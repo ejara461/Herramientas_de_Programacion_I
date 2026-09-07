@@ -158,15 +158,15 @@
 
       <div class="campo">
         <label for="documento">Número de documento</label>
-        <input type="text" id="documento" name="Documento" required>
+        <input type="text" id="documento" name="Documento">
       </div>
       <div class="campo">
         <label for="nombre">Nombre completo</label>
-        <input type="text" id="nombre" name="Nombre" required>
+        <input type="text" id="nombre" name="Nombre">
       </div>
       <div class="campo">
         <label for="proyecto">Proyecto PIA</label>
-        <select id="proyecto" name="Proyecto_PIA" required>
+        <select id="proyecto" name="Proyecto_PIA">
           <option value="">Seleccione...</option>
           <option>Gestión Alfabetización</option>
           <option>Gestión de Daños</option>
@@ -196,7 +196,7 @@
         <input type="hidden" id="etiquetas-hidden" name="Etiquetas_Semanticas">
         <div class="campo" style="margin-top:0.9rem;">
           <label for="codigo-html">Código HTML completo de la página reestructurada</label>
-          <textarea id="codigo-html" name="Codigo_HTML" required placeholder="&lt;!DOCTYPE html&gt;..."></textarea>
+          <textarea id="codigo-html" name="Codigo_HTML" placeholder="&lt;!DOCTYPE html&gt;..."></textarea>
         </div>
       </div>
 
@@ -208,7 +208,7 @@
         real para decidir entre &lt;article&gt; y &lt;section&gt;. Incluya un ejemplo de
         cada una en un sitio real distinto a su proyecto, justificando por qué esa etiqueta
         es la correcta en cada caso.</p>
-        <textarea id="investigacion" name="Investigacion_Article_Section" required
+        <textarea id="investigacion" name="Investigacion_Article_Section"
           data-min-palabras="120" oninput="contarPalabras(this)"></textarea>
         <p class="contador falta" id="contador-investigacion">0 / 120 palabras</p>
       </div>
@@ -295,14 +295,35 @@
     mensaje.style.display = 'none';
     mensaje.className = '';
 
-    if(etiquetas.length < 4){
-      mensaje.textContent = 'Marque al menos cuatro etiquetas semánticas aplicadas.';
+    function mostrarError(texto){
+      mensaje.textContent = texto;
       mensaje.className = 'error';
+      mensaje.scrollIntoView({behavior:'smooth', block:'center'});
+    }
+
+    var documento = document.getElementById('documento').value.trim();
+    var nombre = document.getElementById('nombre').value.trim();
+    var proyecto = document.getElementById('proyecto').value;
+    var codigo = document.getElementById('codigo-html').value.trim();
+
+    if(!documento || !nombre){
+      mostrarError('Complete el número de documento y el nombre completo.');
+      return;
+    }
+    if(!proyecto){
+      mostrarError('Seleccione su proyecto PIA.');
+      return;
+    }
+    if(etiquetas.length < 4){
+      mostrarError('Marque al menos cuatro etiquetas semánticas aplicadas.');
+      return;
+    }
+    if(!codigo){
+      mostrarError('Pegue el código HTML completo de la página reestructurada.');
       return;
     }
     if(!palabrasOk){
-      mensaje.textContent = 'La actividad de investigación requiere mínimo 120 palabras.';
-      mensaje.className = 'error';
+      mostrarError('La actividad de investigación requiere mínimo 120 palabras. Complete el texto hasta que el contador quede en verde.');
       return;
     }
 

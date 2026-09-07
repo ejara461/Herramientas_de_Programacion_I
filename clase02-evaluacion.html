@@ -163,15 +163,15 @@
 
       <div class="campo">
         <label for="documento">Número de documento</label>
-        <input type="text" id="documento" name="Documento" required>
+        <input type="text" id="documento" name="Documento">
       </div>
       <div class="campo">
         <label for="nombre">Nombre completo</label>
-        <input type="text" id="nombre" name="Nombre" required>
+        <input type="text" id="nombre" name="Nombre">
       </div>
       <div class="campo">
         <label for="proyecto">Proyecto PIA</label>
-        <select id="proyecto" name="Proyecto_PIA" required>
+        <select id="proyecto" name="Proyecto_PIA">
           <option value="">Seleccione...</option>
           <option>Gestión Alfabetización</option>
           <option>Gestión de Daños</option>
@@ -184,7 +184,7 @@
       <div class="pregunta-bloque">
         <div class="num-tipo"><strong>Pregunta 1</strong><span class="tipo">Selección múltiple</span></div>
         <p class="enunciado">¿Cuál etiqueta representa contenido autónomo que tendría sentido publicado por separado?</p>
-        <label class="opcion-radio"><input type="radio" name="Respuesta_P1" value="section" required> a) &lt;section&gt;</label>
+        <label class="opcion-radio"><input type="radio" name="Respuesta_P1" value="section"> a) &lt;section&gt;</label>
         <label class="opcion-radio"><input type="radio" name="Respuesta_P1" value="article"> b) &lt;article&gt;</label>
         <label class="opcion-radio"><input type="radio" name="Respuesta_P1" value="aside"> c) &lt;aside&gt;</label>
         <label class="opcion-radio"><input type="radio" name="Respuesta_P1" value="div"> d) &lt;div&gt;</label>
@@ -193,7 +193,7 @@
       <div class="pregunta-bloque">
         <div class="num-tipo"><strong>Pregunta 2</strong><span class="tipo">Selección múltiple</span></div>
         <p class="enunciado">¿Cuántas veces puede aparecer &lt;main&gt; en un mismo documento HTML?</p>
-        <label class="opcion-radio"><input type="radio" name="Respuesta_P2" value="0" required> a) Ninguna, es opcional y no se usa</label>
+        <label class="opcion-radio"><input type="radio" name="Respuesta_P2" value="0"> a) Ninguna, es opcional y no se usa</label>
         <label class="opcion-radio"><input type="radio" name="Respuesta_P2" value="1"> b) Exactamente una</label>
         <label class="opcion-radio"><input type="radio" name="Respuesta_P2" value="varias"> c) Tantas como secciones tenga la página</label>
         <label class="opcion-radio"><input type="radio" name="Respuesta_P2" value="header"> d) Solo dentro de &lt;header&gt;</label>
@@ -202,7 +202,7 @@
       <div class="pregunta-bloque">
         <div class="num-tipo"><strong>Pregunta 3</strong><span class="tipo">Selección múltiple</span></div>
         <p class="enunciado">Un contenedor que solo se usa para centrar una tarjeta en pantalla mediante CSS, sin significado propio. ¿Qué etiqueta es la adecuada?</p>
-        <label class="opcion-radio"><input type="radio" name="Respuesta_P3" value="section" required> a) &lt;section&gt;</label>
+        <label class="opcion-radio"><input type="radio" name="Respuesta_P3" value="section"> a) &lt;section&gt;</label>
         <label class="opcion-radio"><input type="radio" name="Respuesta_P3" value="article"> b) &lt;article&gt;</label>
         <label class="opcion-radio"><input type="radio" name="Respuesta_P3" value="div"> c) &lt;div&gt;</label>
         <label class="opcion-radio"><input type="radio" name="Respuesta_P3" value="aside"> d) &lt;aside&gt;</label>
@@ -211,7 +211,7 @@
       <div class="pregunta-bloque">
         <div class="num-tipo"><strong>Pregunta 4</strong><span class="tipo">Selección múltiple</span></div>
         <p class="enunciado">Un bloque de "Contenido relacionado" al lado de un artículo, que si se elimina no afecta la comprensión del artículo. ¿Qué etiqueta corresponde?</p>
-        <label class="opcion-radio"><input type="radio" name="Respuesta_P4" value="nav" required> a) &lt;nav&gt;</label>
+        <label class="opcion-radio"><input type="radio" name="Respuesta_P4" value="nav"> a) &lt;nav&gt;</label>
         <label class="opcion-radio"><input type="radio" name="Respuesta_P4" value="aside"> b) &lt;aside&gt;</label>
         <label class="opcion-radio"><input type="radio" name="Respuesta_P4" value="footer"> c) &lt;footer&gt;</label>
         <label class="opcion-radio"><input type="radio" name="Respuesta_P4" value="main"> d) &lt;main&gt;</label>
@@ -220,7 +220,7 @@
       <div class="pregunta-bloque">
         <div class="num-tipo"><strong>Pregunta 5</strong><span class="tipo">Abierta</span></div>
         <p class="enunciado">Explique, con sus propias palabras, la diferencia entre &lt;section&gt; y &lt;div&gt;, y por qué esa diferencia es relevante para la accesibilidad de una página web.</p>
-        <textarea name="Respuesta_P5" id="p5" required data-min-palabras="50" oninput="contarPalabras(this)"></textarea>
+        <textarea name="Respuesta_P5" id="p5" data-min-palabras="50" oninput="contarPalabras(this)"></textarea>
         <p class="contador falta" id="contador-p5">0 / 50 palabras</p>
         <p class="valor-pregunta">Calificación manual</p>
       </div>
@@ -228,7 +228,7 @@
       <div class="pregunta-bloque">
         <div class="num-tipo"><strong>Pregunta 6</strong><span class="tipo">Abierta</span></div>
         <p class="enunciado">Tome como referencia la página de su propio proyecto PIA: describa dos decisiones concretas que tomó hoy sobre qué etiqueta semántica usar en un bloque específico de su página, y justifique cada decisión.</p>
-        <textarea name="Respuesta_P6" id="p6" required data-min-palabras="50" oninput="contarPalabras(this)"></textarea>
+        <textarea name="Respuesta_P6" id="p6" data-min-palabras="50" oninput="contarPalabras(this)"></textarea>
         <p class="contador falta" id="contador-p6">0 / 50 palabras</p>
         <p class="valor-pregunta">Calificación manual</p>
       </div>
@@ -310,9 +310,35 @@
     mensaje.style.display = 'none';
     mensaje.className = '';
 
-    if(!p5ok || !p6ok){
-      mensaje.textContent = 'Las preguntas 5 y 6 requieren mínimo 50 palabras cada una.';
+    function mostrarError(texto){
+      mensaje.textContent = texto;
       mensaje.className = 'error';
+      mensaje.scrollIntoView({behavior:'smooth', block:'center'});
+    }
+
+    var documento = document.getElementById('documento').value.trim();
+    var nombre = document.getElementById('nombre').value.trim();
+    var proyecto = document.getElementById('proyecto').value;
+
+    function radioSeleccionado(nombreCampo){
+      return document.querySelector('input[name="' + nombreCampo + '"]:checked') !== null;
+    }
+
+    if(!documento || !nombre){
+      mostrarError('Complete el número de documento y el nombre completo.');
+      return;
+    }
+    if(!proyecto){
+      mostrarError('Seleccione su proyecto PIA.');
+      return;
+    }
+    if(!radioSeleccionado('Respuesta_P1') || !radioSeleccionado('Respuesta_P2') ||
+       !radioSeleccionado('Respuesta_P3') || !radioSeleccionado('Respuesta_P4')){
+      mostrarError('Responda las cuatro preguntas de selección múltiple (1 a 4) antes de enviar.');
+      return;
+    }
+    if(!p5ok || !p6ok){
+      mostrarError('Las preguntas 5 y 6 requieren mínimo 50 palabras cada una. Complete el texto hasta que el contador quede en verde.');
       return;
     }
 
