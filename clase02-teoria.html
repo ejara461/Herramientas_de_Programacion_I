@@ -269,6 +269,28 @@
   navegación o cuál es el contenido principal. Hoy se resuelve ese problema
   con las <strong>etiquetas semánticas</strong> de HTML5.</p>
 
+  <h2>0. Organización de archivos y rutas para imágenes y recursos</h2>
+  <p>Antes de avanzar con la semántica, es fundamental resolver una duda muy frecuente al momento de enlazar archivos o imágenes que no se encuentran en la misma carpeta que nuestro archivo HTML.</p>
+
+  <h3>La etiqueta básica de imagen</h3>
+  <pre>&lt;img src="logo.png" alt="Logo"&gt;</pre>
+  <p>Si la imagen está exactamente en la misma carpeta que el archivo HTML, solo se escribe su nombre en el atributo <code>src</code>. Sin embargo, cuando la estructura de carpetas es distinta, debemos indicar la ruta correcta:</p>
+
+  <h3>1. La imagen está dentro de una subcarpeta (Ruta Relativa Directa)</h3>
+  <p>Si creaste una carpeta llamada <code>img</code> o <code>recursos</code> al mismo nivel de tu HTML y allí guardaste la imagen:</p>
+  <pre>&lt;img src="img/logo.png" alt="Logo institucional"&gt;</pre>
+
+  <h3>2. El HTML está en una subcarpeta y la imagen está arriba</h3>
+  <p>Si tu archivo HTML está dentro de una carpeta (por ejemplo, <code>paginas/</code>) y necesitas salir de ella para encontrar la imagen, usas dos puntos y un slash <code>../</code>:</p>
+  <pre>&lt;img src="../logo.png" alt="Logo institucional"&gt;</pre>
+
+  <h3>3. Rutas en carpetas muy superiores (ej. Usuarios)</h3>
+  <p>Si la imagen está varios niveles hacia arriba en el sistema operativo, debes subir tantos niveles como sea necesario usando <code>../</code> por cada nivel:</p>
+  <pre>&lt;img src="../../imagenes/logo.png" alt="Logo institucional"&gt;</pre>
+  <div class="caja alerta">
+    <strong>Buena práctica recomendada:</strong> Para proyectos escolares y de desarrollo web, mantén siempre las imágenes y recursos ordenados dentro de la estructura de carpetas de tu propio proyecto, evitando apuntar a rutas externas o del sistema operativo (como <code>Usuarios</code>).
+  </div>
+
   <h2>1. Qué significa "semántica" en HTML</h2>
   <p>Una etiqueta es semántica cuando su nombre describe el significado del
   contenido que envuelve, no solo su apariencia. <code class="inline">&lt;strong&gt;</code>
@@ -337,7 +359,7 @@
   <p>Envuelve un bloque de enlaces de navegación significativos: el menú
   principal del sitio, una barra de migas de pan, o un índice de contenidos.
   No todo grupo de enlaces necesita <code class="inline">&lt;nav&gt;</code>: un pie de
-  página con dos o tres enlaces sueltos (política de privacidad, contacto)
+  página con dois o tres enlaces sueltos (política de privacidad, contacto)
   normalmente no se marca como <code class="inline">&lt;nav&gt;</code>, porque no es
   navegación principal del sitio.</p>
   <pre>&lt;nav&gt;
