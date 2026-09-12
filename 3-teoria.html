@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clase 3 · Teoría · Tablas HTML</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --azul-profundo:#132A4C;
+  --azul-medio:#2C5C8F;
+  --azul-claro:#EAF1F8;
+  --rojo-mc:#B0223A;
+  --verde:#2E7D42;
+  --borde:#CBD9E6;
+}
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  font-family:"IBM Plex Sans", Arial, sans-serif;
+  color:var(--azul-profundo);
+  background:#fff;
+  line-height:1.6;
+}
+code, pre, textarea.code{
+  font-family:"IBM Plex Mono", "Courier New", monospace;
+}
+.topbar{
+  position:sticky; top:0; z-index:10;
+  background:var(--azul-profundo);
+  color:#fff;
+  display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between;
+  padding:.6rem 1rem; gap:.6rem;
+}
+.topbar .marca{display:flex; align-items:center; gap:.6rem; font-weight:600;}
+.topbar .marca img{height:34px; width:34px; border-radius:4px; background:#fff; padding:2px;}
+.topbar nav{display:flex; gap:1rem; flex-wrap:wrap;}
+.topbar nav a{color:#EAF1F8; text-decoration:none; font-size:.95rem; padding:.25rem .5rem; border-radius:4px;}
+.topbar nav a.actual{background:var(--rojo-mc); color:#fff; font-weight:600;}
+.topbar .reloj{font-family:"IBM Plex Mono", monospace; font-size:.95rem;}
+main{max-width:920px; margin:0 auto; padding:1.5rem 1.25rem 4rem;}
+h1{color:var(--azul-profundo); font-size:1.6rem; margin-top:0;}
+h2{color:var(--azul-medio); border-bottom:2px solid var(--borde); padding-bottom:.3rem; margin-top:2.5rem;}
+h3{color:var(--azul-profundo); margin-top:1.6rem;}
+.bloque{background:var(--azul-claro); border:1px solid var(--borde); border-radius:8px; padding:1rem 1.2rem; margin:1rem 0;}
+.bloque.alerta{background:#FCEBEE; border-color:#E6AEB8;}
+.bloque.ok{background:#EAF6EC; border-color:#B7DCC0;}
+pre{background:var(--azul-profundo); color:#EAF1F8; padding:1rem; border-radius:6px; overflow-x:auto; font-size:.85rem;}
+pre.malo{background:#3B1520; color:#F7D9DF;}
+table{border-collapse:collapse; width:100%; margin:1rem 0;}
+table.demo th, table.demo td{border:1px solid var(--borde); padding:.5rem .7rem; text-align:left;}
+table.demo thead{background:var(--azul-medio); color:#fff;}
+table.demo tbody tr:nth-child(even){background:var(--azul-claro);}
+.etiqueta-req{display:inline-block; background:var(--rojo-mc); color:#fff; font-family:"IBM Plex Mono", monospace; font-size:.8rem; padding:.1rem .4rem; border-radius:4px; margin:.15rem;}
+.checklist{list-style:none; padding-left:0;}
+.checklist li{padding:.4rem 0; border-bottom:1px dashed var(--borde);}
+.checklist li::before{content:"✔ "; color:var(--verde); font-weight:700;}
+.errores li{margin-bottom:.6rem;}
+.grid-2{display:grid; grid-template-columns:1fr 1fr; gap:1rem;}
+@media (max-width:700px){.grid-2{grid-template-columns:1fr;}}
+.quiz{background:#fff; border:1px solid var(--borde); border-radius:8px; padding:1rem 1.2rem; margin:1rem 0;}
+.quiz label{display:block; margin:.4rem 0; cursor:pointer;}
+.quiz .resultado{margin-top:.6rem; font-weight:600; display:none;}
+.quiz .resultado.mostrar{display:block;}
+.quiz .resultado.correcto{color:var(--verde);}
+.quiz .resultado.incorrecto{color:var(--rojo-mc);}
+button.chk{background:var(--azul-medio); color:#fff; border:none; padding:.5rem 1rem; border-radius:6px; cursor:pointer; font-size:.9rem;}
+button.chk:hover{background:var(--azul-profundo);}
+footer.pie{text-align:center; color:var(--azul-medio); font-size:.85rem; padding:2rem 0 1rem;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="marca">
+    <img src="data:image/jpeg;base64,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" alt="Logo IE María de los Ángeles Cano">
+    <span>Herramientas de Programación I · Clase 3</span>
+  </div>
+  <nav>
+    <a href="3-teoria.html" class="actual">Teoría</a>
+    <a href="3-taller.html">Taller</a>
+    <a href="3-evaluacion.html">Evaluación</a>
+  </nav>
+  <div class="reloj" id="reloj">--:--:--</div>
+</div>
+
+<main>
+  <h1>Clase 3 — Tablas HTML</h1>
+
+  <h2>Repaso: solución al punto 1 del Taller 1 (Clase 2)</h2>
+  <p>El punto 1 pedía: <em>«Reorganice el contenido de su proyecto con al menos cuatro etiquetas semánticas distintas entre: <code>&lt;header&gt;</code>, <code>&lt;nav&gt;</code>, <code>&lt;main&gt;</code>, <code>&lt;article&gt;</code>, <code>&lt;section&gt;</code>, <code>&lt;aside&gt;</code>, <code>&lt;footer&gt;</code>. No elimine ni reescriba el contenido de texto, listas, enlaces o imágenes: solo reorganice la estructura.»</em></p>
+
+  <p>A continuación, un código sugerido de solución, usando <strong>únicamente etiquetas vistas hasta el cierre de la Clase 2</strong> (ninguna etiqueta de hoy todavía):</p>
+
+<pre>&lt;!DOCTYPE html&gt;
+&lt;html lang="es"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;Mi proyecto PIA&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+    &lt;header&gt;
+        &lt;h1&gt;Nombre del proyecto&lt;/h1&gt;
+        &lt;nav&gt;
+            &lt;ul&gt;
+                &lt;li&gt;&lt;a href="#inicio"&gt;Inicio&lt;/a&gt;&lt;/li&gt;
+                &lt;li&gt;&lt;a href="#proyecto"&gt;Proyecto&lt;/a&gt;&lt;/li&gt;
+            &lt;/ul&gt;
+        &lt;/nav&gt;
+    &lt;/header&gt;
+
+    &lt;main&gt;
+        &lt;section&gt;
+            &lt;h2&gt;Sobre el proyecto&lt;/h2&gt;
+            &lt;p&gt;Contenido central y único de la página, tal como estaba antes de reorganizar.&lt;/p&gt;
+            &lt;img src="img/logo.jpg" alt="Logo del proyecto"&gt;
+        &lt;/section&gt;
+
+        &lt;article&gt;
+            &lt;h2&gt;Detalle o funcionalidad&lt;/h2&gt;
+            &lt;p&gt;Un bloque de contenido independiente y autocontenido dentro de la página.&lt;/p&gt;
+        &lt;/article&gt;
+
+        &lt;aside&gt;
+            &lt;h2&gt;Información relacionada&lt;/h2&gt;
+            &lt;p&gt;Contenido secundario, no imprescindible para entender lo principal.&lt;/p&gt;
+        &lt;/aside&gt;
+    &lt;/main&gt;
+
+    &lt;footer&gt;
+        &lt;p&gt;Institución Educativa María de los Ángeles Cano&lt;/p&gt;
+    &lt;/footer&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+
+  <p>Este código usa seis etiquetas semánticas (<code>header, nav, main, article, section, aside, footer</code>), cumple el mínimo de cuatro exigido, y conserva la regla de un único <code>&lt;main&gt;</code> con el contenido central de la página.</p>
+
+  <h3>Errores reales encontrados al revisar el taller</h3>
+  <p>Estos son errores que aparecieron de forma repetida en las entregas. Se presentan sin nombres, agrupados por tipo, para que cada uno revise si los cometió.</p>
+
+  <div class="bloque alerta">
+    <ul class="errores">
+      <li><strong>Confundir <code>&lt;header&gt;</code> con <code>&lt;head&gt;</code>.</strong> Varias entregas pusieron <code>&lt;meta charset&gt;</code> y <code>&lt;title&gt;</code> dentro de un <code>&lt;header&gt;</code> en el <code>&lt;body&gt;</code>, en vez de dentro del <code>&lt;head&gt;</code> del documento. Son etiquetas distintas: <code>&lt;head&gt;</code> es la sección de metadatos del documento (no se ve en la página); <code>&lt;header&gt;</code> es un bloque visible de contenido, normalmente el encabezado de la página o de una sección.</li>
+      <li><strong>Etiquetas de contenido dentro de <code>&lt;head&gt;</code>.</strong> Se encontraron <code>&lt;img&gt;</code> y <code>&lt;a&gt;</code> dentro de <code>&lt;head&gt;</code>. Dentro de <code>&lt;head&gt;</code> solo van metadatos (<code>&lt;title&gt;</code>, <code>&lt;meta&gt;</code>); ningún contenido visible.</li>
+      <li><strong>Anidar <code>&lt;main&gt;</code> dentro de un encabezado de texto.</strong> Ejemplo real: <code>&lt;h1&gt;&lt;main&gt;Gestión de Daños&lt;/main&gt;&lt;/h1&gt;</code>. Un elemento de estructura de página (<code>&lt;main&gt;</code>) no va dentro de un elemento de texto (<code>&lt;h1&gt;</code>); es al revés: los títulos van dentro de las secciones.</li>
+      <li><strong>Etiquetas sin cerrar o cierres sueltos.</strong> Casos con <code>&lt;/header&gt;</code> de más (cerrando algo que ya se había cerrado antes) o con <code>&lt;img ...&gt;</code> sin el <code>&gt;</code> final, lo que rompe el resto del documento.</li>
+      <li><strong>Doctype y codificación mal escritos.</strong> <code>&lt;!DOCTYPR html&gt;</code>, <code>&lt;!Doctype html.&gt;</code>, <code>charset="UFF-B"</code>, <code>charset="UFT -8"</code>. El navegador es tolerante, pero un doctype o un <code>charset</code> mal escrito no cumple su función real.</li>
+      <li><strong>Rutas de archivo de Windows en <code>src</code>.</strong> Ejemplos: <code>C:\xampp\htdocs\img\...</code>, <code>D:\Nueva carpeta\...</code>. Esas rutas solo existen en el computador de quien programó; en una página web la ruta debe ser relativa al proyecto (<code>img/logo.jpg</code>).</li>
+      <li><strong>Etiqueta <code>&lt;button&gt;</code> no vista en clase.</strong> Aparece en una entrega. Toda etiqueta que no se ha visto en clase se trata como contenido no enseñado, sin importar si el resultado visual es válido.</li>
+      <li><strong>Typos de etiquetas ya vistas.</strong> <code>&lt;foother&gt;</code>, <code>&lt;foter&gt;</code>. No son etiquetas nuevas ni cuentan como tales: son errores de escritura de <code>&lt;footer&gt;</code>, y se corrigen con indulgencia.</li>
+    </ul>
+  </div>
+
+  <div class="bloque">
+    <p><strong>Nota sobre el uso de mayúsculas:</strong> <code>&lt;H1&gt;</code>, <code>&lt;UL&gt;</code>, <code>&lt;LI&gt;</code> funcionan igual que en minúscula porque HTML no distingue mayúsculas de minúsculas en los nombres de etiqueta. Aun así, la convención en todo el curso es escribir las etiquetas siempre en minúscula.</p>
+  </div>
+
+  <h2>La estructura que toda página HTML5 debe tener</h2>
+  <p>Sin importar el tema de la página, estas etiquetas <strong>siempre</strong> deben estar presentes y en este orden:</p>
+
+  <ul class="checklist">
+    <li><span class="etiqueta-req">&lt;!DOCTYPE html&gt;</span> — declara que el documento es HTML5. Va en la primera línea, sin nada antes.</li>
+    <li><span class="etiqueta-req">&lt;html lang="es"&gt;</span> — envuelve todo el documento.</li>
+    <li><span class="etiqueta-req">&lt;head&gt;</span> — sección de metadatos, no visible en la página.</li>
+    <li><span class="etiqueta-req">&lt;meta charset="UTF-8"&gt;</span> — dentro de <code>&lt;head&gt;</code>, define la codificación de caracteres (tildes, eñes).</li>
+    <li><span class="etiqueta-req">&lt;title&gt;</span> — dentro de <code>&lt;head&gt;</code>, el texto que aparece en la pestaña del navegador.</li>
+    <li><span class="etiqueta-req">&lt;body&gt;</span> — todo el contenido visible de la página.</li>
+  </ul>
+
+  <div class="bloque">
+    <p>Regla práctica: si al abrir el código de una página no se ven, en ese orden, <code>doctype → html → head (meta + title) → body</code>, la estructura está incompleta, sin importar qué tan bien se vea el contenido dentro.</p>
+  </div>
+
+  <h2>Tablas HTML</h2>
+  <p>Una tabla organiza datos en filas y columnas. Se usa para datos tabulares reales (listados, horarios, precios), nunca para acomodar el diseño general de una página — eso se resuelve más adelante con CSS.</p>
+
+  <h3>Etiquetas de tabla</h3>
+  <div class="grid-2">
+    <div class="bloque">
+      <p><span class="etiqueta-req">&lt;table&gt;</span> contenedor de toda la tabla.</p>
+      <p><span class="etiqueta-req">&lt;thead&gt;</span> agrupa la fila (o filas) de encabezado.</p>
+      <p><span class="etiqueta-req">&lt;tbody&gt;</span> agrupa las filas con los datos.</p>
+    </div>
+    <div class="bloque">
+      <p><span class="etiqueta-req">&lt;tr&gt;</span> una fila de la tabla (table row).</p>
+      <p><span class="etiqueta-req">&lt;th&gt;</span> una celda de encabezado (table header), texto en negrita y centrado por defecto.</p>
+      <p><span class="etiqueta-req">&lt;td&gt;</span> una celda de datos (table data).</p>
+    </div>
+  </div>
+
+  <h3>Ejemplo: tabla de usuarios de un proyecto</h3>
+<pre>&lt;table&gt;
+    &lt;thead&gt;
+        &lt;tr&gt;
+            &lt;th&gt;Documento&lt;/th&gt;
+            &lt;th&gt;Nombre&lt;/th&gt;
+            &lt;th&gt;Rol&lt;/th&gt;
+        &lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody&gt;
+        &lt;tr&gt;
+            &lt;td&gt;1001&lt;/td&gt;
+            &lt;td&gt;Ana Torres&lt;/td&gt;
+            &lt;td&gt;Administrador&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;1002&lt;/td&gt;
+            &lt;td&gt;Luis Gómez&lt;/td&gt;
+            &lt;td&gt;Usuario&lt;/td&gt;
+        &lt;/tr&gt;
+    &lt;/tbody&gt;
+&lt;/table&gt;</pre>
+
+  <p>El resultado en el navegador (con estilo básico) se ve así:</p>
+  <table class="demo">
+    <thead>
+      <tr><th>Documento</th><th>Nombre</th><th>Rol</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>1001</td><td>Ana Torres</td><td>Administrador</td></tr>
+      <tr><td>1002</td><td>Luis Gómez</td><td>Usuario</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Errores frecuentes al construir una tabla (adelanto para el taller de hoy)</h3>
+  <div class="grid-2">
+    <div class="bloque alerta">
+      <p><strong>Código con error</strong></p>
+<pre class="malo">&lt;table&gt;
+    &lt;tr&gt;
+        &lt;td&gt;Documento&lt;/td&gt;
+        &lt;td&gt;Nombre&lt;/td&gt;
+    &lt;tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;1001&lt;/td&gt;
+        &lt;td&gt;Ana&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/table&gt;</pre>
+      <p>La primera fila usa <code>&lt;td&gt;</code> para el encabezado (debería ser <code>&lt;th&gt;</code>), no hay <code>&lt;thead&gt;</code> ni <code>&lt;tbody&gt;</code>, y la primera <code>&lt;tr&gt;</code> nunca se cierra.</p>
+    </div>
+    <div class="bloque ok">
+      <p><strong>Código corregido</strong></p>
+<pre>&lt;table&gt;
+    &lt;thead&gt;
+        &lt;tr&gt;
+            &lt;th&gt;Documento&lt;/th&gt;
+            &lt;th&gt;Nombre&lt;/th&gt;
+        &lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody&gt;
+        &lt;tr&gt;
+            &lt;td&gt;1001&lt;/td&gt;
+            &lt;td&gt;Ana&lt;/td&gt;
+        &lt;/tr&gt;
+    &lt;/tbody&gt;
+&lt;/table&gt;</pre>
+    </div>
+  </div>
+
+  <h2>Verifique lo aprendido</h2>
+
+  <div class="quiz" data-correcta="b">
+    <p>1. ¿Dónde debe ir <code>&lt;meta charset="UTF-8"&gt;</code>?</p>
+    <label><input type="radio" name="q1" value="a"> Dentro de <code>&lt;header&gt;</code>, al inicio del <code>&lt;body&gt;</code></label>
+    <label><input type="radio" name="q1" value="b"> Dentro de <code>&lt;head&gt;</code></label>
+    <label><input type="radio" name="q1" value="c"> Dentro de <code>&lt;table&gt;</code>, antes de <code>&lt;thead&gt;</code></label>
+    <button class="chk" onclick="revisar(this)">Revisar</button>
+    <p class="resultado"></p>
+  </div>
+
+  <div class="quiz" data-correcta="c">
+    <p>2. ¿Qué etiqueta agrupa la fila de encabezado de una tabla?</p>
+    <label><input type="radio" name="q2" value="a"> <code>&lt;tr&gt;</code></label>
+    <label><input type="radio" name="q2" value="b"> <code>&lt;tbody&gt;</code></label>
+    <label><input type="radio" name="q2" value="c"> <code>&lt;thead&gt;</code></label>
+    <button class="chk" onclick="revisar(this)">Revisar</button>
+    <p class="resultado"></p>
+  </div>
+
+  <div class="quiz" data-correcta="a">
+    <p>3. <code>&lt;h1&gt;&lt;main&gt;Texto&lt;/main&gt;&lt;/h1&gt;</code> es un error porque:</p>
+    <label><input type="radio" name="q3" value="a"> Un elemento de estructura de página no va anidado dentro de un elemento de texto</label>
+    <label><input type="radio" name="q3" value="b"> <code>&lt;main&gt;</code> no existe en HTML5</label>
+    <label><input type="radio" name="q3" value="c"> Falta el atributo <code>lang</code></label>
+    <button class="chk" onclick="revisar(this)">Revisar</button>
+    <p class="resultado"></p>
+  </div>
+
+  <h2>Etiquetas vistas hasta hoy (Clase 3)</h2>
+
+  <div class="bloque ok">
+    <h3 style="margin-top:0;">Etiquetas principales — no pueden faltar en ninguna página</h3>
+    <p>
+      <span class="etiqueta-req">html</span><span class="etiqueta-req">head</span><span class="etiqueta-req">body</span>
+      <span class="etiqueta-req">title</span><span class="etiqueta-req">meta (solo charset)</span>
+    </p>
+  </div>
+
+  <div class="bloque ok">
+    <h3 style="margin-top:0;">Etiquetas semánticas — estructura del contenido</h3>
+    <p>
+      <span class="etiqueta-req">header</span><span class="etiqueta-req">nav</span><span class="etiqueta-req">main</span>
+      <span class="etiqueta-req">article</span><span class="etiqueta-req">section</span><span class="etiqueta-req">aside</span>
+      <span class="etiqueta-req">footer</span><span class="etiqueta-req">div</span>
+    </p>
+  </div>
+
+  <div class="bloque ok">
+    <h3 style="margin-top:0;">Etiquetas de contenido — texto, enlaces, imágenes, listas</h3>
+    <p>
+      <span class="etiqueta-req">p</span><span class="etiqueta-req">a</span><span class="etiqueta-req">img</span>
+      <span class="etiqueta-req">h1</span><span class="etiqueta-req">h2</span><span class="etiqueta-req">h3</span>
+      <span class="etiqueta-req">ul</span><span class="etiqueta-req">ol</span><span class="etiqueta-req">li</span>
+      <span class="etiqueta-req">hr</span><span class="etiqueta-req">br</span>
+    </p>
+  </div>
+
+  <div class="bloque ok">
+    <h3 style="margin-top:0;">Etiquetas de tablas — nuevas de hoy</h3>
+    <p>
+      <span class="etiqueta-req">table</span><span class="etiqueta-req">thead</span><span class="etiqueta-req">tbody</span>
+      <span class="etiqueta-req">tr</span><span class="etiqueta-req">th</span><span class="etiqueta-req">td</span>
+    </p>
+  </div>
+
+  <div class="bloque alerta">
+    <p><strong>Recuerde:</strong> en el taller y la evaluación use únicamente las etiquetas de esta lista. Cualquier etiqueta o metadato no visto (por ejemplo <code>&lt;button&gt;</code> o <code>meta name="viewport"</code>) se penaliza en la nota del taller, sin importar si el resultado visual es correcto.</p>
+  </div>
+
+  <footer class="pie">IE María de los Ángeles Cano · Herramientas de Programación I · Grado 10 · Clase 3</footer>
+</main>
+
+<script>
+function actualizarReloj(){
+  var el = document.getElementById('reloj');
+  var ahora = new Date();
+  var hh = String(ahora.getHours()).padStart(2,'0');
+  var mm = String(ahora.getMinutes()).padStart(2,'0');
+  var ss = String(ahora.getSeconds()).padStart(2,'0');
+  el.textContent = hh + ':' + mm + ':' + ss;
+}
+actualizarReloj();
+setInterval(actualizarReloj, 1000);
+
+function revisar(boton){
+  var quiz = boton.closest('.quiz');
+  var correcta = quiz.getAttribute('data-correcta');
+  var seleccion = quiz.querySelector('input[type="radio"]:checked');
+  var resultado = quiz.querySelector('.resultado');
+  if(!seleccion){
+    resultado.textContent = 'Seleccione una opción antes de revisar.';
+    resultado.className = 'resultado mostrar incorrecto';
+    return;
+  }
+  if(seleccion.value === correcta){
+    resultado.textContent = 'Correcto.';
+    resultado.className = 'resultado mostrar correcto';
+  } else {
+    resultado.textContent = 'Incorrecto. Revise la sección correspondiente arriba.';
+    resultado.className = 'resultado mostrar incorrecto';
+  }
+}
+</script>
+</body>
+</html>
