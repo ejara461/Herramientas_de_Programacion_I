@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clase 9 · Teoría · Selectores y cascada</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --azul-profundo:#132A4C; --azul-medio:#2C5C8F; --azul-claro:#EAF1F8;
+  --rojo-mc:#B0223A; --verde:#2E7D42; --borde:#CBD9E6;
+}
+*{box-sizing:border-box;}
+body{margin:0; font-family:"IBM Plex Sans", Arial, sans-serif; color:var(--azul-profundo); background:#fff; line-height:1.6;}
+code, pre, textarea, input, select{font-family:"IBM Plex Mono","Courier New",monospace;}
+.topbar{position:sticky; top:0; z-index:10; background:var(--azul-profundo); color:#fff; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; padding:.6rem 1rem; gap:.6rem;}
+.topbar .marca{display:flex; align-items:center; gap:.6rem; font-weight:600;}
+.topbar .marca img{height:34px; width:34px; border-radius:4px; background:#fff; padding:2px;}
+.topbar nav{display:flex; gap:1rem; flex-wrap:wrap;}
+.topbar nav a{color:#EAF1F8; text-decoration:none; font-size:.95rem; padding:.25rem .5rem; border-radius:4px;}
+.topbar nav a.actual{background:var(--rojo-mc); color:#fff; font-weight:600;}
+.topbar .reloj{font-family:"IBM Plex Mono", monospace; font-size:.95rem;}
+main{max-width:920px; margin:0 auto; padding:1.5rem 1.25rem 4rem;}
+h1{font-size:1.6rem; margin-top:0;}
+h2{color:var(--azul-medio); border-bottom:2px solid var(--borde); padding-bottom:.3rem; margin-top:2.5rem;}
+h3{margin-top:1.6rem;}
+.bloque{background:var(--azul-claro); border:1px solid var(--borde); border-radius:8px; padding:1rem 1.2rem; margin:1rem 0;}
+.bloque.alerta{background:#FCEBEE; border-color:#E6AEB8;}
+.bloque.ok{background:#EAF6EC; border-color:#B7DCC0;}
+pre{background:var(--azul-profundo); color:#EAF1F8; padding:1rem; border-radius:6px; overflow-x:auto; font-size:.85rem;}
+pre.malo{background:#3B1520; color:#F7D9DF;}
+pre.css{background:#1F3B2A; color:#E3F4E8;}
+.grid-2{display:grid; grid-template-columns:1fr 1fr; gap:1rem;}
+.grid-2 > div{min-width:0;}
+@media (max-width:700px){.grid-2{grid-template-columns:1fr;}}
+.rotulo{font-size:.78rem; font-weight:700; text-transform:uppercase; letter-spacing:.03em; margin:0 0 .3rem;}
+.rotulo.mal{color:var(--rojo-mc);} .rotulo.bien{color:var(--verde);}
+.etiqueta-req{display:inline-block; background:var(--rojo-mc); color:#fff; font-family:"IBM Plex Mono", monospace; font-size:.8rem; padding:.1rem .4rem; border-radius:4px; margin:.15rem;}
+.etiqueta-req.nueva{background:var(--verde);}
+.quiz{background:#fff; border:1px solid var(--borde); border-radius:8px; padding:1rem 1.2rem; margin:1rem 0;}
+.quiz label{display:block; margin:.4rem 0; cursor:pointer;}
+.quiz .resultado{margin-top:.6rem; font-weight:600; display:none;}
+.quiz .resultado.mostrar{display:block;}
+.quiz .resultado.correcto{color:var(--verde);}
+.quiz .resultado.incorrecto{color:var(--rojo-mc);}
+button.chk{background:var(--azul-medio); color:#fff; border:none; padding:.5rem 1rem; border-radius:6px; cursor:pointer; font-size:.9rem; font-family:"IBM Plex Sans", Arial, sans-serif;}
+button.chk:hover{background:var(--azul-profundo);}
+table{border-collapse:collapse; width:100%; margin:1rem 0;}
+th, td{border:1px solid var(--borde); padding:.5rem .7rem; text-align:left; vertical-align:top;}
+thead{background:var(--azul-medio); color:#fff;}
+.tabla-scroll{overflow-x:auto;}
+.diagrama{display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:.3rem; font-family:"IBM Plex Mono", monospace; font-size:1.05rem; background:#fff; border:1px solid var(--borde); border-radius:8px; padding:1.2rem .8rem; margin:1rem 0;}
+.diagrama span{padding:.3rem .5rem; border-radius:5px;}
+.d-sel{background:#FCEBEE; color:var(--rojo-mc); font-weight:600;}
+.d-prop{background:#EAF1F8; color:var(--azul-medio); font-weight:600;}
+.d-val{background:#EAF6EC; color:var(--verde); font-weight:600;}
+.leyenda{display:flex; flex-wrap:wrap; gap:1rem; justify-content:center; font-size:.85rem; margin-top:-.4rem;}
+.leyenda span{padding:.1rem .5rem; border-radius:4px;}
+.lab{border:1px solid var(--borde); border-radius:8px; padding:1rem 1.2rem; margin:1rem 0; background:#fff;}
+.lab textarea{width:100%; min-height:170px; padding:.6rem; border:1px solid var(--borde); border-radius:6px; font-size:.85rem; background:#FAFCFE;}
+.lab iframe{width:100%; height:260px; border:1px solid var(--borde); border-radius:6px; background:#fff;}
+.lab .reto{font-size:.92rem; margin:.3rem 0 .6rem;}
+footer.pie{text-align:center; color:var(--azul-medio); font-size:.85rem; padding:2rem 0 1rem;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="marca">
+    <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBxISEhUSEhMVFhUXFhgXGBYXFxgVFxUXFRUXFhgVFxcYHSggGBolHRUVITEhJSkrLi4uGR8zODMtNygtLisBCgoKDg0OGxAQGjUlIB0tKzAuKzc3Ky0tMC0tLS0wLS0tLS8tLisvLSstLS0tListKy0tLS0tLS0tLS0tLS0tLf/AABEIASYBJAMBIgACEQEDEQH/xAAcAAEAAgMBAQEAAAAAAAAAAAAABgcEBQgDAQL/xABJEAABAwIDAwgECwUIAQUAAAABAAIDBBEFBiESMUEHEyJRYXGBkTJyobEUIzM1QlKCkrKzwQg0YtHwFRdDU2Oi0+GDFiRUk/H/xAAbAQEAAgMBAQAAAAAAAAAAAAAABAUCAwYBB//EADURAQACAQICBgYJBQAAAAAAAAABAgMEESExBQYSQVHRIjJCYXGRFDNSgaGxweHxEyNigvD/2gAMAwEAAhEDEQA/ALxREQEREBRzO2cafDIRLOSXO0jjb6TyOrqHWVI1zLy+1rn4q6MnoxRRtaPWbzhPjt+xBtqvl8rS4mKmp2t4B/OPPmHN9yx/7+8R/wAik+5L/wAqqlEFrf394j/kUn3Jf+VZFNy+1oPTpad3q84z3ucqhRB0flvlwoZ3BlTG+mcfpE85F4vABHi23arRjeHAFpBBFwQbgg8QeK4fVoclGdpIf/aSPJaBtRXPo29JvdbUBB0ki1OX8WE7N/SHtHWtsgIiICIiAiIgwsZxWGkhfUTvDI2C7nHtNgB1kkgAdqp/GOX5ocRS0ZcOD5X7N+3m2g/iWu/aGzTtzR4fGejFaSW3GRw6DfstN/t9iptBa55e8R4QUn3Zf+VfP7+8R/yKT7kv/KqpRBc1By/VAPx9HE4X/wAN7o/Y7aVoZL5QaPEmkROLJWi7oZLB4HEjg4doXJKy8MxCSnlZNE4tewhwI7Du7ig7WBX1Vrk3O/PMY6+jhuPA8QrHglDmhw3EXQftERAREQEREBERAREQEREBERAXLXLl881Hqw/kMXUq5a5cvnmo9WH8iNBAkREBFnYPS87II+tr7d4aSPasJwtoUHxZOH1JikZIPokHw4rGRB0JkfGSx7SDdptx3gq3WOBAI3HUeK5lyDiV42g72HZPq7x+vkugcq13OQgE6t9yDdIiICIiAtbmTGGUdLNVSejEwutu2juazvc4geK2So/9ovMnyOHsd/rS28WxtP8AvcR6pQUvidfJUTSTynafI9z3Htcbm3UOxYqIgItxl/C+eMl9zWG3rEdFacoCIiCdcntcQxzb+i+/g7/sFdD5KrucgtfVp9h/7uuXcl1GzPs39NpHiNR7ir75OK6zw0nR12/y9tvNBZCIiAiIgIiICIiAiIgIiICIiAuWuXL55qPVh/IjXUq5a5cvnmo9WH8iNBAkREG3yp+8s7nfhKZppObqHW3O6Q8d/tTKn7yzud+EqS5yw/bp+dA1jcLn+B36bQHmggaIiDe5PrebnDSdHi3jw/l4q/siYnYgE6bj4rmaN5aQRoQbjvG5XRk3FA7m3jc4A+PEeaC+EWHhVTzkYPVosxAREQeVTO2NjpHkNaxpc4ncGtFyT4Bcc5qxp1bVz1Tt8ryQPqt0DG+DQ0eC6C5eMw/BsPMDTZ9S7m+0RgXkPjo37S5mugIiysMpDLKyMfSOvYN5Pkgm2VaPm4G9b+kfcP5qIZhpOaqJGcL3Hc4XHvVl0kQJDQNP0G5aXlawXmjT1AGkjCxx/ij3ex3sQV6iIgycNqOblY/6rgfbqrtynVbEgseIIVEq2Mo1m0yF/W0A97dPeEHQ8Egc0OHEA+a/a1OWqnbhA6vcf6K2yAiIgIiICIiAiIgIiICIiAuWuXL55qPVh/IjXUq5a5cvnmo9WH8iNBAkREG3yp+8s7nfhKtPCaBtQ2WB26RpZfquND4GyqzKn7yzud+Eq3sq/KeKCkK2ndE90bxZzHFpHUQbLxVh8tmBGnrhMB0KmMSdm2LNeO/Rp+0q8QFN8g4jYGK+rTtDuO/26+KhC2WX63mp2u4E7J7nf0EHUmS8QDmgX3qWKpsmV9nAX46K1opNoAjiEH7RFpM6Y6KGinqTvYw7A63u6LB94hBzxy25h+F4k9jTeOnHMtsdNoG8h+9p9kKv1+pZS5xc4kkkkk7yTvJPEr8oClOSKO7nzEbhst7zv9w81FgFZeBUfNQMZxtc+s7U+W5BJst0m28GykPLDgHOYMXAdKB7Zu3ZJ2Hf7XX+yvfIuG3Iv/XFT3F8PbUQS07vRljfGewPaW3Hmg4pRe1XTuje6N4s5jixw6nNJBHmF4oCnORKr4st4sffwP8A+FQZSDJVRszln12+1uo/VB0lkeruLdf9BTBVhkersRruVnNdcXQfUREBERAREQEREBERAREQFy1y5fPNR6sP5Ea6lXLXLl881Hqw/kRoIEiIg2+U/wB5Z3O/CVb2VflPFVDlP95Z3O/CVb2VflPFBveWvAvhOFNmaLvpiHjiebPQePwu+yubV2oKNstOYpBdkkZa4dbXggjyK46x3DHUtRNTv9KKRzD27JsHdxFj4oMBERBbGRsU2mRvvr6Lu9vHxCvTLtVtxgdS5cyLXbMjoifS6Q7x/wBFdAZEr72aTv0QTlUf+0bmH5CgY7/WlF/sxtP+829VXbLIGtLnGzQCSTuAAuSVx5nXHTXVs9STo952OyNvRYPugINKAvi/TRc2C21FgMj9XdAdu/f1LC+StI4yk6fSZtRbs4qzLyy/R87OxpGg6TtODdfforMo2AvG1YDtNveoxhtA2C+wTc6EnqHBZd1Dvrqx6sOh0/VXNaN8t4j4cf2XHgGYaCnb8ZURh3ULv8eiCs+flFw5u6Yu9WOT9WhUYi1Tr7+ELKnVTTR617T8vJr884YJ66onptYpZDIL9E3fZz9D/EXLQOwOYfR8iFL0WP07J7myeq2knvn5x5INLQyN9Jjh4L94VLzczH7tlwv3cfYptdeE1HG70mNPv81trr/tQg5uqfD+1k+ceSeZTqNl4Hb5q4cPl2mA9i57wnFOacCRcDTTforpyfjcM8Y2Hg24cR2EKZjz0yerLnNZ0ZqdJ9bXh4xxhJERFtQBERAREQEREBERAREQFy1y5fPNR6sP5Ea6lXLXLl881Hqw/kRoIEiIg2+U/wB5Z3O/CVb2VflPFVDlP95Z3O/CVb2VflPFBctB8m3uXP8A+0PgPNVkdW0dGoZZx/1IrDwuws+6V0Bh/wAm3uUP5ZMB+F4XNsi74bTs6/i77Y+4X+NkHKqIiD3oKkxSMkH0SD3jiPK6vPJ2I2c0g6GxB7DxVCqxsgYleMNvrGdn7P0f18kFscseZhT4U4NNpKn4pvY0j4x33QR9oLmyhonymzR48B4qcco2Kvr6uOBrrx07NnsDjZ0h772HgvGjpWxNDW+J4k9qi6jURjjaOa86H6Htrbdu/Ckfj7oeGH4WyLcLu6yBfw6lmpdFU3va07zL6Hg0+LBTsY67QIiLFvF9X1jCdALr2FI7jYd5WyuK9uUIWfX6bBwyXiGOiyxQOO4jyP8AJaCXHGMcWPa4EEjcDu8VnOmy/ZRq9OaCeH9WG0KLEgxSF+547jossEFappavOE7FqMWWN8don4SLMwnEXwStkYSCLX7R1Hr8Vhr7deVtNZ3hllxVy0mluUrsy/mrbs1xupi1wIuNyoXBJy148Fc2XZtqL+uK6F8fbVERAREQEREBERAREQFy1y5fPNR6sP5Ea6lXLXLl881Hqw/kRoIEiIg2+U/3lnc78JVvZV+U8VUOU/3lnc78JVvZV+U8UFy4f8m3uXs9gIIIBBFiDqCDvBXjh/ybe5ZCDjnOmCGiraimtoyQ7F+Mbukw/dIWjV1ftHYDaSCuaNHAwyG3FvSjJ7SC4fZCpVB9C22XcT5iQnUhzToPrDVvtWpW6y1SbT9s7m/iWGS8UrNkrR6W2pzVxV9pIKGl2Ado3e4lz3dZJushAUVFa02mZl9Uw4KYccY6cIgREWKQ+rLhpOLvJfaWH6R8FuMLw50rrAKy02mjbtXcP0507btTg087RHOf0h4UlE5+gHsUnwvKbnb2nyupfl3LTGt2neSlMbA0WAsFYOSmZmd5Q2jyb1gDvVFcsWA/A8ReB6MrGyt4Xv0Xf7muPiuqVTX7SGE7UFNVAase6JxA4SDabfuLD94o8UHdZtJiEkfouPcd3ksIhAvJrFuEtmLLfFbtUnaUrw/HWv0f0T18FuWsJNhvVeAq0cGkEscb+Lmi/fuPtBUO2irNt44OiwdZ9RTHNb17U90+bPw0fGN71c2VR8V5fqq+y5l/bcCAVaOG0vNsDePFTXMspERAREQEREBERAREQFy1y5fPNR6sP5Ea6lXLXLl881Hqw/kRoIEiIg2+U/3lnc78JVvZV+U8VUOU/wB5Z3O/CVb2VflPFBcuH/Jt7lkLHw/5NvcshBGOUnAvhuHVEIbd+wXx9fOR9JoHUTYt7nFci2XcK5I5UMB+BYlURAWY53Ox6WGxJ0gB2NJc37KCLEKZ4JBsRN6z0j47lD4RdwA4kD2qfNbYADcNPJQNdb0Yr4us6q4Itlvln2YiPn/AiIqx3Qv3Gy5AX4KyqFupPULea24Kdu8QrulNTOn0l8kc9uHxnhDYUsRc4AKz8m4KAA5wUHyxSbb79quPC6fYjA8VevlW7LREQFFuU/CfhWF1UdruEZkb17UXxgt37NvFSlfHNBFjuKDh5Ftc1YX8ErKim1+Lle0X4tDjsHxbYrVICnuRau8Nr6sf7Ha/zUCUkyPU2lcz6zbjvb/0Sg6RyROCO8KWqtsi1li3+tFZKAiIgIiICIiAiIgIiIC5a5cvnmo9WH8iNdSqk+V7kxrKurdW0gbLttYHR7QY9pY0MBbtWBFgON0FEot9X5Or4DaWllb4B3tFwsFuCVJ/wX+It70HvlP95Z3O/CVb2VflPFVxlzAJY5RLJZtgbNvdxJFuCsfKjTznHeguah+TZ3Be68aIfFs9Ue5eyAqZ/aNwLahgrWjVjuZef4H3cwnsDg4fbVzLVZpwRldSzUshs2RttoC5a4EFrrcbEA+CDkDCW/Gs9YHyU1TEuTLEKCUSSMa+FpuZY3AtA3XLTZw39SKr13rw7vqpEfR7z/l+giIoLqxZtEOie9YSz6L0fE+5S9F9a53rNMxop+MJ9kaluR2q0QFAMgR6t/rgrAVu+diIiAiIg5u/aEwjmsRbOB0Z4muJ63x/FuA+yI/NVculeXjLUtXRxSQRukkhkJ2WjadzcjbPsBqbFsZ8CubZonNJDgWnqIIPkUH4WdgdTzc8buG0Ae53RPvWCvanp3vIDGknsBKC9soVGy+3arhpZNpjXdYCojL8xa9t99hfvA1V1YBLtQjs0/VBskREBERAREQEREBERAREQaXG8CE9yN54KLTZMN/R9isNEFcsyYfqHyW7wbK4jNyLe9StEHxrbCw4L6iICIiDS50h26CpH+k533Rtfoue10xW04kjfGdz2uae5wI/Vc0PYQSCLEEgjqI0Vbr441l2vVPJ6GWnhMT8/wCH5REVe7EWbQnQjt96wlk0TtSOsKTpLbZYUfWDFOTQ327tp+UrYyA4Xb3foVPlWmQ6ixarLVy+aiIiAiIgLU4/g7Khlixjj/EAbjxW2RBUddklod8m0fYA/ReDcpkbgR4dauIi+9fjmW/Vb5BBVuG5Tdtg2J96sjCKTmmWO9ZoaBuX1AREQEREBERAREQEREBERAREQEREBERAREQFQGfcO5iunbwc7nG9ok6WnYCXN8Ff6rjlgwbajjqmjVh2Hn+Bxu0nsDr/AHlF1dO1j38F71d1UYdZFbcrxt9/d5feqdERU76SL9RvsbhflfV7E9md4asmOMlJraOE8JTjKFZZw1Vw0su0wO6wud8Gr+bcL7r7+r/pXTlHFBIwNJ4XCvMOWMld4fLOkdBk0eacduXdPjCSIiLagiIiAiIgIvhK1H/qmi5zmvhEe3e1r6X6trd7V5MxHNnTHe+/ZiZ2bhEResBERAREQEREBERAREQEREBERAREQEREBERAWPX0bJo3xSC7XtLSOw/qshEexMxO8Oc8w4M+knfDJw9F1rBzTucP5LWK/M65WZXRW0bK30H9X8J62lUZiFFJDI6KVpa9psR/LrHaFTajBOOeHKX0nofpWusx7Wn045x4++GMiIoy8FvMv5klpnA+k2+7j4FaNFnTJak71RdVpMWpp2Mtd4XvgGd6SoaAZQx/1XjYPt0UmY8EXBBHWDdcxLIp66WPVkj2+q9zfcVNrr59qHL5+qlZ44sm3x/Z0ui53GZ63/5U/wD9jv5rzkzDVu0NTOf/ACP/AJrZ9Pr4IsdVM/fkj8XQlZWxRDalkYwdb3Bo9qiWMcpdHECItqd38PRb4vcPcCqXe8uNyST1nUr8rVfXW9mNlhp+quGs75rzb3RwjzSXMOdqurJBeY4/8thLRbqcd7lGw4jd/RXy6KFa9rTvMuk0+mxYKdjHWIhdNLnEu2ASNWtJ7SW3N1LaCrErdoKhqCQ7TO4e5XJlF94z4fqr+OT5HfbtTs3yIi9YiIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAtBmrK0FayzxZ49GRo6Q7O0di36LG1YtG0tmLLfFaL0naY73PmYsrVFI7pt2mcHtBIt2j6PitIQul6mlbICHDeoFmLk9jdd0bdk9bOH2VAy6Lvo67Q9aOEV1Nf9o8vJUiLf4hlOeO9rOHkfb/Naiaikaekxw8FDthyV5w6PD0ppM3qZI/L82Ol19IRa5ie+EyMtJ5T+T5dEX62ez3p2Z8Hs5aRznb5Pyi9BA47gV6spDxsFsrgyW5QhZuk9Jhj08kf98GOvWGEuPZxKzYaDqaT7vJbWkweR9tCpmLRcd7ub1/WeJrNNNHP2p/SGNh0ZL22HFXHlSItjN+z9VF8u5UIIcWnxVgU0AY0NHBWLjnqiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgxqmhjk9Jo7+K0lZlKN3onwKkiIK+q8lH6t+6xWpnyaR9D2K10Xm0MovaOUqedlHs9iNym7qKuCybITaCb2nnKp4snuPBx9q2dJkh3Ftu/T3qxkXrFFKPJzB6RHhqt5S4RDHubc9uqz0QfAF9REBERAREQEREBERAREQEREBarHsx0lE3bqp2RDgCbud6rBdzvALyzlj7aCjmqnC+w3ot+s9xDWt8yFAOSLCxVMdjFa7nqiR7gxz9RE1jtnoN3NNwbW3BBIDysYYHAPdNGDue+CVrT3dG/sUuwvEoamJs0EjZI3ei9puDY2PiCCLKKcoEkc9BVRvaHNEMjhexLXMYXNcL7iDxWJkpppsNpGAlvxLHEa+lIOcPtKDecoWaP7NonVIZtu2msa03DS5x+kRuFgfYvXIePyV1FFVSxc059+jrYgOIa9u1rskWIWdh87ZmFjwHdjhcEdoO/Ve2KNcY+j1jy/qyDLBuvq1mDMcNra3G1vBbNAREQEREBEX4llawFziGtAuSSAAOsk7kH7RecEzXtD2Oa5pFw5pDmkdYI0IXogIvhK+oK7z3yiy0NdBRQ0vPuka17gCdohzy3ZjA3u6JOqsRfgxN2trZG0BYOsLgdV+parFo3l9wDa3BBuEXhQgiNu1e/b3lexKD6iIgIiICIiAiIgIiICIiAiIgIiIInyqYI+swyohjF5A0SMH1jE4P2QOsgEDtIVR8k+fWwRHD5+i0vLoZDoA5/pRv6rm5B/6XRCo/lp5NgA/EaNoFulPEBpbjK0fiHj1oJxhsbJy6OVoc1wLXNduLSLFp7DdeubKqdroqGgp/jXtB557TzFNE3o7RP03bgGKsOS/NL3sMbzd8VulxcwnQnrIKt6pzE2OkmqDb4qN7x3tGg8TYeKClMpNqXZhbE6rkm5iR/OShxALYgdoBoNgwuAbYdat3MOZZ3y/BKEBr7AyVUrfioWu3bDf8WQ8G7hxVa8hWGueKyufcuJETXHiXfGSEHv2PNSPH610MFRNe2xG8jX6WzZtvtEIIZycY85mJz1VZWSyRQte0PJe7nnPeGRtZGCbl1y4NA0st3yn41iklO+pE3wOBr2tbTscRO8ONg6V7NAeOwCQO3esDkQyw10M2IvbdzX81Dfcwhu0+QX49IAH1lreVyueTDSi5Ln7dhvv6DB5koLL5HcYk/spklVI+Rxlk2S8lztjaAFy47r7S2mas9Mg5uCmaJayoIbBEfRG0bCWQjcwam2824akatuGGlo4YAQBFEATu1DbuPmSfFVfkHMAfi0lbJHNO8McIIomGR5JsxjepgDb3J0uglPKbgFXQ0Yrf7UrHVG21snxpjjdt7xEyO3NgEbupSjLueZxhdLLNC+aqlBYxreiJCCQ2SR50Y0tAcT27lpcWwaqxKdsuKFsUMZvHRRu2rHXWWTi7h0fCyk1TT9BrWaAAAACwAAsAAOCCscz47iQxemilrvpQyOEO1FBEHO2ntLb9NoaN7rkhSHH6apx54c+U02Hh14m7JMk4BtzxabCx4X3BQ/LeEjFsdkD7mJjnPf/FHERG0dx6PgSrPxYuD7N0AsABoABoAAg2FHiNBglA2MOlMbLhoNnSSveS7ZaLgEkk6DQLRVMOPYiDI2piw+M6thbcyAWuOckAuHd1u5R3KDXYtirpHXNPRtOwOBeTsh/VcnaP2Qp1n7EhR0FS9rrO5ssab/AE5OgPeT4IK25JqyoqsS52rqJqiOka8sL5HPbtv+LBAcdLguP2QpTnXNFbUw1T6aR1FTQNd8YWkT1L26bLNxjZfTa3rW8jGCubh8lRaxmksHW+hELDw2i/yWo5Wax0dM2K+sslyL/Rj6X4igkvIJXTmnqqipmmkaZGNYJHufq1pLy0OOl9ttz2BT/GM401NCZpSQNzGgbT5XkaRsaNS4+SimWsHNJhdNENHFnOP9aXpG/doPAKK5IvieMGVxLoKMfFjeC8uLWv6t+0b9gQS6swzH64c58Kjw9h1bAwGSQDhzklvS69nRQLkur6mqxQy1VRLUR0jZCwue5zdpxMbXAE21BcfAK1+UPH/gtDUSA6iJzW+u/oNt23Kr/kVwYtw+Wo3GWUgHrbGNkf7nO8kFq1uZoIo5JXXtGxz3dzGlx9yrzKVNJj8M1ZV1VRG0yPijggk5tkIAa4E2+Ud0vpfyWzZh3Pc5DIejI1zHW6nN2f1VX4DjFVl6ukpagEwuI5xutnN3Nnj8vGxB1AQWTycYfiOH1FRDVyOmpLDmpHSbZ2gdNhriS0Fp6Q4EBWJS4mx52RcHtUTo65sxbsuBa4XBGoIO4qRUWE7JDidxv2oNuiIgIiICIiAiIgIiICieI5/pYcRjw14fzr9kbdhzbXSC7GEk3u7QaDeQpYqr5VOTWWsmbX0TrVLdm7Cdnb5u2w5jjo1wsN+mgQWosTFpo2QSvmIETY3F5O7YDTtd+irs8oOIRsZHUYXUicAbRjDTG433tN9AfFY9XR4ljYEdUW0NGDd0THCSea31iOiB2cOooIRyMZffIKmqIOwGiJu/VxO261+oNAv2rZco+IOhw98QNudkZHv3tBLz+ABWvHSU9JTNpqZgbGwWAGveXHi48SoziGS4sSaIpy5rQ7bDmWDgbHTUEEINJkzHYaLB6aCEc/Vz7UnMMI2iXSEbbzujaGADXqC1XKxXbFDsX1mka37Lem72hvmrBjydS4dDzdJHsl3pyO6T323bTjw39EWC08mUIK6RgqmOeGE2Ae5npWv6J7B5INlkek+C4JSxnRz4+cP/AJXGT3OaPBVa0NqcxxMlLRHFI0XcbNAhZzlrnrcCrux2ls1kcY2WNa1rRwAbpYd2nkorScltFUVLquoEjrm5j2rRud1mw2vC6DEzTmVtXFV/Bml0McErRUfRkkDTcRje5o4uGih/ITjlNTfDGzSsie9sZYXuDA4N29oAnS+oVkYnRWOw1jQy2yGgANDbW2Q0aW7FG4+R6hPx1pyDrze1ZnmG7XtQY1Rmh9VPzOHgTPv0pXXEMTb7yd7j3e1T3HZRS0c9Q7/Chc4cOmG2aPFxCjuHYeKUhkTGsYDuboO89ZUjrMJbXxGnnDnROsXAOLdA4OAuNd4CCB/s8UGxBV1bt7nNjaT/AAjbd7Xt8lu8zTEQ1EjfSZFI4d7WE6KX0eXYKGkMFK0sYHF1rlxJdoSSfDyChuNY9T0RDJmmaSXospmDafLtdGxHBp3a+1BFuQfH6Wmhq2zSxxSFzHAvc1gcxoI0JNri581p+VfNDqtjBCHfBecPxpFhNI0fQG/ZaDvKl2DclMRJqquBkIOsdGx7nhl/82RzrvP8LdFEeWPT4NGLC3OWAFrDoAAAbggtnBYBS4XSQCwPMsJ4dKQbZ8buKqLPZFTi1NSucAy8THEmwbzrwXuJ7iPJWriBcWxt6mNHkAFgx8mVFXzfCZ+cuA0OY14DH2Fhfo3Gg4FB8zbm5swqIqNu3HBBJtVDSBG2VrTsxx/XO65GihvITjtLTNqxPNHE47Dm844MBDQ4GxPEXVj4vhjYxzMMbWRNBaGNFmgbiLdqiuHclFCLzFsj9biNzvix2aNufNBFuVPNDqyEczf4LzlucItz8gF7MG8sZrrxNlL8v5lgp8MoqKltPUOjDnRxkWj5x2298z9Qy20dDqvHMGT46sxMl2mNiuGtjs0AG2liNNy3EWXoqWLmqWIMB1J1LndrnHU+KDByBm74ViU1IYgwR7Za/a6R5t4aQQeu5OnUvf8AaApaZ1A2V+yJmSNbEdziHHps7rC/e3tWOzIsM8pqNqaCffzsD9h17ancd6y6LJ8UUzZ5jNVSsPQfUyGTY1vo3QDXVBjZcwyamo6USAh4jFwdC25Lg09wI8lZGX6/nIwD6TfctViJMoGnf/XktlgFAYwXHjuQbhERAREQEREBERAREQEREGtxPCxLrxWuhwx7NNk+CkaINNHhRdq7T2rZ09M1gsB48V7Ig85oQ8WcLhedPRsZq0arIRB+ZIw4WIuvrWgaBfUQeMlJG7e0HwXoxoAsNwX6RBgzYVE47Rb5LKhhawWaLL0RB8cL6FUngTmRZoqjW9Fxa4Uxfo3XYEeyTp8ncDtuN6u1aTMuU6OvaBVQteW+i7Vr2+q9uoHYgxMexhkTXOleGMHpOcQAPPeqew6gfj2LNkYx3wKnLdp5Fg5rTtEdrnnhwaplX8l1Ex422zStB6Ille4W8wpdQEQwiKJjI2AaNY0NA47gLIMXHQ0Ps3+ty3WWo7Rd5Wngw98r7n+u9SqmhDGhoQfiejY/VwXpFC1osBovREGHLhkbnbRbqvR9FGRYtCyEQeFPSMZ6ISelY/ePEb17ogxYaBjTff3rKREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERB+ZIw4WO5Yv9mx9RREGVHGG6AWX6REBERAREQEREBERAREQEREBERB/9k=" alt="Logo IE María de los Ángeles Cano">
+    <span>Herramientas de Programación I · Clase 9</span>
+  </div>
+  <nav>
+    <a href="9-teoria.html" class="actual">Teoría</a>
+    <a href="9-taller.html">Taller</a>
+    <a href="9-evaluacion.html">Evaluación</a>
+  </nav>
+  <div class="reloj" id="reloj">--:--:--</div>
+</div>
+
+<main>
+  <h1>Clase 9 — Selectores CSS y regla de cascada</h1>
+
+  <div class="bloque">
+    <p>En la clase anterior aprendimos a escribir reglas CSS y a aplicarlas de tres formas: en un archivo externo, en un bloque <code>&lt;style&gt;</code> y con el atributo <code>style</code>. Todas las reglas usaban un <strong>selector de elemento</strong>, es decir, el nombre de una etiqueta. Hoy vamos a aprender a escoger con precisión <strong>qué</strong> elementos reciben cada estilo, y a predecir cuál regla gana cuando varias se contradicen.</p>
+    <p>Desde esta clase, cada taller avanza el front end de su proyecto PIA siguiendo el lienzo de su equipo. Hoy le toca la <strong>barra superior</strong> y la <strong>tabla de registros con estados en color</strong>.</p>
+  </div>
+
+  <h2>Repaso: lo que ya sabemos de CSS</h2>
+  <p>Una regla CSS tiene un selector y un bloque de declaraciones entre llaves. Cada declaración es una pareja <em>propiedad: valor</em> terminada en punto y coma:</p>
+  <pre class="css">p {
+    color: #333333;
+    font-size: 16px;
+}</pre>
+  <p>Cuando dos reglas le piden cosas distintas a un mismo elemento sobre la <strong>misma propiedad</strong>, el navegador aplica la cascada. Lo que vimos el viernes 2 de octubre fue la versión más sencilla: el estilo en línea gana, y entre las hojas externa y embebida gana la que aparezca de última en el documento. Hoy esa regla se completa.</p>
+
+  <div class="quiz" data-correcta="c">
+    <p><strong>Verifique:</strong> el <code>&lt;link&gt;</code> a <code>estilos.css</code> va antes del <code>&lt;style&gt;</code>. Ambos definen <code>color</code> para <code>h2</code>, y el <code>h2</code> no tiene atributo <code>style</code>. ¿Qué color se ve?</p>
+    <label><input type="radio" name="q1" value="a"> El de la hoja externa, porque los archivos .css siempre ganan</label>
+    <label><input type="radio" name="q1" value="b"> Ninguno: el navegador deja el color por defecto cuando hay conflicto</label>
+    <label><input type="radio" name="q1" value="c"> El de la hoja embebida, porque está de última</label>
+    <button class="chk" onclick="revisar(this)">Revisar</button>
+    <p class="resultado"></p>
+  </div>
+
+  <h2>El problema: el selector de elemento afecta a todos</h2>
+  <p>Suponga que en una tabla de préstamos de equipos quiere ver en rojo solo las filas de los equipos atrasados. Con lo que sabemos hasta ahora, la única opción sería escribir una regla para <code>tr</code>, pero esa regla pintaría de rojo <strong>todas</strong> las filas de <strong>todas</strong> las tablas de la página. El selector de elemento no distingue entre una fila y otra: para él, todas las <code>tr</code> son iguales.</p>
+  <p>Lo mismo pasa con los enlaces. En una página normal hay enlaces en el menú de la barra superior, enlaces dentro del texto y enlaces en el pie de página. Casi nunca deben verse igual: los del menú suelen ir en blanco sobre fondo oscuro y sin subrayado, y los del texto suelen mantener el subrayado para que se reconozcan. Una regla para <code>a</code> los cambia todos a la vez.</p>
+  <p>CSS resuelve esto con otros tipos de selector. Hoy veremos tres nuevos: el selector de <strong>clase</strong>, el selector de <strong>id</strong> y el selector <strong>descendiente</strong>. Con ellos y con el selector de elemento que ya conocemos, se puede apuntar a casi cualquier parte de una página sin tocar los demás elementos.</p>
+
+  <h2>Selector de clase</h2>
+  <p>Una <strong>clase</strong> es una etiqueta que usted le pone a los elementos que quiere tratar igual. Se asigna en el HTML con el atributo <code>class</code>, y en el CSS se escribe con un <strong>punto</strong> delante del nombre:</p>
+  <div class="grid-2">
+    <div><p class="rotulo">HTML</p><pre>&lt;tr class="atrasado"&gt;
+    &lt;td&gt;Portátil 07&lt;/td&gt;
+    &lt;td&gt;Atrasado&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class="devuelto"&gt;
+    &lt;td&gt;Video proyector 2&lt;/td&gt;
+    &lt;td&gt;Devuelto&lt;/td&gt;
+&lt;/tr&gt;</pre></div>
+    <div><p class="rotulo">CSS</p><pre class="css">.atrasado {
+    color: darkred;
+    background-color: #FBE3E6;
+}
+
+.devuelto {
+    color: darkgreen;
+}</pre></div>
+  </div>
+  <p>La regla <code>.atrasado</code> se aplica a cualquier elemento que tenga <code>class="atrasado"</code>, sea una fila, un párrafo o una celda. Las demás filas no se afectan. Observe que el punto va <strong>solo en el CSS</strong>: en el atributo <code>class</code> se escribe el nombre sin punto.</p>
+
+  <h3>Una clase se puede repetir</h3>
+  <p>La misma clase se puede usar en todos los elementos que se quiera. Si la tabla tiene veinte préstamos atrasados, las veinte filas llevan <code>class="atrasado"</code> y todas quedan en rojo con una sola regla. Si mañana se decide que lo atrasado se marca en naranja, se cambia una línea del CSS y no se toca el HTML.</p>
+
+  <h3>Un elemento puede tener varias clases</h3>
+  <p>El atributo <code>class</code> acepta varios nombres separados por <strong>espacio</strong>. El elemento recibe los estilos de todas sus clases:</p>
+  <pre>&lt;tr class="fila atrasado"&gt;</pre>
+  <p>Esa fila recibe lo que diga <code>.fila</code> (por ejemplo, el tamaño de letra de todas las filas) y además lo que diga <code>.atrasado</code> (el color del estado). Es un error frecuente escribir el atributo dos veces, <code>class="fila" class="atrasado"</code>: el navegador solo toma el primero e ignora el segundo, sin avisar. También es un error separar con comas: <code>class="fila, atrasado"</code> crea una clase llamada <code>fila,</code> que no coincide con ninguna regla.</p>
+
+  <h3>Cómo nombrar las clases</h3>
+  <ul>
+    <li>Use nombres que digan <strong>qué es</strong> o <strong>en qué estado está</strong> el elemento, no cómo se ve: <code>.atrasado</code> es mejor que <code>.rojo</code>. Si el color cambia, el nombre <code>.rojo</code> quedaría mintiendo.</li>
+    <li>Escriba en minúsculas y separe las palabras con guion: <code>.en-proceso</code>, <code>.barra-usuario</code>. Las clases distinguen mayúsculas: <code>.Atrasado</code> y <code>.atrasado</code> son clases distintas.</li>
+    <li>No use espacios (el espacio separa clases), no empiece el nombre con un número y evite tildes y la letra ñ, que pueden dar problemas en algunos editores.</li>
+  </ul>
+
+  <div class="quiz" data-correcta="b">
+    <p><strong>Verifique:</strong> ¿Cuál regla se aplica a <code>&lt;p class="aviso"&gt;</code>?</p>
+    <label><input type="radio" name="q2" value="a"> <code>aviso { color: red; }</code></label>
+    <label><input type="radio" name="q2" value="b"> <code>.aviso { color: red; }</code></label>
+    <label><input type="radio" name="q2" value="c"> <code>#aviso { color: red; }</code></label>
+    <button class="chk" onclick="revisar(this)">Revisar</button>
+    <p class="resultado"></p>
+  </div>
+
+  <div class="quiz" data-correcta="a">
+    <p><strong>Verifique:</strong> ¿Cómo se le asignan a una celda las clases <code>dato</code> y <code>pendiente</code>?</p>
+    <label><input type="radio" name="q3" value="a"> <code>&lt;td class="dato pendiente"&gt;</code></label>
+    <label><input type="radio" name="q3" value="b"> <code>&lt;td class="dato" class="pendiente"&gt;</code></label>
+    <label><input type="radio" name="q3" value="c"> <code>&lt;td class=".dato .pendiente"&gt;</code></label>
+    <button class="chk" onclick="revisar(this)">Revisar</button>
+    <p class="resultado"></p>
+  </div>
+
+  <h2>Selector de id</h2>
+  <p>El atributo <code>id</code> ya lo conocemos: en la Clase 4 lo usamos para conectar un <code>&lt;label&gt;</code> con su <code>&lt;input&gt;</code> mediante el atributo <code>for</code>. Un <code>id</code> identifica a <strong>un solo elemento</strong>: su valor no se puede repetir dentro de la misma página. En CSS se selecciona con un <strong>numeral</strong> delante del nombre:</p>
+  <div class="grid-2">
+    <div><p class="rotulo">HTML</p><pre>&lt;header id="barra-superior"&gt;
+    &lt;h1&gt;Préstamo de Equipos&lt;/h1&gt;
+    &lt;p&gt;Usuario: Coordinación&lt;/p&gt;
+&lt;/header&gt;</pre></div>
+    <div><p class="rotulo">CSS</p><pre class="css">#barra-superior {
+    background-color: #132A4C;
+    color: white;
+}</pre></div>
+  </div>
+  <p>Como el <code>id</code> es único, el selector <code>#barra-superior</code> apunta exactamente a un elemento. Por eso se usa para las piezas que aparecen <strong>una sola vez</strong> en la página: la barra superior, el menú principal, el formulario de registro. Si se pone el mismo <code>id</code> a dos elementos, el navegador normalmente pinta los dos y no muestra error, pero el documento queda inválido y más adelante JavaScript solo encontrará el primero. Para lo que se repite, la herramienta correcta es la clase.</p>
+  <div class="tabla-scroll">
+  <table>
+    <thead><tr><th></th><th>Clase</th><th>Id</th></tr></thead>
+    <tbody>
+      <tr><td>Atributo en HTML</td><td><code>class="atrasado"</code></td><td><code>id="barra-superior"</code></td></tr>
+      <tr><td>Selector en CSS</td><td><code>.atrasado</code> (punto)</td><td><code>#barra-superior</code> (numeral)</td></tr>
+      <tr><td>¿Se repite en la página?</td><td>Sí, en todos los elementos que se quiera</td><td>No, un solo elemento por valor</td></tr>
+      <tr><td>¿Varios por elemento?</td><td>Sí, separados por espacio</td><td>No, un elemento tiene un solo id</td></tr>
+      <tr><td>Uso típico</td><td>Estados, tipos de fila, grupos de elementos iguales</td><td>Piezas únicas: barra, menú principal, formulario</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="quiz" data-correcta="c">
+    <p><strong>Verifique:</strong> una página tiene doce tarjetas de productos y todas deben verse igual. ¿Qué conviene usar?</p>
+    <label><input type="radio" name="q4" value="a"> Un mismo id repetido en las doce tarjetas</label>
+    <label><input type="radio" name="q4" value="b"> Doce id distintos con doce reglas iguales</label>
+    <label><input type="radio" name="q4" value="c"> Una clase repetida en las doce tarjetas</label>
+    <button class="chk" onclick="revisar(this)">Revisar</button>
+    <p class="resultado"></p>
+  </div>
+
+  <h2>Selector descendiente</h2>
+  <p>El selector descendiente combina dos selectores separados por un <strong>espacio</strong>. Se lee de derecha a izquierda: <code>nav a</code> significa "los enlaces que estén dentro de un <code>nav</code>".</p>
+  <div class="grid-2">
+    <div><p class="rotulo">HTML</p><pre>&lt;nav&gt;
+    &lt;ul&gt;
+        &lt;li&gt;&lt;a href="#"&gt;Inicio&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="#"&gt;Préstamos&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+&lt;/nav&gt;
+...
+&lt;footer&gt;
+    &lt;p&gt;&lt;a href="#"&gt;Reglamento&lt;/a&gt;&lt;/p&gt;
+&lt;/footer&gt;</pre></div>
+    <div><p class="rotulo">CSS</p><pre class="css">nav a {
+    color: white;
+    text-decoration: none;
+}
+
+footer a {
+    color: #2C5C8F;
+}</pre></div>
+  </div>
+  <p>Los enlaces del menú quedan blancos y sin subrayado; el enlace del pie queda azul y conserva su subrayado. Ninguno de los dos se afecta con la regla del otro.</p>
+  <p>Dos detalles importantes:</p>
+  <ul>
+    <li><strong>"Dentro" significa a cualquier profundidad.</strong> En el ejemplo, los <code>a</code> no son hijos directos de <code>nav</code>: están dentro de <code>li</code>, que está dentro de <code>ul</code>, que está dentro de <code>nav</code>. Aun así, <code>nav a</code> los selecciona.</li>
+    <li><strong>El espacio cambia el significado.</strong> En un selector descendiente, el espacio es parte de la sintaxis. <code>#barra-superior p</code> (con espacio) es "los párrafos dentro de la barra"; sin espacio sería otra cosa que no vamos a usar en este curso.</li>
+  </ul>
+  <p>El selector descendiente se puede armar con cualquiera de los tipos que conocemos: <code>#barra-superior p</code>, <code>.atrasado td</code>, <code>table th</code>. Es la forma más limpia de dar estilo a lo que está dentro de una pieza sin llenar el HTML de atributos <code>class</code>.</p>
+
+  <div class="quiz" data-correcta="a">
+    <p><strong>Verifique:</strong> ¿Qué selecciona <code>#barra-superior p</code>?</p>
+    <label><input type="radio" name="q5" value="a"> Los párrafos que están dentro del elemento con id barra-superior</label>
+    <label><input type="radio" name="q5" value="b"> El elemento con id barra-superior y todos los párrafos de la página</label>
+    <label><input type="radio" name="q5" value="c"> Solo el párrafo que tiene id barra-superior</label>
+    <button class="chk" onclick="revisar(this)">Revisar</button>
+    <p class="resultado"></p>
+  </div>
+
+  <h2>Dos propiedades nuevas</h2>
+  <p>A las cinco propiedades de la clase pasada se suman dos, que se necesitan para la barra y los menús. En el taller de hoy se aceptan estas siete.</p>
+  <div class="tabla-scroll">
+  <table>
+    <thead><tr><th>Propiedad</th><th>Qué cambia</th><th>Valores que usaremos</th></tr></thead>
+    <tbody>
+      <tr><td><code>font-weight</code></td><td>Grosor de la letra</td><td><code>bold</code> (negrita), <code>normal</code></td></tr>
+      <tr><td><code>text-decoration</code></td><td>Línea decorativa del texto</td><td><code>none</code> (quita el subrayado de los enlaces), <code>underline</code></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p><code>font-weight: normal</code> sirve, por ejemplo, para quitar la negrita que el navegador pone por defecto en los <code>th</code> o en los títulos. <code>text-decoration: none</code> se usa casi siempre en los enlaces de un menú, donde el subrayado sobra porque el lugar ya indica que son enlaces.</p>
+
+  <h3>Por qué los enlaces no heredan el color de la barra</h3>
+  <p>En la Clase 8 vimos que <code>color</code> se hereda: si se pone <code>color: white</code> en la barra, el título y los párrafos que estén adentro se vuelven blancos. Pero los <strong>enlaces</strong> siguen azules. La razón es que el navegador ya trae su propia regla que apunta <strong>directamente</strong> a <code>a</code> (azul y subrayado), y un valor heredado siempre pierde frente a cualquier regla que apunte directamente al elemento, aunque sea la del navegador. La solución es escribir una regla para los enlaces de la barra: <code>#barra-superior a { color: white; }</code>.</p>
+
+  <div class="quiz" data-correcta="b">
+    <p><strong>Verifique:</strong> <code>footer { color: gray; }</code>. ¿De qué color queda un enlace dentro del <code>footer</code> si no hay ninguna otra regla?</p>
+    <label><input type="radio" name="q6" value="a"> Gris, porque lo hereda del footer</label>
+    <label><input type="radio" name="q6" value="b"> Azul, porque la regla del navegador para <code>a</code> le gana a lo heredado</label>
+    <label><input type="radio" name="q6" value="c"> Negro, porque el footer anula el color de los enlaces</label>
+    <button class="chk" onclick="revisar(this)">Revisar</button>
+    <p class="resultado"></p>
+  </div>
+
+  <h2>Laboratorio: barra y tabla de préstamos</h2>
+  <div class="lab">
+    <p class="reto"><strong>Reto:</strong> la página de la derecha ya tiene los atributos <code>id</code> y <code>class</code> en su HTML (puede verlo abajo). Escriba reglas para que: (1) la barra tenga fondo azul oscuro y texto blanco; (2) los enlaces de la barra queden blancos, sin subrayado y en negrita; (3) las filas <code>.atrasado</code> queden en rojo oscuro con fondo rosado claro y las <code>.devuelto</code> en verde; (4) el enlace del pie conserve el subrayado pero en color gris. El resultado se actualiza mientras escribe.</p>
+    <div class="grid-2">
+      <div>
+        <p class="rotulo">CSS (editable)</p>
+        <textarea id="lab-css" spellcheck="false">body {
+    font-family: Arial, sans-serif;
+}
+
+#barra-superior {
+    color: black;
+}</textarea>
+      </div>
+      <div>
+        <p class="rotulo">Resultado</p>
+        <iframe id="lab-vista" title="Resultado del laboratorio"></iframe>
+      </div>
+    </div>
+    <p><button class="chk" onclick="reiniciarLab()">Restaurar el código inicial</button></p>
+    <p class="rotulo">HTML del laboratorio (solo lectura)</p>
+    <pre id="lab-html-ver"></pre>
+  </div>
+
+  <h2>La cascada completa: especificidad</h2>
+  <p>Ahora que existen varios tipos de selector, puede pasar que una regla de elemento, una de clase y una de id apunten al mismo elemento y le pidan colores distintos. El orden en el documento ya no basta para decidir. El navegador sigue estos pasos, en este orden:</p>
+  <ol>
+    <li><strong>Estilo en línea.</strong> Si el elemento tiene atributo <code>style</code> con esa propiedad, gana. Es lo mismo que vimos en la Clase 8.</li>
+    <li><strong>Especificidad.</strong> Entre las reglas de las hojas externa y embebida, gana la del selector <strong>más específico</strong>, sin importar dónde esté escrita.</li>
+    <li><strong>Orden.</strong> Solo si dos reglas tienen exactamente la misma especificidad, gana la que aparece de última.</li>
+  </ol>
+  <p>La especificidad es una medida de qué tan precisa es la puntería de un selector. De mayor a menor: un <strong>id</strong> es más específico que una <strong>clase</strong>, y una clase es más específica que un <strong>elemento</strong>. La razón es lógica: <code>p</code> apunta a todos los párrafos, <code>.aviso</code> solo a los que tienen esa clase, y <code>#aviso-principal</code> a uno solo.</p>
+  <div class="bloque ok">
+    <p><strong>Orden de fuerza:</strong> estilo en línea &gt; id &gt; clase &gt; elemento. Si empatan, gana la última regla escrita.</p>
+  </div>
+
+  <h3>Cómo se cuenta la especificidad</h3>
+  <p>Un selector descendiente combina varios selectores, así que se cuenta por columnas: cuántos <strong>id</strong>, cuántas <strong>clases</strong> y cuántos <strong>elementos</strong> tiene. Para comparar dos selectores se mira primero la columna de id: el que tenga más, gana. Si empatan, se mira la de clases; si vuelven a empatar, la de elementos.</p>
+  <div class="tabla-scroll">
+  <table>
+    <thead><tr><th>Selector</th><th>Id</th><th>Clases</th><th>Elementos</th><th>Se escribe</th></tr></thead>
+    <tbody>
+      <tr><td><code>a</code></td><td>0</td><td>0</td><td>1</td><td>0-0-1</td></tr>
+      <tr><td><code>nav a</code></td><td>0</td><td>0</td><td>2</td><td>0-0-2</td></tr>
+      <tr><td><code>.atrasado</code></td><td>0</td><td>1</td><td>0</td><td>0-1-0</td></tr>
+      <tr><td><code>.atrasado td</code></td><td>0</td><td>1</td><td>1</td><td>0-1-1</td></tr>
+      <tr><td><code>#barra-superior</code></td><td>1</td><td>0</td><td>0</td><td>1-0-0</td></tr>
+      <tr><td><code>#barra-superior a</code></td><td>1</td><td>0</td><td>1</td><td>1-0-1</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p>Fíjese en que <code>.atrasado</code> (0-1-0) le gana a <code>nav a</code> (0-0-2): una sola clase pesa más que cualquier cantidad de elementos, porque la columna de clases se compara antes. Las columnas no se suman entre sí como un número de tres cifras en el que diez elementos valgan lo que una clase.</p>
+
+  <div class="lab">
+    <p class="reto"><strong>Calculadora de especificidad:</strong> escriba un selector con los tipos vistos hoy (por ejemplo <code>#menu .activo a</code>) y observe sus columnas.</p>
+    <input type="text" id="calc-sel" value="#barra-superior a" spellcheck="false" style="width:100%; padding:.5rem; border:1px solid var(--borde); border-radius:5px;">
+    <p id="calc-res" style="font-weight:600; margin:.6rem 0 0;"></p>
+  </div>
+
+  <h3>Ejemplo resuelto</h3>
+  <div class="grid-2">
+    <div><p class="rotulo">HTML</p><pre>&lt;p id="aviso-principal" class="aviso"&gt;
+    Devolución hasta las 5:00 p. m.
+&lt;/p&gt;</pre></div>
+    <div><p class="rotulo">CSS (en este orden)</p><pre class="css">#aviso-principal {
+    color: navy;
+}
+
+.aviso {
+    color: darkred;
+}
+
+p {
+    color: black;
+}</pre></div>
+  </div>
+  <p>El párrafo queda <strong>navy</strong>. Las tres reglas apuntan al mismo elemento y a la misma propiedad. La regla <code>p</code> está de última, pero eso no importa: el orden solo desempata reglas de igual especificidad. Gana <code>#aviso-principal</code> (1-0-0) frente a <code>.aviso</code> (0-1-0) y frente a <code>p</code> (0-0-1). Si se borra la regla del id, el párrafo queda <strong>darkred</strong>, porque la clase le gana al elemento aunque el elemento esté después.</p>
+
+  <div class="quiz" data-correcta="b">
+    <p><strong>Verifique:</strong> <code>&lt;td class="pendiente"&gt;</code> con estas reglas, en este orden: <code>.pendiente { color: orange; }</code> y luego <code>td { color: black; }</code>. ¿De qué color queda?</p>
+    <label><input type="radio" name="q7" value="a"> Negro, porque la regla td está de última</label>
+    <label><input type="radio" name="q7" value="b"> Naranja, porque la clase es más específica que el elemento</label>
+    <label><input type="radio" name="q7" value="c"> Ninguno, el navegador descarta las dos por conflicto</label>
+    <button class="chk" onclick="revisar(this)">Revisar</button>
+    <p class="resultado"></p>
+  </div>
+
+  <div class="quiz" data-correcta="c">
+    <p><strong>Verifique:</strong> dos reglas en la misma hoja: primero <code>.resuelto { color: green; }</code> y después <code>.resuelto { color: teal; }</code>. ¿Qué color se ve?</p>
+    <label><input type="radio" name="q8" value="a"> green, porque la primera regla define el estilo</label>
+    <label><input type="radio" name="q8" value="b"> Una mezcla de los dos</label>
+    <label><input type="radio" name="q8" value="c"> teal, porque tienen la misma especificidad y gana la última</label>
+    <button class="chk" onclick="revisar(this)">Revisar</button>
+    <p class="resultado"></p>
+  </div>
+
+  <h3>Una recomendación práctica</h3>
+  <p>Como el id pesa tanto, una regla de id es difícil de corregir después: para ganarle hace falta otro id o un estilo en línea. Por eso en los proyectos reales se prefiere dar estilo con <strong>clases</strong> y dejar los id para identificar piezas únicas (y, más adelante, para JavaScript). En el taller de hoy usará un id para la barra superior, que es única, y clases para los estados de su tabla, que se repiten.</p>
+
+  <h2>Ver la cascada en el navegador</h2>
+  <p>Las herramientas de desarrollador muestran exactamente qué regla ganó. Abra su página, haga clic derecho sobre el elemento y elija <strong>Inspeccionar</strong> (o presione F12). En el panel <strong>Estilos</strong> (Styles) aparecen todas las reglas que apuntan a ese elemento, ordenadas de la más fuerte (arriba) a la más débil (abajo). Las declaraciones que perdieron aparecen <strong>tachadas</strong>. Al final aparece la hoja del navegador, rotulada como <em>user agent stylesheet</em>, que es la que pone azules y subrayados los enlaces.</p>
+  <div class="bloque alerta">
+    <p><strong>Cuando un estilo "no funciona":</strong> revise primero si la regla aparece en el panel. Si no aparece, el selector no coincide con el elemento (falta el punto o el numeral, el nombre de la clase está mal escrito, o falta el atributo en el HTML). Si aparece tachada, la regla sí coincide pero otra más específica le está ganando.</p>
+  </div>
+
+  <div class="quiz" data-correcta="a">
+    <p><strong>Verifique:</strong> en el panel Estilos, su regla <code>.resuelto { color: green; }</code> aparece tachada. ¿Qué significa?</p>
+    <label><input type="radio" name="q9" value="a"> El selector sí coincide con el elemento, pero otra regla más fuerte le gana en esa propiedad</label>
+    <label><input type="radio" name="q9" value="b"> El nombre de la clase está mal escrito en el HTML</label>
+    <label><input type="radio" name="q9" value="c"> El archivo CSS no se cargó</label>
+    <button class="chk" onclick="revisar(this)">Revisar</button>
+    <p class="resultado"></p>
+  </div>
+
+  <h2>Resumen de la clase</h2>
+  <div class="tabla-scroll">
+  <table>
+    <thead><tr><th>Selector</th><th>Sintaxis</th><th>Selecciona</th><th>Especificidad</th></tr></thead>
+    <tbody>
+      <tr><td>Elemento</td><td><code>td</code></td><td>Todas las etiquetas de ese tipo</td><td>0-0-1</td></tr>
+      <tr><td>Clase</td><td><code>.pendiente</code></td><td>Los elementos con <code>class="pendiente"</code></td><td>0-1-0</td></tr>
+      <tr><td>Id</td><td><code>#barra-superior</code></td><td>El único elemento con <code>id="barra-superior"</code></td><td>1-0-0</td></tr>
+      <tr><td>Descendiente</td><td><code>nav a</code></td><td>Los <code>a</code> que están dentro de un <code>nav</code>, a cualquier profundidad</td><td>Suma de sus partes</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p>Cascada: estilo en línea &gt; especificidad (id &gt; clase &gt; elemento) &gt; orden (la última gana solo si empatan). Lo heredado pierde frente a cualquier regla que apunte directamente al elemento.</p>
+
+  <footer class="pie">Herramientas de Programación I · Grado 10 · IE María de los Ángeles Cano</footer>
+</main>
+
+<script>
+function actualizarReloj(){
+  var el = document.getElementById('reloj');
+  var ahora = new Date();
+  el.textContent = String(ahora.getHours()).padStart(2,'0') + ':' + String(ahora.getMinutes()).padStart(2,'0') + ':' + String(ahora.getSeconds()).padStart(2,'0');
+}
+actualizarReloj();
+setInterval(actualizarReloj, 1000);
+
+function revisar(boton){
+  var quiz = boton.closest('.quiz');
+  var correcta = quiz.getAttribute('data-correcta');
+  var seleccion = quiz.querySelector('input[type="radio"]:checked');
+  var resultado = quiz.querySelector('.resultado');
+  if(!seleccion){
+    resultado.textContent = 'Seleccione una opción antes de revisar.';
+    resultado.className = 'resultado mostrar incorrecto';
+    return;
+  }
+  if(seleccion.value === correcta){
+    resultado.textContent = 'Correcto.';
+    resultado.className = 'resultado mostrar correcto';
+  } else {
+    resultado.textContent = 'Incorrecto. Revise la explicación de arriba.';
+    resultado.className = 'resultado mostrar incorrecto';
+  }
+}
+
+var LAB_INICIAL = document.getElementById('lab-css').value;
+var LAB_HTML = '<header id="barra-superior">\n    <h1>Préstamo de Equipos</h1>\n    <p>Usuario: Coordinación</p>\n    <nav>\n        <a href="#">Inicio</a>\n        <a href="#">Préstamos</a>\n        <a href="#">Reportes</a>\n    </nav>\n</header>\n<main>\n    <table>\n        <thead>\n            <tr><th>Equipo</th><th>Estado</th></tr>\n        </thead>\n        <tbody>\n            <tr class="atrasado"><td>Portátil 07</td><td>Atrasado</td></tr>\n            <tr class="devuelto"><td>Video proyector 2</td><td>Devuelto</td></tr>\n            <tr class="atrasado"><td>Cámara 1</td><td>Atrasado</td></tr>\n            <tr><td>Parlante 3</td><td>Prestado</td></tr>\n        </tbody>\n    </table>\n</main>\n<footer>\n    <p><a href="#">Reglamento de préstamos</a></p>\n</footer>';
+document.getElementById('lab-html-ver').textContent = LAB_HTML;
+function pintarLab(){
+  var css = document.getElementById('lab-css').value.replace(/<\/style/gi, '');
+  document.getElementById('lab-vista').srcdoc = '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><style>' + css + '</style></head><body>' + LAB_HTML + '</body></html>';
+}
+function reiniciarLab(){
+  document.getElementById('lab-css').value = LAB_INICIAL;
+  pintarLab();
+}
+document.getElementById('lab-css').addEventListener('input', pintarLab);
+pintarLab();
+
+function calcular(){
+  var sel = document.getElementById('calc-sel').value.trim();
+  var res = document.getElementById('calc-res');
+  if(sel === ''){ res.textContent = 'Escriba un selector.'; return; }
+  var ids = 0, clases = 0, elementos = 0, valido = true;
+  sel.split(/\s+/).forEach(function(parte){
+    if(!/^([a-zA-Z][a-zA-Z0-9]*)?([#.][a-zA-Z_][\w-]*)*$/.test(parte)){ valido = false; return; }
+    ids += (parte.match(/#[a-zA-Z_][\w-]*/g) || []).length;
+    clases += (parte.match(/\.[a-zA-Z_][\w-]*/g) || []).length;
+    if(/^[a-zA-Z]/.test(parte)) elementos++;
+  });
+  if(!valido){ res.textContent = 'Use solo selectores de elemento, clase (.nombre), id (#nombre) y descendiente (espacio).'; return; }
+  res.textContent = 'Id: ' + ids + ' · Clases: ' + clases + ' · Elementos: ' + elementos + '  →  especificidad ' + ids + '-' + clases + '-' + elementos;
+}
+document.getElementById('calc-sel').addEventListener('input', calcular);
+calcular();
+</script>
+</body>
+</html>
