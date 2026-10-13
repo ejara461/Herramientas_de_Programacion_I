@@ -41,6 +41,10 @@ button.enviar:hover{background:#225c33;}
 #mensaje-resultado.exito{display:block; background:#EAF6EC; color:var(--verde); border:1px solid #B7DCC0;}
 .pts{color:var(--azul-medio); font-weight:400; font-size:.85rem;}
 .oculto-candado{display:none;}
+.oculto-doc{display:none;}
+#msg-doc{font-weight:600; margin-top:.3rem;}
+#msg-doc.ok{color:var(--verde);} #msg-doc.mal{color:var(--rojo-mc);}
+input[readonly]{background:var(--azul-claro);}
 </style>
 </head>
 <body>
@@ -70,6 +74,7 @@ button.enviar:hover{background:#225c33;}
       <div class="pregunta">
         <label for="documento">Número de documento</label>
         <input type="text" name="Documento" id="documento" inputmode="numeric" autocomplete="off">
+        <div id="msg-doc"></div>
       </div>
       <div class="pregunta">
         <label for="nombre">Nombre completo</label>
@@ -77,9 +82,10 @@ button.enviar:hover{background:#225c33;}
       </div>
       <div class="pregunta">
         <label for="proyecto">Nombre del proyecto PIA</label>
-        <input type="text" name="Proyecto_PIA" id="proyecto" autocomplete="off">
+        <input type="text" name="Proyecto_PIA" id="proyecto" autocomplete="off" readonly placeholder="Se completa con su documento">
       </div>
 
+      <div id="partes" class="oculto-doc">
       <div class="pregunta">
         <p class="enunciado">1. ¿Qué selector aplica una regla a todos los elementos que tienen <code>class="activo"</code>? <span class="pts">(0.5 pts)</span></p>
         <label><input type="radio" name="P1" value="id"> <code>#activo</code></label>
@@ -138,7 +144,7 @@ button.enviar:hover{background:#225c33;}
         </div>
       </div>
       <div class="pregunta">
-        <p class="enunciado">10. Describa las clases de estado que creó hoy para su proyecto: qué condición representa cada una, qué colores eligió y por qué. Explique también qué cuidado hay que tener para que el texto se lea bien sobre el color de fondo. Mínimo 50 palabras. <span class="pts">(0.5 pts)</span></p>
+        <p class="enunciado">10. Describa las clases de estado que creó hoy para su proyecto<span id="conds-p10"></span>: qué condición representa cada una, qué colores eligió y por qué. Explique también qué cuidado hay que tener para que el texto se lea bien sobre el color de fondo. Mínimo 50 palabras. <span class="pts">(0.5 pts)</span></p>
         <div class="campo">
           <textarea name="P10" id="r10"></textarea>
           <div class="contador insuficiente" id="c10">0 / 50 palabras</div>
@@ -146,12 +152,71 @@ button.enviar:hover{background:#225c33;}
       </div>
 
       <button type="submit" class="enviar">Enviar evaluación</button>
+      </div>
     </fieldset>
   </form>
 
   <div id="mensaje-resultado"></div>
 </main>
 <script>
+var SAL = 'htp1-g10:';
+var PROYECTOS = {
+  psico: { nombre:'Citas psicológicas', sistema:'Bienestar Estudiantil', donde:'Tabla del historial de citas',
+    columnas:['Fecha','Hora','Psicólogo','Motivo','Estado','Acciones'],
+    condiciones:[['pendiente','pendiente'],['realizada','realizada'],['cancelada','cancelada']],
+    filas:[['realizada',['06/10/2026','8:00 a. m.','Ps. Laura Gómez','Orientación vocacional','Realizada','Ver']],
+           ['pendiente',['15/10/2026','10:30 a. m.','Ps. Andrés Ríos','Manejo del estrés','Pendiente','Editar']],
+           ['cancelada',['09/10/2026','2:00 p. m.','Ps. Laura Gómez','Seguimiento','Cancelada','Ver']]],
+    nota:'' },
+  danos: { nombre:'Gestión de daños', sistema:'Gestión de Daños · I.E. María Cano', donde:'Tabla de reportes',
+    columnas:['ID','Zona','Descripción','Estado','Acción'],
+    condiciones:[['pendiente','pendiente'],['en-proceso','en proceso'],['resuelto','resuelto']],
+    filas:[['pendiente',['R-014','Info 1','Pantalla del PC 3 rota','Pendiente','Ver']],
+           ['en-proceso',['R-015','Restaurante','Fuga en el lavaplatos','En proceso','Ver']],
+           ['resuelto',['R-016','Lab. física','Bombillo fundido','Resuelto','Ver']]],
+    nota:'' },
+  olim: { nombre:'Olimpiadas deportivas', sistema:'Olimpiadas Deportivas', donde:'Tabla de posiciones de un torneo',
+    columnas:['Posición','Equipo','PJ','PG','PE','PP','Puntos'],
+    condiciones:[['lider','equipo líder'],['ultimo','último lugar']],
+    filas:[['lider',['1','10.°A','4','3','1','0','10']],
+           ['',['2','11.°B','4','2','1','1','7']],
+           ['',['3','9.°A','4','1','1','2','4']],
+           ['ultimo',['4','8.°C','4','0','1','3','1']]],
+    nota:'PJ: partidos jugados · PG: ganados · PE: empatados · PP: perdidos. La columna Posición no está en el lienzo; se agrega para que se entienda quién es líder y quién va de último.' },
+  alfa: { nombre:'Alfabetización', sistema:'ALPHA', donde:'Tabla de registro de horas',
+    columnas:['Estudiante','Fecha','Actividad de alfabetización','Horas','Horas acumuladas','Estado','Acción'],
+    condiciones:[['completo','horas completas'],['pendiente','horas pendientes']],
+    filas:[['completo',['Sara Mejía','05/10/2026','Lectura guiada','2','80','Completo','Editar']],
+           ['pendiente',['Juan Pérez','05/10/2026','Escritura de palabras','2','46','Pendiente','Editar']],
+           ['pendiente',['Valeria Ruiz','06/10/2026','Reconocimiento de letras','3','58','Pendiente','Editar']]],
+    nota:'Horas completas: 80 horas como mínimo legal (Resolución 4210 de 1996 del Ministerio de Educación), o lo que fije la institución. Las columnas Horas acumuladas y Estado no están en el lienzo; se agregan para poder marcar la condición.' },
+  rest: { nombre:'Restaurante escolar', sistema:'SIARE', donde:'Tabla de recepción de productos (rol Apoyo logístico)',
+    columnas:['Fecha','Producto','Cantidad','Lote','Vence','Proveedor','Estado','Acción'],
+    condiciones:[['aceptado','aceptado'],['proximo-a-vencer','próximo a vencer'],['rechazado','rechazado']],
+    filas:[['aceptado',['13/10/2026','Arroz','50 kg','A-2291','12/2027','Proveedor 1','Aceptado','Ver']],
+           ['proximo-a-vencer',['13/10/2026','Leche UHT','120 und','L-0877','20/10/2026','Proveedor 2','Próximo a vencer','Ver']],
+           ['rechazado',['13/10/2026','Pollo','30 kg','P-1043','10/10/2026','Proveedor 3','Rechazado','Ver']]],
+    nota:'Su lienzo no dibuja esta tabla: agréguela a la pantalla del Apoyo logístico. Al recibir alimentos se controlan el lote, la fecha de vencimiento y el estado del producto (los lineamientos del PAE están en la Resolución 335 de 2021).' }
+};
+var DOCS = {"c2add85f47b28336741637b8113b79bf5ff5da181ddfefe23afcaf41005d8b5a": "alfa", "96447567c3c729ba6470be0c87830ee018a11f7234c60b84254b0736a26d8737": "danos", "e2119e186cf5e9934df13c7aab3710c5923dd1fa8eb388f84616a8f2a4be15af": "alfa", "a90d1ca54e64e3fe4f06c537e70df6443b758f43c22bfab3e901ea4db8a7e43b": "rest", "c4fbebaf6368a61cd6664d76930ecffcf3d174a3514592d98181ea9b27a5fe09": "rest", "bebf0338af76e770071ed999a7875531b0f922b3d30205a422c24383d73b5b78": "alfa", "166b6055a53d39dd3eb3bda3f4ed2d2c097689a8426cfa6ef45744d3ebf07061": "danos", "5c3ce7f92a5dbb28ca13e49a6da55855f079f9e1fd4d2073feec52013e687b54": "rest", "e9e4e6557af2690bf03fadc230a78ef8767436dfbfbf64cc4197f8856d7fa4f3": "danos", "60001d7a1f16155d7644045af420562beffb00d10664defa631a4c80eb090bb8": "alfa", "9147bcb601ce6ab2966e39ae367f8333b8a265e658a5e5a66b95e5d1b554b28c": "rest", "0903f899b8bbdb11baff60c4d82646ef6f5c25064ab296203835d6a4e1f664fc": "psico", "665542d2c0d1bc5b2969d08ebb1b0a43e398e9d22a2e079c64345296c7a78434": "danos", "ffb073e4f123fbb5ecd51419589b3c9272941f33f38a94a96a24f1f5a925b206": "psico", "c38c2636b69375ba7c1d8f0bdc4dfe0f32fa7b195aaf8529ebbc14357395da6d": "psico", "10ba326df74be252123cfe2f3db4c9112f1c96726f46d8c7305d9e1a7b0d0bf8": "olim", "f0aabf50cdb0cdf13a81b7463d2e4e27189867b31dcb50b8399355543210f3df": "danos", "b3c64408d6d65fee65d28e3680706dddaa57d6972203a7643c6b97e0fcec3099": "alfa", "aa066b22d1f2d9c1133016b79606b402c5c168781e9288cfcfd23a278a9c387e": "psico", "08e598083982f3d0f8fa75d063fbb649aa820df7e9fbd3ed10aa39091551814c": "olim", "8bf57c2bb1dfbc42fe80227bf0e18b9328bebd85bf12361f7b0a0e58e5b23ca7": "olim"};
+
+function hashDoc(doc){
+  var datos = new TextEncoder().encode(SAL + doc);
+  return crypto.subtle.digest('SHA-256', datos).then(function(buf){
+    return Array.prototype.map.call(new Uint8Array(buf), function(b){ return ('0' + b.toString(16)).slice(-2); }).join('');
+  });
+}
+var COLOR_FILA = { pendiente:'#FBE3E6|#8B0000', rechazado:'#FBE3E6|#8B0000', ultimo:'#FBE3E6|#8B0000', cancelada:'#FFF4D6|#7A4A00', 'en-proceso':'#FFF4D6|#7A4A00', 'proximo-a-vencer':'#FFF4D6|#7A4A00', realizada:'#E4F5EC|#006400', resuelto:'#E4F5EC|#006400', lider:'#E4F5EC|#006400', completo:'#E4F5EC|#006400', aceptado:'#E4F5EC|#006400' };
+function esc(t){ return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function tablaEjemplo(p){
+  var h = '<div class="tabla-scroll"><table class="guia ejemplo"><thead><tr>' + p.columnas.map(function(c){ return '<th>' + esc(c) + '</th>'; }).join('') + '</tr></thead><tbody>';
+  p.filas.forEach(function(f){
+    var c = COLOR_FILA[f[0]], est = c ? ' style="background:' + c.split('|')[0] + '; color:' + c.split('|')[1] + ';"' : '';
+    h += '<tr' + est + '>' + f[1].map(function(v){ return '<td>' + esc(v) + '</td>'; }).join('') + '</tr>';
+  });
+  return h + '</tbody></table></div>';
+}
+
 var URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbyAMhOJY5sjG5C-ZllVUhNSbCiIH5kfZBlAYSgkgoEUJ52g-yFVLT95BIhol4jnOfQXRQ/exec";
 var INTERVALO_POLLING_MS = 18000;
 var elementosBloqueados = document.querySelectorAll('.oculto-candado');
@@ -163,6 +228,37 @@ function actualizarReloj(){
 }
 actualizarReloj();
 setInterval(actualizarReloj, 1000);
+
+
+var proyectoActual = null;
+function aplicarProyecto(clave){
+  var p = PROYECTOS[clave];
+  proyectoActual = clave;
+  document.getElementById('proyecto').value = p.nombre;
+  var c = p.condiciones.map(function(x){ return x[1]; });
+  var lista = c.length > 1 ? c.slice(0, -1).join(', ') + ' y ' + c[c.length - 1] : c[0];
+  document.getElementById('conds-p10').textContent = ' (' + p.nombre + ': ' + lista + ')';
+  document.getElementById('partes').classList.remove('oculto-doc');
+}
+function quitarProyecto(){
+  proyectoActual = null;
+  document.getElementById('proyecto').value = '';
+  document.getElementById('conds-p10').textContent = '';
+  document.getElementById('partes').classList.add('oculto-doc');
+}
+var consultaDoc = 0;
+document.getElementById('documento').addEventListener('input', function(){
+  var doc = this.value.replace(/\D/g, '');
+  var msg = document.getElementById('msg-doc');
+  var n = ++consultaDoc;
+  if(doc.length < 6){ quitarProyecto(); msg.textContent = ''; msg.className = ''; return; }
+  if(!window.crypto || !crypto.subtle){ msg.textContent = 'Abra esta página desde su dirección https para continuar.'; msg.className = 'mal'; return; }
+  hashDoc(doc).then(function(h){
+    if(n !== consultaDoc) return;
+    if(DOCS[h]){ aplicarProyecto(DOCS[h]); msg.textContent = 'Documento reconocido.'; msg.className = 'ok'; }
+    else { quitarProyecto(); msg.textContent = 'Documento no registrado, consulte al docente.'; msg.className = 'mal'; }
+  });
+});
 
 function contarPalabras(texto){
   var limpio = texto.trim();
@@ -217,7 +313,7 @@ document.getElementById('form-evaluacion').addEventListener('submit', function(e
 
   if(document.getElementById('documento').value.trim() === ''){ mostrarError('Ingrese su número de documento.'); return; }
   if(document.getElementById('nombre').value.trim() === ''){ mostrarError('Ingrese su nombre completo.'); return; }
-  if(document.getElementById('proyecto').value.trim() === ''){ mostrarError('Ingrese el nombre de su proyecto PIA.'); return; }
+  if(!proyectoActual){ mostrarError('Escriba un documento registrado para continuar.'); return; }
   for(var i=1;i<=6;i++){
     if(!document.querySelector('input[name="P' + i + '"]:checked')){ mostrarError('Responda la pregunta ' + i + '.'); return; }
   }
@@ -238,6 +334,8 @@ document.getElementById('form-evaluacion').addEventListener('submit', function(e
         mensaje.className = 'exito';
         mensaje.scrollIntoView({behavior:'smooth', block:'center'});
         ev.target.reset();
+        quitarProyecto();
+        document.getElementById('msg-doc').textContent = '';
         abiertas.forEach(function(n){
           document.getElementById('c'+n).textContent = '0 / 50 palabras';
           document.getElementById('c'+n).className = 'contador insuficiente';
