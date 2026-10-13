@@ -52,6 +52,10 @@ button.enviar:hover{background:#225c33;}
 .guia{border-collapse:collapse; width:100%; margin:.6rem 0;}
 .guia thead{background:var(--azul-medio); color:#fff;}
 .tabla-scroll{overflow-x:auto;}
+.oculto-doc{display:none;}
+#msg-doc{font-weight:600; margin-top:.3rem;}
+#msg-doc.ok{color:var(--verde);} #msg-doc.mal{color:var(--rojo-mc);}
+input[readonly]{background:var(--azul-claro);}
 </style>
 </head>
 <body>
@@ -87,6 +91,7 @@ button.enviar:hover{background:#225c33;}
       <div class="campo">
         <label for="documento">Número de documento</label>
         <input type="text" id="documento" name="Documento" inputmode="numeric" autocomplete="off">
+        <div id="msg-doc"></div>
       </div>
       <div class="campo">
         <label for="nombre">Nombre completo</label>
@@ -94,12 +99,13 @@ button.enviar:hover{background:#225c33;}
       </div>
       <div class="campo">
         <label for="proyecto">Nombre del proyecto PIA</label>
-        <input type="text" id="proyecto" name="Proyecto_PIA" autocomplete="off">
+        <input type="text" id="proyecto" name="Proyecto_PIA" autocomplete="off" readonly placeholder="Se completa con su documento">
       </div>
 
+      <div id="partes" class="oculto-doc">
       <div class="parte">
         <h3>Parte 1 — Pantalla de ingreso <span class="pts">1.2 pts</span></h3>
-        <p class="ayuda">Arme la pantalla de inicio de sesión de su proyecto dentro de un contenedor con una clase (por ejemplo <code>class="tarjeta-ingreso"</code>). El formulario debe tener: un <code>label</code> y un campo de texto para el usuario; un <code>label</code> y un campo <code>type="password"</code> con <code>placeholder</code>, <code>minlength</code> y <code>maxlength</code>; y un <code>input type="submit"</code> con el texto del botón que muestra su lienzo. El equipo de <strong>Olimpiadas</strong> agrega además el <code>select</code> de rol (Estudiante, Profesor, Administrativo). El equipo de <strong>Citas psicológicas</strong> también hace esta pantalla aunque su lienzo no la dibuje: su sistema maneja datos de salud, que la Ley 1581 de 2012 clasifica como sensibles.</p>
+        <p class="ayuda">Arme la pantalla de inicio de sesión de su proyecto dentro de un contenedor con una clase (por ejemplo <code>class="tarjeta-ingreso"</code>). El formulario debe tener: un <code>label</code> y un campo de texto para el usuario; un <code>label</code> y un campo <code>type="password"</code> con <code>placeholder</code>, <code>minlength</code> y <code>maxlength</code>; y un <code>input type="submit"</code> con el texto del botón que muestra su lienzo.<span id="nota-p1"></span></p>
         <p class="ayuda">En el CSS, el contenedor debe tener <code>width</code> en px, quedar centrado con <code>margin</code> y <code>auto</code>, y llevar <code>padding</code>, <code>border</code>, <code>border-radius</code> y <code>box-sizing: border-box</code>. Los campos deben ocupar todo el ancho del contenedor sin salirse.</p>
         <div class="campo">
           <label for="p1-html">HTML completo de la pantalla de ingreso, desde la etiqueta de apertura del contenedor hasta su cierre</label>
@@ -114,18 +120,7 @@ button.enviar:hover{background:#225c33;}
       <div class="parte">
         <h3>Parte 2 — Tarjetas del panel de inicio <span class="pts">1.2 pts</span></h3>
         <p class="ayuda">Arme las tarjetas que muestra el lienzo de su proyecto. Todas usan la misma clase. Cada tarjeta lleva el dato y su rótulo en párrafos con clase propia (por ejemplo <code>.numero</code> y <code>.rotulo</code>). En el CSS, la clase de la tarjeta debe tener <code>width</code> en %, <code>padding</code>, <code>border</code> con al menos un lado distinto (por ejemplo una franja de color a la izquierda), <code>border-radius</code>, <code>margin</code> para separarlas y <code>box-sizing: border-box</code>. El dato debe verse más grande que el rótulo.</p>
-        <div class="tabla-scroll">
-        <table class="guia">
-          <thead><tr><th>Proyecto</th><th>Tarjetas del lienzo</th></tr></thead>
-          <tbody>
-            <tr><td>Citas psicológicas</td><td>4 indicadores del inicio: próxima cita, total de citas, citas pendientes, citas realizadas</td></tr>
-            <tr><td>Gestión de daños</td><td>4 indicadores del panel de rendimiento: tiempo medio de resolución, eficiencia de arreglos, zona con mayor reporte, reportes totales</td></tr>
-            <tr><td>Olimpiadas deportivas</td><td>4 indicadores del perfil profesor: torneos asignados, equipos a cargo, partidos registrados, reportes pendientes</td></tr>
-            <tr><td>Alfabetización</td><td>2 tarjetas de grupo (Grupo 10 y Grupo 11), cada una con estudiantes matriculados, cortes pendientes y el enlace "Registrar horas"</td></tr>
-            <tr><td>Restaurante escolar</td><td>4 indicadores del panel de uno de los roles (por ejemplo Administrador: usuarios activos, roles configurados, alertas, reportes)</td></tr>
-          </tbody>
-        </table>
-        </div>
+        <div id="guia-p2"></div>
         <div class="campo">
           <label for="p2-html">HTML de las tarjetas</label>
           <textarea id="p2-html" name="P2_HTML" class="codigo" spellcheck="false"></textarea>
@@ -138,19 +133,8 @@ button.enviar:hover{background:#225c33;}
 
       <div class="parte">
         <h3>Parte 3 — Campo de archivo <span class="pts">0.8 pts</span></h3>
-        <p class="ayuda">Agregue a la pantalla que corresponde de su proyecto un <code>label</code> y un campo <code>type="file"</code> con el <code>accept</code> indicado en la tabla, y <code>multiple</code> solo si la tabla lo pide. Dele espacio con padding y margin para que no quede pegado a los demás campos.</p>
-        <div class="tabla-scroll">
-        <table class="guia">
-          <thead><tr><th>Proyecto</th><th>Pantalla</th><th>Campo</th><th>Atributos</th></tr></thead>
-          <tbody>
-            <tr><td>Gestión de daños</td><td>Reporte del daño</td><td>Imagen de evidencia del daño</td><td><code>accept="image/*"</code>, un solo archivo</td></tr>
-            <tr><td>Restaurante escolar</td><td>Apoyo logístico: recibir productos</td><td>Soporte de recepción (remisión o factura del proveedor)</td><td><code>accept="image/*,.pdf"</code>, un solo archivo</td></tr>
-            <tr><td>Olimpiadas deportivas</td><td>Perfil profesor: registrar partido</td><td>Planilla del partido como soporte del resultado</td><td><code>accept="image/*,.pdf"</code>, un solo archivo</td></tr>
-            <tr><td>Alfabetización</td><td>Registro de horas</td><td>Evidencias de la actividad (fotos de la sesión)</td><td><code>accept="image/*"</code> y <code>multiple</code></td></tr>
-            <tr><td>Citas psicológicas</td><td>Mi perfil</td><td>Foto de perfil</td><td><code>accept="image/*"</code>, un solo archivo</td></tr>
-          </tbody>
-        </table>
-        </div>
+        <p class="ayuda">Agregue a la pantalla que corresponde de su proyecto un <code>label</code> y un campo <code>type="file"</code> con el <code>accept</code> indicado para su proyecto, y <code>multiple</code> solo si se indica. Dele espacio con padding y margin para que no quede pegado a los demás campos.</p>
+        <div id="guia-p3"></div>
         <div class="campo">
           <label for="p3-html">HTML del label y del campo de archivo</label>
           <textarea id="p3-html" name="P3_HTML" class="corto" spellcheck="false"></textarea>
@@ -190,6 +174,7 @@ button.enviar:hover{background:#225c33;}
       </div>
 
       <button type="submit" class="enviar">Enviar taller</button>
+      </div>
     </fieldset>
   </form>
 
@@ -207,6 +192,49 @@ function actualizarReloj(){
 }
 actualizarReloj();
 setInterval(actualizarReloj, 1000);
+
+var SAL = 'htp1-g10:';
+var DOCS = {"c2add85f47b28336741637b8113b79bf5ff5da181ddfefe23afcaf41005d8b5a": "alfa", "96447567c3c729ba6470be0c87830ee018a11f7234c60b84254b0736a26d8737": "danos", "e2119e186cf5e9934df13c7aab3710c5923dd1fa8eb388f84616a8f2a4be15af": "alfa", "a90d1ca54e64e3fe4f06c537e70df6443b758f43c22bfab3e901ea4db8a7e43b": "rest", "c4fbebaf6368a61cd6664d76930ecffcf3d174a3514592d98181ea9b27a5fe09": "rest", "bebf0338af76e770071ed999a7875531b0f922b3d30205a422c24383d73b5b78": "alfa", "166b6055a53d39dd3eb3bda3f4ed2d2c097689a8426cfa6ef45744d3ebf07061": "danos", "5c3ce7f92a5dbb28ca13e49a6da55855f079f9e1fd4d2073feec52013e687b54": "rest", "e9e4e6557af2690bf03fadc230a78ef8767436dfbfbf64cc4197f8856d7fa4f3": "danos", "60001d7a1f16155d7644045af420562beffb00d10664defa631a4c80eb090bb8": "alfa", "9147bcb601ce6ab2966e39ae367f8333b8a265e658a5e5a66b95e5d1b554b28c": "rest", "0903f899b8bbdb11baff60c4d82646ef6f5c25064ab296203835d6a4e1f664fc": "psico", "665542d2c0d1bc5b2969d08ebb1b0a43e398e9d22a2e079c64345296c7a78434": "danos", "ffb073e4f123fbb5ecd51419589b3c9272941f33f38a94a96a24f1f5a925b206": "psico", "c38c2636b69375ba7c1d8f0bdc4dfe0f32fa7b195aaf8529ebbc14357395da6d": "psico", "10ba326df74be252123cfe2f3db4c9112f1c96726f46d8c7305d9e1a7b0d0bf8": "olim", "f0aabf50cdb0cdf13a81b7463d2e4e27189867b31dcb50b8399355543210f3df": "danos", "b3c64408d6d65fee65d28e3680706dddaa57d6972203a7643c6b97e0fcec3099": "alfa", "aa066b22d1f2d9c1133016b79606b402c5c168781e9288cfcfd23a278a9c387e": "psico", "08e598083982f3d0f8fa75d063fbb649aa820df7e9fbd3ed10aa39091551814c": "olim", "8bf57c2bb1dfbc42fe80227bf0e18b9328bebd85bf12361f7b0a0e58e5b23ca7": "olim"};
+var P10 = {
+  psico: { nombre:'Citas psicológicas', p1:' Su lienzo no dibuja esta pantalla, pero su equipo también la hace: el sistema maneja datos de salud, que la Ley 1581 de 2012 clasifica como sensibles.', p2:'4 indicadores del inicio: próxima cita, total de citas, citas pendientes, citas realizadas.', p3:['Mi perfil','Foto de perfil','<code>accept="image/*"</code>, un solo archivo'] },
+  danos: { nombre:'Gestión de daños', p1:'', p2:'4 indicadores del panel de rendimiento: tiempo medio de resolución, eficiencia de arreglos, zona con mayor reporte, reportes totales.', p3:['Reporte del daño','Imagen de evidencia del daño','<code>accept="image/*"</code>, un solo archivo'] },
+  olim: { nombre:'Olimpiadas deportivas', p1:' Su equipo agrega además el <code>select</code> de rol (Estudiante, Profesor, Administrativo).', p2:'4 indicadores del perfil profesor: torneos asignados, equipos a cargo, partidos registrados, reportes pendientes.', p3:['Perfil profesor: registrar partido','Planilla del partido como soporte del resultado','<code>accept="image/*,.pdf"</code>, un solo archivo'] },
+  alfa: { nombre:'Alfabetización', p1:'', p2:'2 tarjetas de grupo (Grupo 10 y Grupo 11), cada una con estudiantes matriculados, cortes pendientes y el enlace "Registrar horas".', p3:['Registro de horas','Evidencias de la actividad (fotos de la sesión)','<code>accept="image/*"</code> y <code>multiple</code>'] },
+  rest: { nombre:'Restaurante escolar', p1:'', p2:'4 indicadores del panel de uno de los roles (por ejemplo Administrador: usuarios activos, roles configurados, alertas, reportes).', p3:['Apoyo logístico: recibir productos','Soporte de recepción (remisión o factura del proveedor)','<code>accept="image/*,.pdf"</code>, un solo archivo'] }
+};
+function hashDoc(doc){
+  return crypto.subtle.digest('SHA-256', new TextEncoder().encode(SAL + doc)).then(function(buf){
+    return Array.prototype.map.call(new Uint8Array(buf), function(b){ return ('0' + b.toString(16)).slice(-2); }).join('');
+  });
+}
+var proyectoActual = null;
+function aplicarProyecto(clave){
+  var p = P10[clave];
+  proyectoActual = clave;
+  document.getElementById('proyecto').value = p.nombre;
+  document.getElementById('nota-p1').innerHTML = p.p1;
+  document.getElementById('guia-p2').innerHTML = '<p class="ayuda"><strong>Su proyecto: ' + p.nombre + '.</strong> Tarjetas del lienzo: ' + p.p2 + '</p>';
+  document.getElementById('guia-p3').innerHTML = '<p class="ayuda"><strong>Su proyecto: ' + p.nombre + '.</strong> Pantalla: ' + p.p3[0] + '. Campo: ' + p.p3[1] + '. Atributos: ' + p.p3[2] + '.</p>';
+  document.getElementById('partes').classList.remove('oculto-doc');
+}
+function quitarProyecto(){
+  proyectoActual = null;
+  document.getElementById('proyecto').value = '';
+  document.getElementById('partes').classList.add('oculto-doc');
+}
+var consultaDoc = 0;
+document.getElementById('documento').addEventListener('input', function(){
+  var doc = this.value.replace(/\D/g, '');
+  var msg = document.getElementById('msg-doc');
+  var n = ++consultaDoc;
+  if(doc.length < 6){ quitarProyecto(); msg.textContent = ''; msg.className = ''; return; }
+  if(!window.crypto || !crypto.subtle){ msg.textContent = 'Abra esta página desde su dirección https para continuar.'; msg.className = 'mal'; return; }
+  hashDoc(doc).then(function(h){
+    if(n !== consultaDoc) return;
+    if(DOCS[h]){ aplicarProyecto(DOCS[h]); msg.textContent = 'Documento reconocido.'; msg.className = 'ok'; }
+    else { quitarProyecto(); msg.textContent = 'Documento no registrado, consulte al docente.'; msg.className = 'mal'; }
+  });
+});
 
 function contarPalabras(texto){
   var limpio = texto.trim();
@@ -273,7 +301,7 @@ document.getElementById('form-taller').addEventListener('submit', function(ev){
   var v = function(id){ return document.getElementById(id).value.trim(); };
   if(v('documento') === ''){ mostrarError('Ingrese su número de documento.'); return; }
   if(v('nombre') === ''){ mostrarError('Ingrese su nombre completo.'); return; }
-  if(v('proyecto') === ''){ mostrarError('Ingrese el nombre de su proyecto PIA.'); return; }
+  if(!proyectoActual){ mostrarError('Escriba un documento registrado para continuar.'); return; }
   if(v('p1-html') === ''){ mostrarError('Parte 1: pegue el HTML de la pantalla de ingreso.'); return; }
   if(v('p1-css') === ''){ mostrarError('Parte 1: pegue las reglas CSS de la pantalla de ingreso.'); return; }
   if(v('p2-html') === ''){ mostrarError('Parte 2: pegue el HTML de las tarjetas.'); return; }
@@ -297,6 +325,8 @@ document.getElementById('form-taller').addEventListener('submit', function(ev){
         mensaje.scrollIntoView({behavior:'smooth', block:'center'});
         ev.target.reset();
         reiniciarContadores();
+        quitarProyecto();
+        document.getElementById('msg-doc').textContent = '';
       } else {
         mostrarError(resp.mensaje || 'No se pudo enviar el taller.');
       }

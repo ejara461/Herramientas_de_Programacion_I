@@ -41,6 +41,11 @@ button.enviar:hover{background:#225c33;}
 #mensaje-resultado.exito{display:block; background:#EAF6EC; color:var(--verde); border:1px solid #B7DCC0;}
 .pts{color:var(--azul-medio); font-weight:400; font-size:.85rem;}
 .oculto-candado{display:none;}
+.oculto-doc{display:none;}
+#msg-doc{font-weight:600; margin-top:.3rem;}
+#msg-doc.ok{color:var(--verde);} #msg-doc.mal{color:var(--rojo-mc);}
+input[readonly]{background:var(--azul-claro);}
+.su-proy{color:var(--azul-medio);}
 </style>
 </head>
 <body>
@@ -70,6 +75,7 @@ button.enviar:hover{background:#225c33;}
       <div class="pregunta">
         <label for="documento">Número de documento</label>
         <input type="text" name="Documento" id="documento" inputmode="numeric" autocomplete="off">
+        <div id="msg-doc"></div>
       </div>
       <div class="pregunta">
         <label for="nombre">Nombre completo</label>
@@ -77,9 +83,10 @@ button.enviar:hover{background:#225c33;}
       </div>
       <div class="pregunta">
         <label for="proyecto">Nombre del proyecto PIA</label>
-        <input type="text" name="Proyecto_PIA" id="proyecto" autocomplete="off">
+        <input type="text" name="Proyecto_PIA" id="proyecto" autocomplete="off" readonly placeholder="Se completa con su documento">
       </div>
 
+      <div id="partes" class="oculto-doc">
       <div class="pregunta">
         <p class="enunciado">1. ¿Cuál es el orden de las capas del modelo de caja, de adentro hacia afuera? <span class="pts">(0.5 pts)</span></p>
         <label><input type="radio" name="P1" value="margin-primero"> margin, border, padding, contenido</label>
@@ -117,7 +124,7 @@ button.enviar:hover{background:#225c33;}
         <label><input type="radio" name="P6" value="type-image"> <code>type="image"</code></label>
       </div>
       <div class="pregunta">
-        <p class="enunciado">7. Explique la diferencia entre padding y margin: dónde queda cada uno, si toman o no el color de fondo y para qué se usa cada uno. Dé un ejemplo con las tarjetas que armó hoy en su proyecto. Mínimo 50 palabras. <span class="pts">(0.5 pts)</span></p>
+        <p class="enunciado">7. Explique la diferencia entre padding y margin: dónde queda cada uno, si toman o no el color de fondo y para qué se usa cada uno. Dé un ejemplo con las tarjetas que armó hoy en su proyecto<span class="su-proy" id="tarj-p7"></span>. Mínimo 50 palabras. <span class="pts">(0.5 pts)</span></p>
         <div class="campo">
           <textarea name="P7" id="r7"></textarea>
           <div class="contador insuficiente" id="c7">0 / 50 palabras</div>
@@ -138,7 +145,7 @@ button.enviar:hover{background:#225c33;}
         </div>
       </div>
       <div class="pregunta">
-        <p class="enunciado">10. Describa el campo de archivo que agregó hoy a su proyecto: en qué pantalla está, qué archivo recibe, qué valor de <code>accept</code> usó, si lleva <code>multiple</code> y por qué. Explique también por qué <code>accept</code> no garantiza que el archivo sea del tipo correcto. Mínimo 50 palabras. <span class="pts">(0.5 pts)</span></p>
+        <p class="enunciado">10. Describa el campo de archivo que agregó hoy a su proyecto<span class="su-proy" id="arch-p10"></span>: en qué pantalla está, qué archivo recibe, qué valor de <code>accept</code> usó, si lleva <code>multiple</code> y por qué. Explique también por qué <code>accept</code> no garantiza que el archivo sea del tipo correcto. Mínimo 50 palabras. <span class="pts">(0.5 pts)</span></p>
         <div class="campo">
           <textarea name="P10" id="r10"></textarea>
           <div class="contador insuficiente" id="c10">0 / 50 palabras</div>
@@ -146,6 +153,7 @@ button.enviar:hover{background:#225c33;}
       </div>
 
       <button type="submit" class="enviar">Enviar evaluación</button>
+      </div>
     </fieldset>
   </form>
 
@@ -163,6 +171,50 @@ function actualizarReloj(){
 }
 actualizarReloj();
 setInterval(actualizarReloj, 1000);
+
+var SAL = 'htp1-g10:';
+var DOCS = {"c2add85f47b28336741637b8113b79bf5ff5da181ddfefe23afcaf41005d8b5a": "alfa", "96447567c3c729ba6470be0c87830ee018a11f7234c60b84254b0736a26d8737": "danos", "e2119e186cf5e9934df13c7aab3710c5923dd1fa8eb388f84616a8f2a4be15af": "alfa", "a90d1ca54e64e3fe4f06c537e70df6443b758f43c22bfab3e901ea4db8a7e43b": "rest", "c4fbebaf6368a61cd6664d76930ecffcf3d174a3514592d98181ea9b27a5fe09": "rest", "bebf0338af76e770071ed999a7875531b0f922b3d30205a422c24383d73b5b78": "alfa", "166b6055a53d39dd3eb3bda3f4ed2d2c097689a8426cfa6ef45744d3ebf07061": "danos", "5c3ce7f92a5dbb28ca13e49a6da55855f079f9e1fd4d2073feec52013e687b54": "rest", "e9e4e6557af2690bf03fadc230a78ef8767436dfbfbf64cc4197f8856d7fa4f3": "danos", "60001d7a1f16155d7644045af420562beffb00d10664defa631a4c80eb090bb8": "alfa", "9147bcb601ce6ab2966e39ae367f8333b8a265e658a5e5a66b95e5d1b554b28c": "rest", "0903f899b8bbdb11baff60c4d82646ef6f5c25064ab296203835d6a4e1f664fc": "psico", "665542d2c0d1bc5b2969d08ebb1b0a43e398e9d22a2e079c64345296c7a78434": "danos", "ffb073e4f123fbb5ecd51419589b3c9272941f33f38a94a96a24f1f5a925b206": "psico", "c38c2636b69375ba7c1d8f0bdc4dfe0f32fa7b195aaf8529ebbc14357395da6d": "psico", "10ba326df74be252123cfe2f3db4c9112f1c96726f46d8c7305d9e1a7b0d0bf8": "olim", "f0aabf50cdb0cdf13a81b7463d2e4e27189867b31dcb50b8399355543210f3df": "danos", "b3c64408d6d65fee65d28e3680706dddaa57d6972203a7643c6b97e0fcec3099": "alfa", "aa066b22d1f2d9c1133016b79606b402c5c168781e9288cfcfd23a278a9c387e": "psico", "08e598083982f3d0f8fa75d063fbb649aa820df7e9fbd3ed10aa39091551814c": "olim", "8bf57c2bb1dfbc42fe80227bf0e18b9328bebd85bf12361f7b0a0e58e5b23ca7": "olim"};
+var P10 = {
+  psico: { nombre:'Citas psicológicas', tarjetas:'próxima cita, total de citas, citas pendientes y citas realizadas', archivo:'foto de perfil en Mi perfil' },
+  danos: { nombre:'Gestión de daños', tarjetas:'tiempo medio de resolución, eficiencia de arreglos, zona con mayor reporte y reportes totales', archivo:'imagen de evidencia en el reporte del daño' },
+  olim: { nombre:'Olimpiadas deportivas', tarjetas:'torneos asignados, equipos a cargo, partidos registrados y reportes pendientes', archivo:'planilla del partido al registrar un partido' },
+  alfa: { nombre:'Alfabetización', tarjetas:'tarjetas del Grupo 10 y del Grupo 11', archivo:'evidencias de la actividad en el registro de horas' },
+  rest: { nombre:'Restaurante escolar', tarjetas:'los 4 indicadores del panel del rol que eligió', archivo:'soporte de recepción al recibir productos' }
+};
+function hashDoc(doc){
+  return crypto.subtle.digest('SHA-256', new TextEncoder().encode(SAL + doc)).then(function(buf){
+    return Array.prototype.map.call(new Uint8Array(buf), function(b){ return ('0' + b.toString(16)).slice(-2); }).join('');
+  });
+}
+var proyectoActual = null;
+function aplicarProyecto(clave){
+  var p = P10[clave];
+  proyectoActual = clave;
+  document.getElementById('proyecto').value = p.nombre;
+  document.getElementById('tarj-p7').textContent = ' (' + p.nombre + ': ' + p.tarjetas + ')';
+  document.getElementById('arch-p10').textContent = ' (' + p.nombre + ': ' + p.archivo + ')';
+  document.getElementById('partes').classList.remove('oculto-doc');
+}
+function quitarProyecto(){
+  proyectoActual = null;
+  document.getElementById('proyecto').value = '';
+  document.getElementById('tarj-p7').textContent = '';
+  document.getElementById('arch-p10').textContent = '';
+  document.getElementById('partes').classList.add('oculto-doc');
+}
+var consultaDoc = 0;
+document.getElementById('documento').addEventListener('input', function(){
+  var doc = this.value.replace(/\D/g, '');
+  var msg = document.getElementById('msg-doc');
+  var n = ++consultaDoc;
+  if(doc.length < 6){ quitarProyecto(); msg.textContent = ''; msg.className = ''; return; }
+  if(!window.crypto || !crypto.subtle){ msg.textContent = 'Abra esta página desde su dirección https para continuar.'; msg.className = 'mal'; return; }
+  hashDoc(doc).then(function(h){
+    if(n !== consultaDoc) return;
+    if(DOCS[h]){ aplicarProyecto(DOCS[h]); msg.textContent = 'Documento reconocido.'; msg.className = 'ok'; }
+    else { quitarProyecto(); msg.textContent = 'Documento no registrado, consulte al docente.'; msg.className = 'mal'; }
+  });
+});
 
 function contarPalabras(texto){
   var limpio = texto.trim();
@@ -217,7 +269,7 @@ document.getElementById('form-evaluacion').addEventListener('submit', function(e
 
   if(document.getElementById('documento').value.trim() === ''){ mostrarError('Ingrese su número de documento.'); return; }
   if(document.getElementById('nombre').value.trim() === ''){ mostrarError('Ingrese su nombre completo.'); return; }
-  if(document.getElementById('proyecto').value.trim() === ''){ mostrarError('Ingrese el nombre de su proyecto PIA.'); return; }
+  if(!proyectoActual){ mostrarError('Escriba un documento registrado para continuar.'); return; }
   for(var i=1;i<=6;i++){
     if(!document.querySelector('input[name="P' + i + '"]:checked')){ mostrarError('Responda la pregunta ' + i + '.'); return; }
   }
@@ -238,6 +290,8 @@ document.getElementById('form-evaluacion').addEventListener('submit', function(e
         mensaje.className = 'exito';
         mensaje.scrollIntoView({behavior:'smooth', block:'center'});
         ev.target.reset();
+        quitarProyecto();
+        document.getElementById('msg-doc').textContent = '';
         abiertas.forEach(function(n){
           document.getElementById('c'+n).textContent = '0 / 50 palabras';
           document.getElementById('c'+n).className = 'contador insuficiente';
