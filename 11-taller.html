@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clase 11 · Taller · Ingreso aparte y panel con Flexbox</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --azul-profundo:#132A4C; --azul-medio:#2C5C8F; --azul-claro:#EAF1F8;
+  --rojo-mc:#B0223A; --verde:#2E7D42; --borde:#CBD9E6;
+}
+*{box-sizing:border-box;}
+body{margin:0; font-family:"IBM Plex Sans", Arial, sans-serif; color:var(--azul-profundo); background:#fff; line-height:1.6;}
+code, pre, textarea, input, select{font-family:"IBM Plex Mono","Courier New",monospace;}
+.topbar{position:sticky; top:0; z-index:10; background:var(--azul-profundo); color:#fff; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; padding:.6rem 1rem; gap:.6rem;}
+.topbar .marca{display:flex; align-items:center; gap:.6rem; font-weight:600;}
+.topbar .marca img{height:34px; width:34px; border-radius:4px; background:#fff; padding:2px;}
+.topbar nav{display:flex; gap:1rem; flex-wrap:wrap;}
+.topbar nav a{color:#EAF1F8; text-decoration:none; font-size:.95rem; padding:.25rem .5rem; border-radius:4px;}
+.topbar nav a.actual{background:var(--rojo-mc); color:#fff; font-weight:600;}
+.topbar .reloj{font-family:"IBM Plex Mono", monospace; font-size:.95rem;}
+main{max-width:820px; margin:0 auto; padding:1.5rem 1.25rem 4rem;}
+h1{margin-top:0;}
+.banner{padding:.8rem 1rem; border-radius:6px; font-weight:600; margin-bottom:1.2rem;}
+.banner.inactivo{background:#FCEBEE; color:var(--rojo-mc); border:1px solid #E6AEB8;}
+.banner.activo{background:#EAF6EC; color:var(--verde); border:1px solid #B7DCC0;}
+fieldset{border:1px solid var(--borde); border-radius:8px; padding:1.2rem; min-width:0;}
+fieldset[disabled]{opacity:.55;}
+.campo{margin-bottom:1.1rem;}
+.campo label{display:block; font-weight:600; margin-bottom:.3rem;}
+.campo input[type=text], .campo textarea, .campo select{width:100%; padding:.5rem; border:1px solid var(--borde); border-radius:5px; font-size:.95rem; background:#fff;}
+.campo textarea{min-height:110px; resize:vertical;}
+.campo textarea.codigo{min-height:220px; font-size:.85rem;}
+.campo textarea.corto{min-height:120px; font-size:.85rem;}
+.contador{font-size:.82rem; color:var(--azul-medio); text-align:right; margin-top:.2rem;}
+.contador.insuficiente{color:var(--rojo-mc);}
+button.enviar{background:var(--verde); color:#fff; border:none; padding:.7rem 1.4rem; border-radius:6px; font-size:1rem; cursor:pointer;}
+button.enviar:hover{background:#225c33;}
+button.enviar:disabled{opacity:.6; cursor:default;}
+#mensaje-resultado{display:none; margin-top:1rem; padding:.8rem 1rem; border-radius:6px; font-weight:600;}
+#mensaje-resultado.error{display:block; background:#FCEBEE; color:var(--rojo-mc); border:1px solid #E6AEB8;}
+#mensaje-resultado.exito{display:block; background:#EAF6EC; color:var(--verde); border:1px solid #B7DCC0;}
+.ayuda{font-weight:400; font-size:.9rem; color:var(--azul-medio); margin-top:.2rem;}
+.guia-proy{background:#F4F8FC; border-left:4px solid var(--azul-medio); padding:.5rem .8rem; margin:.6rem 0; font-size:.9rem;}
+.enunciado{background:var(--azul-claro); border:1px solid var(--borde); border-radius:8px; padding:1rem 1.2rem; margin-bottom:1.5rem;}
+.parte{border:1px solid var(--borde); border-radius:8px; padding:1rem 1.2rem; margin-bottom:1.5rem;}
+.parte h3{margin-top:0; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:.4rem;}
+.pts{background:var(--azul-medio); color:#fff; font-size:.78rem; font-weight:700; padding:.15rem .55rem; border-radius:10px;}
+.print-btn{background:none; border:1px solid var(--azul-medio); color:var(--azul-medio); padding:.4rem .8rem; border-radius:5px; cursor:pointer; font-size:.85rem; margin-bottom:1rem;}
+@media print{.topbar,.print-btn,#mensaje-resultado,button.enviar,#banner-estado,#progreso{display:none !important;} fieldset{border:none;}}
+.oculto-candado{display:none;}
+.oculto-doc{display:none;}
+#msg-doc{font-weight:600; margin-top:.3rem;}
+#msg-doc.ok{color:var(--verde);} #msg-doc.mal{color:var(--rojo-mc);}
+input[readonly]{background:var(--azul-claro);}
+#progreso{display:none; margin-top:1rem;}
+#progreso.visible{display:block;}
+#progreso .pista{height:14px; background:var(--azul-claro); border:1px solid var(--borde); border-radius:7px; overflow:hidden;}
+#progreso .relleno{height:100%; width:0; background:var(--verde); transition:width .2s linear;}
+#progreso .texto{font-size:.85rem; color:var(--azul-medio); margin-top:.3rem;}
+.oculto-enviado{display:none;}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="marca">
+    <img src="data:image/jpeg;base64,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" alt="Logo IE María de los Ángeles Cano">
+    <span>Herramientas de Programación I · Clase 11</span>
+  </div>
+  <nav>
+    <a href="11-teoria.html">Teoría</a>
+    <a href="11-taller.html" class="actual">Taller</a>
+    <a href="11-evaluacion.html">Evaluación</a>
+  </nav>
+  <div class="reloj" id="reloj">--:--:--</div>
+</div>
+
+<main>
+  <h1>Taller — Ingreso aparte y panel de su proyecto organizado con Flexbox</h1>
+  <button class="print-btn oculto-candado" onclick="window.print()">Imprimir este taller</button>
+
+  <div class="enunciado oculto-candado">
+    <p><strong>Instrucciones generales:</strong> el taller tiene 5 partes y vale 5.0 puntos en total. Se trabaja sobre la página de su proyecto PIA de la Clase 10, tomando como guía el lienzo de su equipo. Al terminar, su proyecto queda con tres archivos en la misma carpeta: <code>ingreso.html</code>, <code>panel.html</code> y <code>estilos.css</code>, más una carpeta <code>iconos</code> con las imágenes de los íconos.</p>
+    <p>La pantalla de ingreso sigue siendo una <strong>maqueta</strong>: el botón abre el panel con cualquier usuario y cualquier contraseña, porque no hay servidor. No escriba nunca una contraseña real en estas páginas.</p>
+    <p>Selectores permitidos: de elemento, de clase, de id, descendiente y, desde hoy, la pseudoclase <code>:hover</code>. Propiedades permitidas: las de las clases 9 y 10 más las de hoy: <code>display</code> (<code>flex</code> y <code>block</code>), <code>flex-direction</code>, <code>justify-content</code>, <code>align-items</code>, <code>flex-wrap</code>, <code>gap</code>, <code>flex: 1</code> y <code>list-style: none</code>. Atributo nuevo: <code>action</code> en el formulario. <code>float</code> y <code>position</code> no se penalizan, pero las partes piden Flexbox y se califican con Flexbox. Cada etiqueta, atributo, propiedad o forma de selector no vista en clase se penaliza con -0.3 en la nota del taller, sin tope, una vez por cada tipo distinto.</p>
+    <p>Los íconos pueden ser imágenes (<code>img</code> dentro de <code>a</code>, con <code>alt</code>) o símbolos de texto (por ejemplo ⌂ ✎ ★). Si usa imágenes, que sean hechas por usted o de un sitio con licencia libre, y anote la fuente en un comentario del HTML: las imágenes de internet tienen autor y están protegidas por el derecho de autor (Ley 23 de 1982).</p>
+  </div>
+
+  <div id="banner-estado" class="banner inactivo">El taller no está activo todavía.</div>
+
+  <form id="form-taller" class="oculto-candado" novalidate>
+    <fieldset id="fieldset-taller" disabled>
+
+      <div class="campo">
+        <label for="documento">Número de documento</label>
+        <input type="text" id="documento" name="Documento" inputmode="numeric" autocomplete="off">
+        <div id="msg-doc"></div>
+      </div>
+      <div class="campo">
+        <label for="nombre">Nombre completo</label>
+        <input type="text" id="nombre" name="Nombre" autocomplete="off">
+      </div>
+      <div class="campo">
+        <label for="proyecto">Nombre del proyecto PIA</label>
+        <input type="text" id="proyecto" name="Proyecto_PIA" autocomplete="off" readonly placeholder="Se completa con su documento">
+      </div>
+
+      <div id="partes" class="oculto-doc">
+      <div class="parte">
+        <h3>Parte 1 — La pantalla de ingreso en su propia página <span class="pts">0.8 pts</span></h3>
+        <p class="ayuda">Cree <code>ingreso.html</code> con la barra superior de su proyecto y la tarjeta de ingreso de la Clase 10. El resto de la página de la Clase 10 pasa a <code>panel.html</code>, sin la tarjeta de ingreso. Las dos páginas enlazan el mismo <code>estilos.css</code> con <code>link</code>. Al formulario de ingreso agréguele <code>action="panel.html"</code>, para que el botón abra el panel. Pruébelo en el navegador: escriba cualquier usuario, pulse el botón y compruebe que se abre el panel.</p>
+        <div class="campo">
+          <label for="p1-ing">El formulario de <code>ingreso.html</code> completo, desde <code>&lt;form action="panel.html"&gt;</code> hasta <code>&lt;/form&gt;</code></label>
+          <textarea id="p1-ing" name="P1_Ingreso_HTML" class="corto" spellcheck="false"></textarea>
+        </div>
+      </div>
+
+      <div class="parte">
+        <h3>Parte 2 — Menú lateral y contenido <span class="pts">1.2 pts</span></h3>
+        <p class="ayuda">En <code>panel.html</code>, ponga el menú y el contenido dentro de un <code>div</code> con clase (por ejemplo <code>contenedor</code>). El menú es un <code>nav</code> con clase (por ejemplo <code>menu-lateral</code>) que lleva una lista <code>ul</code> con un <code>li</code> y un enlace <code>a</code> por cada opción; el contenido va en el <code>main</code>, también con clase. La opción de la página actual lleva la clase <code>activo</code>.</p>
+        <p class="ayuda">En el CSS: el contenedor con <code>display: flex</code>; el menú con <code>width</code> en px; el contenido con <code>flex: 1</code> y <code>padding</code>; la lista sin viñetas (<code>list-style: none</code>, <code>margin</code> y <code>padding</code> en 0); los enlaces con <code>display: block</code>, <code>padding</code> y <code>text-decoration: none</code>; un cambio de color con <code>:hover</code>; y un estilo distinto para la opción <code>activo</code>. Los enlaces que todavía no tienen página llevan <code>href="#"</code>.</p>
+        <div id="guia-p2" class="guia-proy"></div>
+        <div class="campo">
+          <label for="p2-html">HTML del contenedor y del menú lateral, desde la apertura del <code>div</code> contenedor hasta el cierre del <code>nav</code></label>
+          <textarea id="p2-html" name="P2_Panel_HTML" class="codigo" spellcheck="false"></textarea>
+        </div>
+        <div class="campo">
+          <label for="p2-css">Reglas CSS del contenedor, del menú lateral y del contenido</label>
+          <textarea id="p2-css" name="P2_CSS" class="codigo" spellcheck="false"></textarea>
+        </div>
+      </div>
+
+      <div class="parte">
+        <h3>Parte 3 — Tarjetas en fila <span class="pts">0.8 pts</span></h3>
+        <p class="ayuda">Envuelva las tarjetas de la Clase 10 en un <code>div</code> con clase (por ejemplo <code>tarjetas</code>). A ese <code>div</code>, no a cada tarjeta, póngale <code>display: flex</code>, <code>flex-wrap: wrap</code> y <code>gap</code>. Ajuste el <code>width</code> en % de la tarjeta para que queden en una sola fila en el computador y quítele el <code>margin-bottom</code>, porque ahora la separación la da el <code>gap</code>.</p>
+        <div id="guia-p3" class="guia-proy"></div>
+        <div class="campo">
+          <label for="p3-css">Reglas CSS del contenedor de tarjetas y de la tarjeta, ya ajustada</label>
+          <textarea id="p3-css" name="P3_CSS" class="codigo" spellcheck="false"></textarea>
+        </div>
+      </div>
+
+      <div class="parte">
+        <h3>Parte 4 — Barra superior con menú horizontal y tarjetas de acción <span class="pts">1.2 pts</span></h3>
+        <p class="ayuda">En la barra superior de <code>panel.html</code>, deje el nombre del sistema a un lado y un <code>nav</code> con una lista horizontal al otro, que incluya el enlace <code>Cerrar sesión</code> con <code>href="ingreso.html"</code>. En el CSS, la barra lleva <code>display: flex</code>, <code>justify-content: space-between</code> y <code>align-items: center</code>; la lista del menú horizontal, <code>display: flex</code>, <code>gap</code> y <code>list-style: none</code>.</p>
+        <p class="ayuda">Agregue además sus tarjetas de acción dentro de un contenedor con <code>display: flex</code>, <code>flex-wrap: wrap</code> y <code>gap</code>. Cada tarjeta lleva un ícono que es enlace, un título y, si su lienzo la tiene, una descripción. Al menos un ícono debe ser una imagen: <code>&lt;a href="#"&gt;&lt;img src="iconos/..." alt="..."&gt;&lt;/a&gt;</code>, con <code>alt</code> que diga a dónde lleva y con <code>width</code> y <code>height</code> en el CSS. Los demás pueden ser imágenes o símbolos de texto.</p>
+        <div id="guia-p4" class="guia-proy"></div>
+        <div class="campo">
+          <label for="p4-html">HTML de la barra superior y de las tarjetas de acción</label>
+          <textarea id="p4-html" name="P4_HTML" class="codigo" spellcheck="false"></textarea>
+        </div>
+        <div class="campo">
+          <label for="p4-css">Reglas CSS de la barra superior, del menú horizontal y de las tarjetas de acción</label>
+          <textarea id="p4-css" name="P4_CSS" class="codigo" spellcheck="false"></textarea>
+        </div>
+      </div>
+
+      <div class="parte">
+        <h3>Parte 5 — Investigación: float, position y Flexbox <span class="pts">1.0 pt</span></h3>
+        <div class="campo">
+          <label for="investigacion">Investigue y explique con sus propias palabras: (1) para qué se creó la propiedad <code>float</code>, por qué se usó durante años para armar columnas y menús, y qué problemas traía; (2) qué hace <code>position</code> con sus valores <code>relative</code>, <code>absolute</code>, <code>fixed</code> y <code>sticky</code>, con un ejemplo de uso en una página como la de su proyecto; (3) por qué hoy se prefiere Flexbox para distribuir menús y tarjetas. Mencione al menos una fuente consultada. Mínimo 120 palabras.</label>
+          <textarea id="investigacion" name="Investigacion"></textarea>
+          <div class="contador insuficiente" id="c-inv">0 / 120 palabras</div>
+        </div>
+      </div>
+
+      <div class="parte">
+        <h3>Archivos completos <span class="pts">evidencia</span></h3>
+        <p class="ayuda">Pegue el contenido completo de sus tres archivos, tal como quedaron. No suman puntos aparte, pero con ellos se revisan las partes 1 a 4: si faltan, esas partes no se pueden verificar.</p>
+        <div class="campo">
+          <label for="f-ing"><code>ingreso.html</code> completo</label>
+          <textarea id="f-ing" name="Ingreso_HTML" class="codigo" spellcheck="false"></textarea>
+        </div>
+        <div class="campo">
+          <label for="f-panel"><code>panel.html</code> completo</label>
+          <textarea id="f-panel" name="Panel_HTML" class="codigo" spellcheck="false"></textarea>
+        </div>
+        <div class="campo">
+          <label for="f-css"><code>estilos.css</code> completo</label>
+          <textarea id="f-css" name="Estilos_CSS" class="codigo" spellcheck="false"></textarea>
+        </div>
+      </div>
+
+      <button type="submit" class="enviar" id="boton-enviar">Enviar taller</button>
+      </div>
+    </fieldset>
+  </form>
+  <div id="progreso"><div class="pista"><div class="relleno" id="progreso-relleno"></div></div><p class="texto" id="progreso-texto">Enviando…</p></div>
+
+  <div id="mensaje-resultado"></div>
+</main>
+<script>
+var URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbwjvUnRun8wgtTuDEjT6jV9RaPYKlhab7BjvTIrNfoLNO7udVj_JvCbopHg2SAboO0vxg/exec";
+var INTERVALO_POLLING_MS = 18000;
+var elementosBloqueados = document.querySelectorAll('.oculto-candado');
+function actualizarReloj(){
+  var el = document.getElementById('reloj');
+  var ahora = new Date();
+  el.textContent = String(ahora.getHours()).padStart(2,'0') + ':' + String(ahora.getMinutes()).padStart(2,'0') + ':' + String(ahora.getSeconds()).padStart(2,'0');
+}
+actualizarReloj();
+setInterval(actualizarReloj, 1000);
+
+var DOCS = {"c2add85f47b28336741637b8113b79bf5ff5da181ddfefe23afcaf41005d8b5a": "alfa", "96447567c3c729ba6470be0c87830ee018a11f7234c60b84254b0736a26d8737": "danos", "e2119e186cf5e9934df13c7aab3710c5923dd1fa8eb388f84616a8f2a4be15af": "alfa", "a90d1ca54e64e3fe4f06c537e70df6443b758f43c22bfab3e901ea4db8a7e43b": "rest", "c4fbebaf6368a61cd6664d76930ecffcf3d174a3514592d98181ea9b27a5fe09": "rest", "bebf0338af76e770071ed999a7875531b0f922b3d30205a422c24383d73b5b78": "alfa", "166b6055a53d39dd3eb3bda3f4ed2d2c097689a8426cfa6ef45744d3ebf07061": "danos", "5c3ce7f92a5dbb28ca13e49a6da55855f079f9e1fd4d2073feec52013e687b54": "rest", "e9e4e6557af2690bf03fadc230a78ef8767436dfbfbf64cc4197f8856d7fa4f3": "danos", "60001d7a1f16155d7644045af420562beffb00d10664defa631a4c80eb090bb8": "alfa", "9147bcb601ce6ab2966e39ae367f8333b8a265e658a5e5a66b95e5d1b554b28c": "rest", "0903f899b8bbdb11baff60c4d82646ef6f5c25064ab296203835d6a4e1f664fc": "psico", "665542d2c0d1bc5b2969d08ebb1b0a43e398e9d22a2e079c64345296c7a78434": "danos", "ffb073e4f123fbb5ecd51419589b3c9272941f33f38a94a96a24f1f5a925b206": "psico", "c38c2636b69375ba7c1d8f0bdc4dfe0f32fa7b195aaf8529ebbc14357395da6d": "psico", "10ba326df74be252123cfe2f3db4c9112f1c96726f46d8c7305d9e1a7b0d0bf8": "olim", "f0aabf50cdb0cdf13a81b7463d2e4e27189867b31dcb50b8399355543210f3df": "danos", "b3c64408d6d65fee65d28e3680706dddaa57d6972203a7643c6b97e0fcec3099": "alfa", "aa066b22d1f2d9c1133016b79606b402c5c168781e9288cfcfd23a278a9c387e": "psico", "08e598083982f3d0f8fa75d063fbb649aa820df7e9fbd3ed10aa39091551814c": "olim", "8bf57c2bb1dfbc42fe80227bf0e18b9328bebd85bf12361f7b0a0e58e5b23ca7": "olim"};
+var P11 = {"psico": {"nombre": "Citas psicológicas", "menu": "Inicio, Agendar cita, Historial, Calendario, Estadísticas y Mi perfil: las seis opciones del menú lateral de su lienzo.", "barra": "a la izquierda, \"Bienestar Estudiantil\"; a la derecha, la fecha, el usuario (Estudiante, Grado 10°) y Cerrar sesión.", "tarjetas": "las 4 tarjetas de indicadores de la Clase 10 (próxima cita, total de citas, pendientes y realizadas), las cuatro en una fila.", "acciones": "las Acciones rápidas del inicio de su lienzo: Nueva cita y Ver historial (2 tarjetas de acción)."}, "danos": {"nombre": "Gestión de daños", "menu": "su lienzo no dibuja menú lateral; arme uno con los módulos de sus diapositivas: Inicio, Reportar daño, Reportes, Infraestructura, Indicadores y Roles y permisos.", "barra": "a la izquierda, \"I.E. María Cano | Sistema de Gestión de Daños\"; a la derecha, \"Usuario: admin_general · En línea\" y Cerrar sesión.", "tarjetas": "las 4 tarjetas del panel de rendimiento de la Clase 10, en una fila.", "acciones": "la selección de zona de su diapositiva 2: las 15 zonas (Restaurante, Lab. física, Info 1, Info 2, Aula abierta, Auditorio, Cafetería, Sala de profesores, Cancha, Galileo, Casa vieja, La huerta, Baños, Bibliobanco y El crem) como tarjetas que se acomodan solas en varias filas con flex-wrap. Cada zona es un enlace; al menos 4 llevan ícono."}, "olim": {"nombre": "Olimpiadas deportivas", "menu": "Inicio, Torneos, Posiciones, Perfiles y Administración: el menú lateral de su lienzo.", "barra": "a la izquierda, \"Olimpiadas Deportivas — Colegio\"; a la derecha, el rol del usuario y Cerrar sesión.", "tarjetas": "las 4 tarjetas del perfil profesor de la Clase 10, en una fila.", "acciones": "las 5 tarjetas de torneos de su lienzo (Voleibol, Ajedrez, Fútbol femenino, Fútbol masculino y Baloncesto), cada una con su ícono enlazado y el enlace \"Ver posiciones\"."}, "alfa": {"nombre": "Alfabetización", "menu": "su lienzo no dibuja menú lateral; arme uno con sus pantallas: Inicio, Grupo 10, Grupo 11 y Resumen de horas.", "barra": "a la izquierda, \"ALPHA · Gestión de Alfabetización\"; a la derecha, \"Rol: Profesor\" y Cerrar sesión.", "tarjetas": "las 2 tarjetas de grupo de la Clase 10 (Grupo 10 y Grupo 11), una al lado de la otra.", "acciones": "los botones de su registro de horas convertidos en tarjetas de acción: Agregar estudiante, Guardar registro y Ver resumen (3 tarjetas)."}, "rest": {"nombre": "Restaurante escolar", "menu": "el menú lateral del rol que eligió en la Clase 10. Por ejemplo, Administrador: Inicio, Usuarios, Permisos, Parámetros, Reportes y Cerrar sesión.", "barra": "a la izquierda, \"SIARE\"; a la derecha, \"Bienvenido/a\" con el rol y Cerrar sesión.", "tarjetas": "las 4 tarjetas de indicadores de la Clase 10, en una fila.", "acciones": "las 4 tarjetas de \"Acciones disponibles\" de su rol. Por ejemplo, Administrador: Gestionar usuarios, Asignar permisos, Configurar sistema y Consultar reportes."}};
+var proyectoActual = null;
+function aplicarProyecto(clave){
+  var p = P11[clave];
+  proyectoActual = clave;
+  document.getElementById('proyecto').value = p.nombre;
+  document.getElementById('guia-p2').innerHTML = '<strong>Su proyecto: ' + p.nombre + '.</strong> Opciones del menú lateral: ' + p.menu;
+  document.getElementById('guia-p3').innerHTML = '<strong>Su proyecto: ' + p.nombre + '.</strong> Tarjetas: ' + p.tarjetas;
+  document.getElementById('guia-p4').innerHTML = '<strong>Su proyecto: ' + p.nombre + '.</strong> Barra superior: ' + p.barra + '<br>Tarjetas de acción: ' + p.acciones;
+  document.getElementById('partes').classList.remove('oculto-doc');
+}
+function quitarProyecto(){
+  proyectoActual = null;
+  document.getElementById('proyecto').value = '';
+  document.getElementById('partes').classList.add('oculto-doc');
+}
+
+var SAL = 'htp1-g10:';
+function hashDoc(doc){
+  return crypto.subtle.digest('SHA-256', new TextEncoder().encode(SAL + doc)).then(function(buf){
+    return Array.prototype.map.call(new Uint8Array(buf), function(b){ return ('0' + b.toString(16)).slice(-2); }).join('');
+  });
+}
+var consultaDoc = 0;
+document.getElementById('documento').addEventListener('input', function(){
+  var doc = this.value.replace(/\D/g, '');
+  var msg = document.getElementById('msg-doc');
+  var n = ++consultaDoc;
+  if(doc.length < 6){ quitarProyecto(); msg.textContent = ''; msg.className = ''; return; }
+  if(!window.crypto || !crypto.subtle){ msg.textContent = 'Abra esta página desde su dirección https para continuar.'; msg.className = 'mal'; return; }
+  hashDoc(doc).then(function(h){
+    if(n !== consultaDoc) return;
+    if(DOCS[h]){ aplicarProyecto(DOCS[h]); msg.textContent = 'Documento reconocido.'; msg.className = 'ok'; }
+    else { quitarProyecto(); msg.textContent = 'Documento no registrado, consulte al docente.'; msg.className = 'mal'; }
+  });
+});
+function contarPalabras(texto){
+  var limpio = texto.trim();
+  if(limpio === '') return 0;
+  return limpio.split(/\s+/).length;
+}
+
+var contadores = [ {area:'investigacion', cont:'c-inv', min:120} ];
+contadores.forEach(function(c){
+  var area = document.getElementById(c.area);
+  var cont = document.getElementById(c.cont);
+  area.addEventListener('input', function(){
+    var n = contarPalabras(area.value);
+    cont.textContent = n + ' / ' + c.min + ' palabras';
+    cont.className = n >= c.min ? 'contador' : 'contador insuficiente';
+  });
+});
+
+var yaEnviado = false;
+var temporizadorProgreso = null;
+function iniciarProgreso(){
+  var caja = document.getElementById('progreso');
+  var relleno = document.getElementById('progreso-relleno');
+  var avance = 0;
+  relleno.style.width = '0%';
+  document.getElementById('progreso-texto').textContent = 'Enviando…';
+  caja.className = 'visible';
+  temporizadorProgreso = setInterval(function(){
+    avance = avance + (90 - avance) * 0.08;
+    relleno.style.width = avance.toFixed(1) + '%';
+  }, 200);
+}
+function completarProgreso(){
+  clearInterval(temporizadorProgreso);
+  document.getElementById('progreso-relleno').style.width = '100%';
+  document.getElementById('progreso-texto').textContent = 'Listo.';
+}
+function reiniciarProgreso(){
+  clearInterval(temporizadorProgreso);
+  document.getElementById('progreso-relleno').style.width = '0%';
+  document.getElementById('progreso').className = '';
+}
+function horaActual(){
+  var a = new Date();
+  return String(a.getHours()).padStart(2,'0') + ':' + String(a.getMinutes()).padStart(2,'0') + ':' + String(a.getSeconds()).padStart(2,'0');
+}
+function cerrarFormulario(texto, clase){
+  yaEnviado = true;
+  var mensaje = document.getElementById('mensaje-resultado');
+  setTimeout(function(){
+    document.getElementById('form-taller').classList.add('oculto-enviado');
+    document.getElementById('progreso').className = '';
+    mensaje.textContent = texto;
+    mensaje.className = clase;
+    mensaje.scrollIntoView({behavior:'smooth', block:'center'});
+  }, 500);
+}
+function enviarDatos(datos, fieldset, boton){
+  iniciarProgreso();
+  fetch(URL_APPS_SCRIPT, { method:'POST', body:datos })
+    .then(function(r){ return r.json(); })
+    .then(function(resp){
+      if(resp.ok){
+        completarProgreso();
+        cerrarFormulario('Taller enviado correctamente a las ' + horaActual() + '.', 'exito');
+      } else if(resp.duplicado){
+        completarProgreso();
+        cerrarFormulario(resp.mensaje, 'error');
+      } else {
+        reiniciarProgreso();
+        fieldset.disabled = false;
+        boton.disabled = false;
+        mostrarErrorGlobal(resp.mensaje || 'No se pudo enviar el taller. Intente nuevamente.');
+      }
+    })
+    .catch(function(){
+      reiniciarProgreso();
+      fieldset.disabled = false;
+      boton.disabled = false;
+      mostrarErrorGlobal('Error de conexión al enviar el taller. Intente nuevamente.');
+    });
+}
+function mostrarErrorGlobal(texto){
+  var mensaje = document.getElementById('mensaje-resultado');
+  mensaje.style.display = '';
+  mensaje.textContent = texto;
+  mensaje.className = 'error';
+  mensaje.scrollIntoView({behavior:'smooth', block:'center'});
+}
+
+function consultarEstado(){
+  fetch(URL_APPS_SCRIPT)
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      var banner = document.getElementById('banner-estado');
+      var fieldset = document.getElementById('fieldset-taller');
+      if(data.ok && data.tallerActivo){
+        banner.textContent = 'El taller está activo. Puede diligenciarlo y enviarlo.';
+        banner.className = 'banner activo';
+        if(!yaEnviado){ fieldset.disabled = false; }
+        elementosBloqueados.forEach(function(el){
+          if(yaEnviado && el.id === 'form-taller') return;
+          el.classList.remove('oculto-candado');
+        });
+      } else {
+        banner.textContent = 'El taller no está activo todavía.';
+        banner.className = 'banner inactivo';
+        fieldset.disabled = true;
+        elementosBloqueados.forEach(function(el){ el.classList.add('oculto-candado'); });
+      }
+    })
+    .catch(function(){ /* se reintenta en el siguiente ciclo */ });
+}
+consultarEstado();
+setInterval(consultarEstado, INTERVALO_POLLING_MS);
+
+document.getElementById('form-taller').addEventListener('submit', function(ev){
+  ev.preventDefault();
+  if(yaEnviado) return;
+  var mensaje = document.getElementById('mensaje-resultado');
+  mensaje.style.display = '';
+  mensaje.className = '';
+  var v = function(id){ return document.getElementById(id).value.trim(); };
+  if(v('documento') === ''){ mostrarErrorGlobal('Ingrese su número de documento.'); return; }
+  if(v('nombre') === ''){ mostrarErrorGlobal('Ingrese su nombre completo.'); return; }
+  if(!proyectoActual){ mostrarErrorGlobal('Escriba un documento registrado para continuar.'); return; }
+  if(v('p1-ing') === ''){ mostrarErrorGlobal('Parte 1: pegue el formulario de ingreso.html.'); return; }
+  if(v('p1-ing').indexOf('action') === -1){ mostrarErrorGlobal('Parte 1: el formulario debe llevar el atributo action.'); return; }
+  if(v('p2-html') === ''){ mostrarErrorGlobal('Parte 2: pegue el HTML del contenedor y del menú lateral.'); return; }
+  if(v('p2-css') === ''){ mostrarErrorGlobal('Parte 2: pegue las reglas CSS del menú lateral y del contenido.'); return; }
+  if(v('p3-css') === ''){ mostrarErrorGlobal('Parte 3: pegue las reglas CSS de las tarjetas en fila.'); return; }
+  if(v('p4-html') === ''){ mostrarErrorGlobal('Parte 4: pegue el HTML de la barra superior y de las tarjetas de acción.'); return; }
+  if(v('p4-css') === ''){ mostrarErrorGlobal('Parte 4: pegue las reglas CSS de la barra y de las tarjetas de acción.'); return; }
+  var nInv = contarPalabras(v('investigacion'));
+  if(nInv < 120){ mostrarErrorGlobal('Parte 5: la investigación debe tener mínimo 120 palabras. Lleva ' + nInv + '.'); return; }
+  if(v('f-ing') === ''){ mostrarErrorGlobal('Archivos completos: pegue ingreso.html.'); return; }
+  if(v('f-panel') === ''){ mostrarErrorGlobal('Archivos completos: pegue panel.html.'); return; }
+  if(v('f-css') === ''){ mostrarErrorGlobal('Archivos completos: pegue estilos.css.'); return; }
+
+  var datos = new FormData(ev.target);
+  datos.append('tipo', 'taller');
+  var fieldset = document.getElementById('fieldset-taller');
+  var boton = document.getElementById('boton-enviar');
+  boton.disabled = true;
+  fieldset.disabled = true;
+  enviarDatos(datos, fieldset, boton);
+});
+</script>
+</body>
+</html>
