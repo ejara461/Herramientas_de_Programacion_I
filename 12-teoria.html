@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clase 12 · Teoría · Diseño responsivo y media queries</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --azul-profundo:#132A4C; --azul-medio:#2C5C8F; --azul-claro:#EAF1F8;
+  --rojo-mc:#B0223A; --verde:#2E7D42; --borde:#CBD9E6;
+}
+*{box-sizing:border-box;}
+body{margin:0; font-family:"IBM Plex Sans", Arial, sans-serif; color:var(--azul-profundo); background:#fff; line-height:1.6;}
+code, pre, textarea, input, select{font-family:"IBM Plex Mono","Courier New",monospace;}
+.topbar{position:sticky; top:0; z-index:10; background:var(--azul-profundo); color:#fff; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; padding:.6rem 1rem; gap:.6rem;}
+.topbar .marca{display:flex; align-items:center; gap:.6rem; font-weight:600;}
+.topbar .marca img{height:34px; width:34px; border-radius:4px; background:#fff; padding:2px;}
+.topbar nav{display:flex; gap:1rem; flex-wrap:wrap;}
+.topbar nav a{color:#EAF1F8; text-decoration:none; font-size:.95rem; padding:.25rem .5rem; border-radius:4px;}
+.topbar nav a.actual{background:var(--rojo-mc); color:#fff; font-weight:600;}
+.topbar .reloj{font-family:"IBM Plex Mono", monospace; font-size:.95rem;}
+main{max-width:920px; margin:0 auto; padding:1.5rem 1.25rem 4rem;}
+h1{font-size:1.6rem; margin-top:0;}
+h2{color:var(--azul-medio); border-bottom:2px solid var(--borde); padding-bottom:.3rem; margin-top:2.5rem;}
+h3{margin-top:1.6rem;}
+.bloque{background:var(--azul-claro); border:1px solid var(--borde); border-radius:8px; padding:1rem 1.2rem; margin:1rem 0;}
+.bloque.alerta{background:#FCEBEE; border-color:#E6AEB8;}
+pre{background:var(--azul-profundo); color:#EAF1F8; padding:1rem; border-radius:6px; overflow-x:auto; font-size:.85rem;}
+pre.css{background:#1F3B2A; color:#E3F4E8;}
+p code, li code, td code{overflow-wrap:anywhere;}
+.quiz{background:#fff; border:1px solid var(--borde); border-radius:8px; padding:1rem 1.2rem; margin:1rem 0;}
+.quiz label{display:block; margin:.4rem 0; cursor:pointer;}
+.quiz .resultado{margin-top:.6rem; font-weight:600; display:none;}
+.quiz .resultado.mostrar{display:block;}
+.quiz .resultado.correcto{color:var(--verde);}
+.quiz .resultado.incorrecto{color:var(--rojo-mc);}
+button.chk{background:var(--azul-medio); color:#fff; border:none; padding:.5rem 1rem; border-radius:6px; cursor:pointer; font-size:.9rem; font-family:"IBM Plex Sans", Arial, sans-serif;}
+button.chk:hover{background:var(--azul-profundo);}
+button.sec{background:#fff; color:var(--azul-medio); border:1px solid var(--azul-medio); padding:.45rem .9rem; border-radius:6px; cursor:pointer; font-size:.88rem; font-family:"IBM Plex Sans", Arial, sans-serif; margin:.3rem .4rem .3rem 0;}
+table{border-collapse:collapse; width:100%; margin:1rem 0;}
+th, td{border:1px solid var(--borde); padding:.5rem .7rem; text-align:left; vertical-align:top;}
+thead{background:var(--azul-medio); color:#fff;}
+.tabla-scroll{overflow-x:auto;}
+.demo{display:grid; grid-template-columns:1fr 1fr; gap:.6rem 1rem; margin:1rem 0;}
+.demo > div:last-child{grid-column:1 / -1;}
+.demo > div{min-width:0;}
+.demo pre{margin:0; font-size:.8rem; max-height:360px; overflow:auto;}
+@media (max-width:760px){.demo{grid-template-columns:1fr;}}
+.rot{font-size:.85rem; font-weight:700; margin:0 0 .3rem; color:var(--azul-medio);}
+.ejes{background:#fff; border:1px solid var(--borde); border-radius:8px; padding:1rem; margin:1rem 0; overflow-x:auto;}
+.explorador{border:1px solid var(--borde); border-radius:8px; padding:1rem 1.2rem; margin:1rem 0; background:#fff;}
+.explorador input[type=range]{width:100%;}
+.exp-estado{font-family:"IBM Plex Mono", monospace; font-size:.85rem; background:var(--azul-claro); border-radius:6px; padding:.5rem .7rem;}
+.lab{border:1px solid var(--borde); border-radius:8px; padding:1rem 1.2rem; margin:1rem 0; background:#fff;}
+.lab textarea{width:100%; min-height:430px; padding:.6rem; border:1px solid var(--borde); border-radius:6px; font-size:.82rem; background:#FAFCFE;}
+.lab .reto{font-size:.92rem; margin:.3rem 0 .6rem;}
+.lab .grid-lab{display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin:1rem 0;}
+.lab .grid-lab > div{min-width:0;}
+.lab pre.lab-html{margin:0; font-size:.78rem; max-height:430px; overflow:auto;}
+@media (max-width:760px){.lab .grid-lab{grid-template-columns:1fr;}}
+footer.pie{text-align:center; color:var(--azul-medio); font-size:.85rem; padding:2rem 0 1rem;}
+.visor-barra{display:flex; flex-wrap:wrap; align-items:center; gap:.4rem; margin:.2rem 0 .5rem;}
+.visor-barra button{background:#fff; color:var(--azul-medio); border:1px solid var(--azul-medio); padding:.3rem .7rem; border-radius:5px; cursor:pointer; font-size:.82rem; font-family:"IBM Plex Sans", Arial, sans-serif;}
+.visor-barra button.on{background:var(--azul-medio); color:#fff;}
+.visor-barra .ancho{font-family:"IBM Plex Mono", monospace; font-size:.82rem; color:var(--azul-medio); margin-left:.3rem;}
+.visor{position:relative; overflow:hidden; border:1px solid var(--borde); border-radius:6px; background:#F7F9FC;}
+.visor iframe{position:absolute; top:0; left:0; border:0; background:#fff; transform-origin:0 0;}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="marca">
+    <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBxISEhUSEhMVFhUXFhgXGBYXFxgVFxUXFRUXFhgVFxcYHSggGBolHRUVITEhJSkrLi4uGR8zODMtNygtLisBCgoKDg0OGxAQGjUlIB0tKzAuKzc3Ky0tMC0tLS0wLS0tLS8tLisvLSstLS0tListKy0tLS0tLS0tLS0tLS0tLf/AABEIASYBJAMBIgACEQEDEQH/xAAcAAEAAgMBAQEAAAAAAAAAAAAABgcEBQgDAQL/xABJEAABAwIDAwgECwUIAQUAAAABAAIDBBEFBiESMUEHEyJRYXGBkTJyobEUIzM1QlKCkrKzwQg0YtHwFRdDU2Oi0+GDFiRUk/H/xAAbAQEAAgMBAQAAAAAAAAAAAAAABAUCAwYBB//EADURAQACAQICBgYJBQAAAAAAAAABAgMEESExBQYSQVHRIjJCYXGRFDNSgaGxweHxEyNigvD/2gAMAwEAAhEDEQA/ALxREQEREBRzO2cafDIRLOSXO0jjb6TyOrqHWVI1zLy+1rn4q6MnoxRRtaPWbzhPjt+xBtqvl8rS4mKmp2t4B/OPPmHN9yx/7+8R/wAik+5L/wAqqlEFrf394j/kUn3Jf+VZFNy+1oPTpad3q84z3ucqhRB0flvlwoZ3BlTG+mcfpE85F4vABHi23arRjeHAFpBBFwQbgg8QeK4fVoclGdpIf/aSPJaBtRXPo29JvdbUBB0ki1OX8WE7N/SHtHWtsgIiICIiAiIgwsZxWGkhfUTvDI2C7nHtNgB1kkgAdqp/GOX5ocRS0ZcOD5X7N+3m2g/iWu/aGzTtzR4fGejFaSW3GRw6DfstN/t9iptBa55e8R4QUn3Zf+VfP7+8R/yKT7kv/KqpRBc1By/VAPx9HE4X/wAN7o/Y7aVoZL5QaPEmkROLJWi7oZLB4HEjg4doXJKy8MxCSnlZNE4tewhwI7Du7ig7WBX1Vrk3O/PMY6+jhuPA8QrHglDmhw3EXQftERAREQEREBERAREQEREBERAXLXLl881Hqw/kMXUq5a5cvnmo9WH8iNBAkREBFnYPS87II+tr7d4aSPasJwtoUHxZOH1JikZIPokHw4rGRB0JkfGSx7SDdptx3gq3WOBAI3HUeK5lyDiV42g72HZPq7x+vkugcq13OQgE6t9yDdIiICIiAtbmTGGUdLNVSejEwutu2juazvc4geK2So/9ovMnyOHsd/rS28WxtP8AvcR6pQUvidfJUTSTynafI9z3Htcbm3UOxYqIgItxl/C+eMl9zWG3rEdFacoCIiCdcntcQxzb+i+/g7/sFdD5KrucgtfVp9h/7uuXcl1GzPs39NpHiNR7ir75OK6zw0nR12/y9tvNBZCIiAiIgIiICIiAiIgIiICIiAuWuXL55qPVh/IjXUq5a5cvnmo9WH8iNBAkREG3yp+8s7nfhKZppObqHW3O6Q8d/tTKn7yzud+EqS5yw/bp+dA1jcLn+B36bQHmggaIiDe5PrebnDSdHi3jw/l4q/siYnYgE6bj4rmaN5aQRoQbjvG5XRk3FA7m3jc4A+PEeaC+EWHhVTzkYPVosxAREQeVTO2NjpHkNaxpc4ncGtFyT4Bcc5qxp1bVz1Tt8ryQPqt0DG+DQ0eC6C5eMw/BsPMDTZ9S7m+0RgXkPjo37S5mugIiysMpDLKyMfSOvYN5Pkgm2VaPm4G9b+kfcP5qIZhpOaqJGcL3Hc4XHvVl0kQJDQNP0G5aXlawXmjT1AGkjCxx/ij3ex3sQV6iIgycNqOblY/6rgfbqrtynVbEgseIIVEq2Mo1m0yF/W0A97dPeEHQ8Egc0OHEA+a/a1OWqnbhA6vcf6K2yAiIgIiICIiAiIgIiICIiAuWuXL55qPVh/IjXUq5a5cvnmo9WH8iNBAkREG3yp+8s7nfhKtPCaBtQ2WB26RpZfquND4GyqzKn7yzud+Eq3sq/KeKCkK2ndE90bxZzHFpHUQbLxVh8tmBGnrhMB0KmMSdm2LNeO/Rp+0q8QFN8g4jYGK+rTtDuO/26+KhC2WX63mp2u4E7J7nf0EHUmS8QDmgX3qWKpsmV9nAX46K1opNoAjiEH7RFpM6Y6KGinqTvYw7A63u6LB94hBzxy25h+F4k9jTeOnHMtsdNoG8h+9p9kKv1+pZS5xc4kkkkk7yTvJPEr8oClOSKO7nzEbhst7zv9w81FgFZeBUfNQMZxtc+s7U+W5BJst0m28GykPLDgHOYMXAdKB7Zu3ZJ2Hf7XX+yvfIuG3Iv/XFT3F8PbUQS07vRljfGewPaW3Hmg4pRe1XTuje6N4s5jixw6nNJBHmF4oCnORKr4st4sffwP8A+FQZSDJVRszln12+1uo/VB0lkeruLdf9BTBVhkersRruVnNdcXQfUREBERAREQEREBERAREQFy1y5fPNR6sP5Ea6lXLXLl881Hqw/kRoIEiIg2+U/wB5Z3O/CVb2VflPFVDlP95Z3O/CVb2VflPFBveWvAvhOFNmaLvpiHjiebPQePwu+yubV2oKNstOYpBdkkZa4dbXggjyK46x3DHUtRNTv9KKRzD27JsHdxFj4oMBERBbGRsU2mRvvr6Lu9vHxCvTLtVtxgdS5cyLXbMjoifS6Q7x/wBFdAZEr72aTv0QTlUf+0bmH5CgY7/WlF/sxtP+829VXbLIGtLnGzQCSTuAAuSVx5nXHTXVs9STo952OyNvRYPugINKAvi/TRc2C21FgMj9XdAdu/f1LC+StI4yk6fSZtRbs4qzLyy/R87OxpGg6TtODdfforMo2AvG1YDtNveoxhtA2C+wTc6EnqHBZd1Dvrqx6sOh0/VXNaN8t4j4cf2XHgGYaCnb8ZURh3ULv8eiCs+flFw5u6Yu9WOT9WhUYi1Tr7+ELKnVTTR617T8vJr884YJ66onptYpZDIL9E3fZz9D/EXLQOwOYfR8iFL0WP07J7myeq2knvn5x5INLQyN9Jjh4L94VLzczH7tlwv3cfYptdeE1HG70mNPv81trr/tQg5uqfD+1k+ceSeZTqNl4Hb5q4cPl2mA9i57wnFOacCRcDTTforpyfjcM8Y2Hg24cR2EKZjz0yerLnNZ0ZqdJ9bXh4xxhJERFtQBERAREQEREBERAREQFy1y5fPNR6sP5Ea6lXLXLl881Hqw/kRoIEiIg2+U/wB5Z3O/CVb2VflPFVDlP95Z3O/CVb2VflPFBctB8m3uXP8A+0PgPNVkdW0dGoZZx/1IrDwuws+6V0Bh/wAm3uUP5ZMB+F4XNsi74bTs6/i77Y+4X+NkHKqIiD3oKkxSMkH0SD3jiPK6vPJ2I2c0g6GxB7DxVCqxsgYleMNvrGdn7P0f18kFscseZhT4U4NNpKn4pvY0j4x33QR9oLmyhonymzR48B4qcco2Kvr6uOBrrx07NnsDjZ0h772HgvGjpWxNDW+J4k9qi6jURjjaOa86H6Htrbdu/Ckfj7oeGH4WyLcLu6yBfw6lmpdFU3va07zL6Hg0+LBTsY67QIiLFvF9X1jCdALr2FI7jYd5WyuK9uUIWfX6bBwyXiGOiyxQOO4jyP8AJaCXHGMcWPa4EEjcDu8VnOmy/ZRq9OaCeH9WG0KLEgxSF+547jossEFappavOE7FqMWWN8don4SLMwnEXwStkYSCLX7R1Hr8Vhr7deVtNZ3hllxVy0mluUrsy/mrbs1xupi1wIuNyoXBJy148Fc2XZtqL+uK6F8fbVERAREQEREBERAREQFy1y5fPNR6sP5Ea6lXLXLl881Hqw/kRoIEiIg2+U/3lnc78JVvZV+U8VUOU/3lnc78JVvZV+U8UFy4f8m3uXs9gIIIBBFiDqCDvBXjh/ybe5ZCDjnOmCGiraimtoyQ7F+Mbukw/dIWjV1ftHYDaSCuaNHAwyG3FvSjJ7SC4fZCpVB9C22XcT5iQnUhzToPrDVvtWpW6y1SbT9s7m/iWGS8UrNkrR6W2pzVxV9pIKGl2Ado3e4lz3dZJushAUVFa02mZl9Uw4KYccY6cIgREWKQ+rLhpOLvJfaWH6R8FuMLw50rrAKy02mjbtXcP0507btTg087RHOf0h4UlE5+gHsUnwvKbnb2nyupfl3LTGt2neSlMbA0WAsFYOSmZmd5Q2jyb1gDvVFcsWA/A8ReB6MrGyt4Xv0Xf7muPiuqVTX7SGE7UFNVAase6JxA4SDabfuLD94o8UHdZtJiEkfouPcd3ksIhAvJrFuEtmLLfFbtUnaUrw/HWv0f0T18FuWsJNhvVeAq0cGkEscb+Lmi/fuPtBUO2irNt44OiwdZ9RTHNb17U90+bPw0fGN71c2VR8V5fqq+y5l/bcCAVaOG0vNsDePFTXMspERAREQEREBERAREQFy1y5fPNR6sP5Ea6lXLXLl881Hqw/kRoIEiIg2+U/3lnc78JVvZV+U8VUOU/wB5Z3O/CVb2VflPFBcuH/Jt7lkLHw/5NvcshBGOUnAvhuHVEIbd+wXx9fOR9JoHUTYt7nFci2XcK5I5UMB+BYlURAWY53Ox6WGxJ0gB2NJc37KCLEKZ4JBsRN6z0j47lD4RdwA4kD2qfNbYADcNPJQNdb0Yr4us6q4Itlvln2YiPn/AiIqx3Qv3Gy5AX4KyqFupPULea24Kdu8QrulNTOn0l8kc9uHxnhDYUsRc4AKz8m4KAA5wUHyxSbb79quPC6fYjA8VevlW7LREQFFuU/CfhWF1UdruEZkb17UXxgt37NvFSlfHNBFjuKDh5Ftc1YX8ErKim1+Lle0X4tDjsHxbYrVICnuRau8Nr6sf7Ha/zUCUkyPU2lcz6zbjvb/0Sg6RyROCO8KWqtsi1li3+tFZKAiIgIiICIiAiIgIiIC5a5cvnmo9WH8iNdSqk+V7kxrKurdW0gbLttYHR7QY9pY0MBbtWBFgON0FEot9X5Or4DaWllb4B3tFwsFuCVJ/wX+It70HvlP95Z3O/CVb2VflPFVxlzAJY5RLJZtgbNvdxJFuCsfKjTznHeguah+TZ3Be68aIfFs9Ue5eyAqZ/aNwLahgrWjVjuZef4H3cwnsDg4fbVzLVZpwRldSzUshs2RttoC5a4EFrrcbEA+CDkDCW/Gs9YHyU1TEuTLEKCUSSMa+FpuZY3AtA3XLTZw39SKr13rw7vqpEfR7z/l+giIoLqxZtEOie9YSz6L0fE+5S9F9a53rNMxop+MJ9kaluR2q0QFAMgR6t/rgrAVu+diIiAiIg5u/aEwjmsRbOB0Z4muJ63x/FuA+yI/NVculeXjLUtXRxSQRukkhkJ2WjadzcjbPsBqbFsZ8CubZonNJDgWnqIIPkUH4WdgdTzc8buG0Ae53RPvWCvanp3vIDGknsBKC9soVGy+3arhpZNpjXdYCojL8xa9t99hfvA1V1YBLtQjs0/VBskREBERAREQEREBERAREQaXG8CE9yN54KLTZMN/R9isNEFcsyYfqHyW7wbK4jNyLe9StEHxrbCw4L6iICIiDS50h26CpH+k533Rtfoue10xW04kjfGdz2uae5wI/Vc0PYQSCLEEgjqI0Vbr441l2vVPJ6GWnhMT8/wCH5REVe7EWbQnQjt96wlk0TtSOsKTpLbZYUfWDFOTQ327tp+UrYyA4Xb3foVPlWmQ6ixarLVy+aiIiAiIgLU4/g7Khlixjj/EAbjxW2RBUddklod8m0fYA/ReDcpkbgR4dauIi+9fjmW/Vb5BBVuG5Tdtg2J96sjCKTmmWO9ZoaBuX1AREQEREBERAREQEREBERAREQEREBERAREQFQGfcO5iunbwc7nG9ok6WnYCXN8Ff6rjlgwbajjqmjVh2Hn+Bxu0nsDr/AHlF1dO1j38F71d1UYdZFbcrxt9/d5feqdERU76SL9RvsbhflfV7E9md4asmOMlJraOE8JTjKFZZw1Vw0su0wO6wud8Gr+bcL7r7+r/pXTlHFBIwNJ4XCvMOWMld4fLOkdBk0eacduXdPjCSIiLagiIiAiIgIvhK1H/qmi5zmvhEe3e1r6X6trd7V5MxHNnTHe+/ZiZ2bhEResBERAREQEREBERAREQEREBERAREQEREBERAWPX0bJo3xSC7XtLSOw/qshEexMxO8Oc8w4M+knfDJw9F1rBzTucP5LWK/M65WZXRW0bK30H9X8J62lUZiFFJDI6KVpa9psR/LrHaFTajBOOeHKX0nofpWusx7Wn045x4++GMiIoy8FvMv5klpnA+k2+7j4FaNFnTJak71RdVpMWpp2Mtd4XvgGd6SoaAZQx/1XjYPt0UmY8EXBBHWDdcxLIp66WPVkj2+q9zfcVNrr59qHL5+qlZ44sm3x/Z0ui53GZ63/5U/wD9jv5rzkzDVu0NTOf/ACP/AJrZ9Pr4IsdVM/fkj8XQlZWxRDalkYwdb3Bo9qiWMcpdHECItqd38PRb4vcPcCqXe8uNyST1nUr8rVfXW9mNlhp+quGs75rzb3RwjzSXMOdqurJBeY4/8thLRbqcd7lGw4jd/RXy6KFa9rTvMuk0+mxYKdjHWIhdNLnEu2ASNWtJ7SW3N1LaCrErdoKhqCQ7TO4e5XJlF94z4fqr+OT5HfbtTs3yIi9YiIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAtBmrK0FayzxZ49GRo6Q7O0di36LG1YtG0tmLLfFaL0naY73PmYsrVFI7pt2mcHtBIt2j6PitIQul6mlbICHDeoFmLk9jdd0bdk9bOH2VAy6Lvo67Q9aOEV1Nf9o8vJUiLf4hlOeO9rOHkfb/Naiaikaekxw8FDthyV5w6PD0ppM3qZI/L82Ol19IRa5ie+EyMtJ5T+T5dEX62ez3p2Z8Hs5aRznb5Pyi9BA47gV6spDxsFsrgyW5QhZuk9Jhj08kf98GOvWGEuPZxKzYaDqaT7vJbWkweR9tCpmLRcd7ub1/WeJrNNNHP2p/SGNh0ZL22HFXHlSItjN+z9VF8u5UIIcWnxVgU0AY0NHBWLjnqiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgxqmhjk9Jo7+K0lZlKN3onwKkiIK+q8lH6t+6xWpnyaR9D2K10Xm0MovaOUqedlHs9iNym7qKuCybITaCb2nnKp4snuPBx9q2dJkh3Ftu/T3qxkXrFFKPJzB6RHhqt5S4RDHubc9uqz0QfAF9REBERAREQEREBERAREQEREBarHsx0lE3bqp2RDgCbud6rBdzvALyzlj7aCjmqnC+w3ot+s9xDWt8yFAOSLCxVMdjFa7nqiR7gxz9RE1jtnoN3NNwbW3BBIDysYYHAPdNGDue+CVrT3dG/sUuwvEoamJs0EjZI3ei9puDY2PiCCLKKcoEkc9BVRvaHNEMjhexLXMYXNcL7iDxWJkpppsNpGAlvxLHEa+lIOcPtKDecoWaP7NonVIZtu2msa03DS5x+kRuFgfYvXIePyV1FFVSxc059+jrYgOIa9u1rskWIWdh87ZmFjwHdjhcEdoO/Ve2KNcY+j1jy/qyDLBuvq1mDMcNra3G1vBbNAREQEREBEX4llawFziGtAuSSAAOsk7kH7RecEzXtD2Oa5pFw5pDmkdYI0IXogIvhK+oK7z3yiy0NdBRQ0vPuka17gCdohzy3ZjA3u6JOqsRfgxN2trZG0BYOsLgdV+parFo3l9wDa3BBuEXhQgiNu1e/b3lexKD6iIgIiICIiAiIgIiICIiAiIgIiIInyqYI+swyohjF5A0SMH1jE4P2QOsgEDtIVR8k+fWwRHD5+i0vLoZDoA5/pRv6rm5B/6XRCo/lp5NgA/EaNoFulPEBpbjK0fiHj1oJxhsbJy6OVoc1wLXNduLSLFp7DdeubKqdroqGgp/jXtB557TzFNE3o7RP03bgGKsOS/NL3sMbzd8VulxcwnQnrIKt6pzE2OkmqDb4qN7x3tGg8TYeKClMpNqXZhbE6rkm5iR/OShxALYgdoBoNgwuAbYdat3MOZZ3y/BKEBr7AyVUrfioWu3bDf8WQ8G7hxVa8hWGueKyufcuJETXHiXfGSEHv2PNSPH610MFRNe2xG8jX6WzZtvtEIIZycY85mJz1VZWSyRQte0PJe7nnPeGRtZGCbl1y4NA0st3yn41iklO+pE3wOBr2tbTscRO8ONg6V7NAeOwCQO3esDkQyw10M2IvbdzX81Dfcwhu0+QX49IAH1lreVyueTDSi5Ln7dhvv6DB5koLL5HcYk/spklVI+Rxlk2S8lztjaAFy47r7S2mas9Mg5uCmaJayoIbBEfRG0bCWQjcwam2824akatuGGlo4YAQBFEATu1DbuPmSfFVfkHMAfi0lbJHNO8McIIomGR5JsxjepgDb3J0uglPKbgFXQ0Yrf7UrHVG21snxpjjdt7xEyO3NgEbupSjLueZxhdLLNC+aqlBYxreiJCCQ2SR50Y0tAcT27lpcWwaqxKdsuKFsUMZvHRRu2rHXWWTi7h0fCyk1TT9BrWaAAAACwAAsAAOCCscz47iQxemilrvpQyOEO1FBEHO2ntLb9NoaN7rkhSHH6apx54c+U02Hh14m7JMk4BtzxabCx4X3BQ/LeEjFsdkD7mJjnPf/FHERG0dx6PgSrPxYuD7N0AsABoABoAAg2FHiNBglA2MOlMbLhoNnSSveS7ZaLgEkk6DQLRVMOPYiDI2piw+M6thbcyAWuOckAuHd1u5R3KDXYtirpHXNPRtOwOBeTsh/VcnaP2Qp1n7EhR0FS9rrO5ssab/AE5OgPeT4IK25JqyoqsS52rqJqiOka8sL5HPbtv+LBAcdLguP2QpTnXNFbUw1T6aR1FTQNd8YWkT1L26bLNxjZfTa3rW8jGCubh8lRaxmksHW+hELDw2i/yWo5Wax0dM2K+sslyL/Rj6X4igkvIJXTmnqqipmmkaZGNYJHufq1pLy0OOl9ttz2BT/GM401NCZpSQNzGgbT5XkaRsaNS4+SimWsHNJhdNENHFnOP9aXpG/doPAKK5IvieMGVxLoKMfFjeC8uLWv6t+0b9gQS6swzH64c58Kjw9h1bAwGSQDhzklvS69nRQLkur6mqxQy1VRLUR0jZCwue5zdpxMbXAE21BcfAK1+UPH/gtDUSA6iJzW+u/oNt23Kr/kVwYtw+Wo3GWUgHrbGNkf7nO8kFq1uZoIo5JXXtGxz3dzGlx9yrzKVNJj8M1ZV1VRG0yPijggk5tkIAa4E2+Ud0vpfyWzZh3Pc5DIejI1zHW6nN2f1VX4DjFVl6ukpagEwuI5xutnN3Nnj8vGxB1AQWTycYfiOH1FRDVyOmpLDmpHSbZ2gdNhriS0Fp6Q4EBWJS4mx52RcHtUTo65sxbsuBa4XBGoIO4qRUWE7JDidxv2oNuiIgIiICIiAiIgIiICieI5/pYcRjw14fzr9kbdhzbXSC7GEk3u7QaDeQpYqr5VOTWWsmbX0TrVLdm7Cdnb5u2w5jjo1wsN+mgQWosTFpo2QSvmIETY3F5O7YDTtd+irs8oOIRsZHUYXUicAbRjDTG433tN9AfFY9XR4ljYEdUW0NGDd0THCSea31iOiB2cOooIRyMZffIKmqIOwGiJu/VxO261+oNAv2rZco+IOhw98QNudkZHv3tBLz+ABWvHSU9JTNpqZgbGwWAGveXHi48SoziGS4sSaIpy5rQ7bDmWDgbHTUEEINJkzHYaLB6aCEc/Vz7UnMMI2iXSEbbzujaGADXqC1XKxXbFDsX1mka37Lem72hvmrBjydS4dDzdJHsl3pyO6T323bTjw39EWC08mUIK6RgqmOeGE2Ae5npWv6J7B5INlkek+C4JSxnRz4+cP/AJXGT3OaPBVa0NqcxxMlLRHFI0XcbNAhZzlrnrcCrux2ls1kcY2WNa1rRwAbpYd2nkorScltFUVLquoEjrm5j2rRud1mw2vC6DEzTmVtXFV/Bml0McErRUfRkkDTcRje5o4uGih/ITjlNTfDGzSsie9sZYXuDA4N29oAnS+oVkYnRWOw1jQy2yGgANDbW2Q0aW7FG4+R6hPx1pyDrze1ZnmG7XtQY1Rmh9VPzOHgTPv0pXXEMTb7yd7j3e1T3HZRS0c9Q7/Chc4cOmG2aPFxCjuHYeKUhkTGsYDuboO89ZUjrMJbXxGnnDnROsXAOLdA4OAuNd4CCB/s8UGxBV1bt7nNjaT/AAjbd7Xt8lu8zTEQ1EjfSZFI4d7WE6KX0eXYKGkMFK0sYHF1rlxJdoSSfDyChuNY9T0RDJmmaSXospmDafLtdGxHBp3a+1BFuQfH6Wmhq2zSxxSFzHAvc1gcxoI0JNri581p+VfNDqtjBCHfBecPxpFhNI0fQG/ZaDvKl2DclMRJqquBkIOsdGx7nhl/82RzrvP8LdFEeWPT4NGLC3OWAFrDoAAAbggtnBYBS4XSQCwPMsJ4dKQbZ8buKqLPZFTi1NSucAy8THEmwbzrwXuJ7iPJWriBcWxt6mNHkAFgx8mVFXzfCZ+cuA0OY14DH2Fhfo3Gg4FB8zbm5swqIqNu3HBBJtVDSBG2VrTsxx/XO65GihvITjtLTNqxPNHE47Dm844MBDQ4GxPEXVj4vhjYxzMMbWRNBaGNFmgbiLdqiuHclFCLzFsj9biNzvix2aNufNBFuVPNDqyEczf4LzlucItz8gF7MG8sZrrxNlL8v5lgp8MoqKltPUOjDnRxkWj5x2298z9Qy20dDqvHMGT46sxMl2mNiuGtjs0AG2liNNy3EWXoqWLmqWIMB1J1LndrnHU+KDByBm74ViU1IYgwR7Za/a6R5t4aQQeu5OnUvf8AaApaZ1A2V+yJmSNbEdziHHps7rC/e3tWOzIsM8pqNqaCffzsD9h17ancd6y6LJ8UUzZ5jNVSsPQfUyGTY1vo3QDXVBjZcwyamo6USAh4jFwdC25Lg09wI8lZGX6/nIwD6TfctViJMoGnf/XktlgFAYwXHjuQbhERAREQEREBERAREQEREGtxPCxLrxWuhwx7NNk+CkaINNHhRdq7T2rZ09M1gsB48V7Ig85oQ8WcLhedPRsZq0arIRB+ZIw4WIuvrWgaBfUQeMlJG7e0HwXoxoAsNwX6RBgzYVE47Rb5LKhhawWaLL0RB8cL6FUngTmRZoqjW9Fxa4Uxfo3XYEeyTp8ncDtuN6u1aTMuU6OvaBVQteW+i7Vr2+q9uoHYgxMexhkTXOleGMHpOcQAPPeqew6gfj2LNkYx3wKnLdp5Fg5rTtEdrnnhwaplX8l1Ex422zStB6Ille4W8wpdQEQwiKJjI2AaNY0NA47gLIMXHQ0Ps3+ty3WWo7Rd5Wngw98r7n+u9SqmhDGhoQfiejY/VwXpFC1osBovREGHLhkbnbRbqvR9FGRYtCyEQeFPSMZ6ISelY/ePEb17ogxYaBjTff3rKREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERB+ZIw4WO5Yv9mx9RREGVHGG6AWX6REBERAREQEREBERAREQEREBERB/9k=" alt="Logo IE María de los Ángeles Cano">
+    <span>Herramientas de Programación I · Clase 12</span>
+  </div>
+  <nav>
+    <a href="12-teoria.html" class="actual">Teoría</a>
+    <a href="12-taller.html">Taller</a>
+    <a href="12-evaluacion.html">Evaluación</a>
+  </nav>
+  <div class="reloj" id="reloj">--:--:--</div>
+</div>
+
+<main>
+  <h1>Clase 12 — Diseño responsivo: viewport, medidas flexibles y media queries</h1>
+
+  <div class="bloque">
+    <p>En la Clase 11 el panel de cada proyecto quedó organizado con Flexbox: menú lateral, tarjetas en fila y barra superior con menú horizontal. En el computador se ve bien, pero abra ese mismo panel en un celular y verá el problema: el menú lateral se come media pantalla y las tarjetas quedan del tamaño de una estampilla.</p>
+    <p>Los lienzos de los cinco PIA piden dos cosas para el celular: que <strong>el menú lateral suba arriba</strong> y que <strong>las tarjetas pasen de 4 a 2 y a 1 por fila</strong> a medida que la pantalla se angosta. Hoy aprendemos a lograrlo con una sola página y un solo <code>estilos.css</code>: la etiqueta <code>meta viewport</code>, las medidas que se adaptan (<code>max-width</code>, <code>rem</code>) y las <strong>media queries</strong>, que aplican reglas distintas según el ancho de la pantalla.</p>
+  </div>
+
+  <h2>Repaso: Flexbox de la Clase 11</h2>
+  <p>El menú lateral queda al lado del contenido porque su padre, el <code>div</code> contenedor, tiene <code>display: flex</code> y la dirección por defecto es fila (<code>row</code>). Las tarjetas quedan en fila por la misma razón, y bajan a otra fila gracias a <code>flex-wrap: wrap</code>. Esas dos ideas son la base de todo lo de hoy: para adaptar el panel al celular no se rehace nada, solo se cambian algunas propiedades cuando la pantalla es angosta.</p>
+  <div class="quiz" data-correcta="b">
+    <p><strong>Verifique:</strong> En el panel de la Clase 11, el contenedor tiene <code>display: flex</code> y el menú queda al lado del contenido. ¿Qué propiedad del contenedor pondría el menú arriba y el contenido debajo?</p>
+    <label><input type="radio" name="q1" value="a"> <code>flex-wrap: wrap</code></label>
+    <label><input type="radio" name="q1" value="b"> <code>flex-direction: column</code></label>
+    <label><input type="radio" name="q1" value="c"> <code>justify-content: space-between</code></label>
+    <button class="chk" onclick="revisar(this)">Revisar</button>
+    <p class="resultado"></p>
+  </div>
+
+  <h2>Qué es el diseño responsivo</h2>
+  <p>Un diseño es <strong>responsivo</strong> (en inglés, <em>responsive</em>) cuando la misma página se acomoda al ancho de la pantalla en que se abre: computador, tableta o celular. No se hacen tres páginas distintas; se hace una sola, con el mismo HTML, y el CSS decide cómo se distribuye según el espacio disponible.</p>
+  <p>El contenido no cambia: el celular muestra los mismos indicadores, el mismo menú y la misma tabla que el computador. Lo que cambia es la <strong>distribución</strong>: lo que en el computador va lado a lado, en el celular va uno debajo del otro. Por eso Flexbox y el diseño responsivo se llevan tan bien: casi todo se resuelve cambiando la dirección o el ancho de las cajas.</p>
+  <div class="ejes"><svg viewBox="0 0 560 250" width="100%" style="max-width:560px" role="img" aria-label="Dos celulares: a la izquierda la página sin viewport se ve diminuta; a la derecha, con viewport, se ve a tamaño legible">
+  <rect x="40" y="10" width="150" height="230" rx="16" fill="#132A4C"/>
+  <rect x="50" y="30" width="130" height="190" fill="#fff"/>
+  <rect x="55" y="36" width="120" height="10" fill="#2C5C8F"/>
+  <rect x="55" y="50" width="22" height="60" fill="#CBD9E6"/>
+  <g fill="#EAF1F8" stroke="#2C5C8F" stroke-width=".6"><rect x="81" y="50" width="20" height="12"/><rect x="104" y="50" width="20" height="12"/><rect x="127" y="50" width="20" height="12"/><rect x="150" y="50" width="20" height="12"/></g>
+  <g fill="#CBD9E6"><rect x="81" y="68" width="89" height="3"/><rect x="81" y="74" width="89" height="3"/><rect x="81" y="80" width="70" height="3"/></g>
+  <text x="115" y="248" font-family="IBM Plex Sans, Arial" font-size="13" fill="#132A4C" text-anchor="middle">Sin viewport</text>
+  <rect x="370" y="10" width="150" height="230" rx="16" fill="#132A4C"/>
+  <rect x="380" y="30" width="130" height="190" fill="#fff"/>
+  <rect x="385" y="36" width="120" height="18" fill="#2C5C8F"/>
+  <g fill="#CBD9E6"><rect x="385" y="58" width="56" height="12"/><rect x="449" y="58" width="56" height="12"/></g>
+  <g fill="#EAF1F8" stroke="#2C5C8F"><rect x="385" y="76" width="120" height="34" rx="4"/><rect x="385" y="116" width="120" height="34" rx="4"/><rect x="385" y="156" width="120" height="34" rx="4"/></g>
+  <text x="445" y="248" font-family="IBM Plex Sans, Arial" font-size="13" fill="#132A4C" text-anchor="middle">Con viewport y media queries</text>
+  <text x="280" y="120" font-family="IBM Plex Sans, Arial" font-size="13" fill="#2C5C8F" text-anchor="middle">La misma página</text>
+  <path d="M215 130 L345 130" stroke="#2C5C8F" stroke-width="2" marker-end="url(#f)"/>
+  <defs><marker id="f" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#2C5C8F"/></marker></defs>
+</svg></div>
+  <p>Para lograrlo se necesitan tres herramientas, en este orden:</p>
+  <ol>
+    <li>La etiqueta <code>meta viewport</code>, para que el celular no finja ser un computador.</li>
+    <li>Medidas que se adaptan: anchos en % con un tope (<code>max-width</code>), imágenes que no se salen y texto en <code>rem</code>.</li>
+    <li>Media queries: bloques de reglas que solo se aplican cuando la pantalla mide cierto ancho o menos.</li>
+  </ol>
+
+  <h2>La etiqueta meta viewport</h2>
+  <p>Cuando aparecieron los teléfonos con navegador, casi todas las páginas estaban hechas para computador. Para que se vieran completas, los navegadores del celular tomaron una decisión: si la página no dice nada, la arman como si la pantalla fuera mucho más ancha que el teléfono (en muchos navegadores, un ancho virtual de 980 px) y luego la reducen hasta que quepa. El resultado es la página de computador en miniatura: letra diminuta, botones imposibles de tocar y hay que hacer zoom con los dedos.</p>
+  <p>La etiqueta <code>meta viewport</code> le dice al navegador del celular: <strong>use el ancho real del dispositivo y no reduzca nada</strong>. Va dentro del <code>head</code>, junto al <code>meta charset</code>, en <strong>todas</strong> las páginas del proyecto:</p>
+  <pre>&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+    &lt;title&gt;EcoPunto · Panel del administrador&lt;/title&gt;
+    &lt;link rel="stylesheet" href="estilos.css"&gt;
+&lt;/head&gt;</pre>
+  <ul>
+    <li><code>width=device-width</code>: el ancho de la página es el ancho del dispositivo. En un celular de 375 px de ancho, la página mide 375 px y no 980.</li>
+    <li><code>initial-scale=1.0</code>: la página abre sin zoom, a escala normal.</li>
+  </ul>
+  <p>Los px de CSS no son los puntos físicos de la pantalla: un celular tiene muchos más puntos físicos, pero el navegador los agrupa para que un px de CSS se vea de un tamaño parecido en todos los aparatos. Por eso un celular de gama media “mide” alrededor de 360 a 430 px de CSS, aunque su resolución sea mucho mayor.</p>
+  <div class="bloque alerta">
+    <p><strong>Sin viewport, nada de lo demás funciona en el celular.</strong> Si falta la etiqueta, el celular cree que mide unos 980 px y las media queries para pantallas angostas nunca se cumplen. Es el error más común del día: escribir todas las media queries y olvidar la etiqueta. En el computador no se nota, por eso hay que probar en el modo dispositivo del navegador o en un celular de verdad.</p>
+  </div>
+  <p>Desde hoy, <code>meta name="viewport"</code> con ese contenido exacto entra a la lista de lo visto en clase. Otros valores que encontrará en internet, como <code>user-scalable=no</code>, no se usan en el curso: impiden que una persona con baja visión amplíe la página con los dedos.</p>
+  <div class="quiz" data-correcta="b">
+    <p><strong>Verifique:</strong> Una página no tiene la etiqueta <code>meta viewport</code>. ¿Qué hace el navegador del celular al abrirla?</p>
+    <label><input type="radio" name="q2" value="a"> La muestra con el ancho real del celular, igual que si tuviera la etiqueta</label>
+    <label><input type="radio" name="q2" value="b"> La arma como si la pantalla fuera mucho más ancha y la reduce, así que todo queda diminuto</label>
+    <label><input type="radio" name="q2" value="c"> No la muestra y avisa que falta la etiqueta</label>
+    <button class="chk" onclick="revisar(this)">Revisar</button>
+    <p class="resultado"></p>
+  </div>
+  <div class="quiz" data-correcta="a">
+    <p><strong>Verifique:</strong> ¿Dónde se escribe la etiqueta <code>meta viewport</code>?</p>
+    <label><input type="radio" name="q3" value="a"> En el <code>head</code> de cada página HTML del proyecto</label>
+    <label><input type="radio" name="q3" value="b"> Una sola vez, al principio de <code>estilos.css</code></label>
+    <label><input type="radio" name="q3" value="c"> Al final del <code>body</code>, después del pie de página</label>
+    <button class="chk" onclick="revisar(this)">Revisar</button>
+    <p class="resultado"></p>
+  </div>
+
+  <h2>Probar en el navegador: el modo dispositivo</h2>
+  <p>No hace falta subir la página a internet para verla como en un celular. Chrome y Firefox traen un <strong>modo dispositivo</strong>: abra la página, pulse <strong>F12</strong> y luego <strong>Ctrl + Shift + M</strong>. La página se muestra en un marco que simula una pantalla; arriba se escoge un modelo de celular o se escribe el ancho en px. Arrastrando el borde del marco se ve cómo cambia la página a medida que se angosta.</p>
+  <p>En el taller va a revisar su panel en tres anchos: <strong>1100 px</strong> (computador), <strong>800 px</strong> (tableta) y <strong>375 px</strong> (celular). En esta página los ejemplos tienen botones con esos mismos tres anchos.</p>
+  <div class="quiz" data-correcta="a">
+    <p><strong>Verifique:</strong> Con la página abierta en Chrome o Firefox y F12 pulsado, ¿qué combinación activa el modo dispositivo?</p>
+    <label><input type="radio" name="q12" value="a"> Ctrl + Shift + M</label>
+    <label><input type="radio" name="q12" value="b"> Ctrl + P</label>
+    <label><input type="radio" name="q12" value="c"> Ctrl + U</label>
+    <button class="chk" onclick="revisar(this)">Revisar</button>
+    <p class="resultado"></p>
+  </div>
+
+  <h2>Medidas que se adaptan</h2>
+  <h3>El problema de los anchos fijos en px</h3>
+  <p>Un ancho en px no cambia nunca. Si la tarjeta de ingreso mide <code>width: 420px</code> y la pantalla mide 375, la tarjeta se sale y aparece una barra para desplazarse de lado. Pulse Computador y luego Celular en este ejemplo:</p>
+  <div class="demo" data-demo="fijo"><div><p class="rot">HTML</p><pre class="d-html"></pre></div><div><p class="rot">CSS</p><pre class="css d-css" style="margin-top:0"></pre></div><div><p class="rot">Vista real: tarjeta de 420 px</p><div class="d-visor"></div></div></div>
+
+  <h3>La solución: porcentaje con tope, max-width</h3>
+  <p>La propiedad <code>max-width</code> pone un <strong>ancho máximo</strong>. Con <code>width: 100%</code> y <code>max-width: 420px</code>, la caja ocupa todo el ancho disponible, pero nunca pasa de 420 px. En el celular se encoge; en el computador se queda en 420 px y <code>margin: 0 auto</code> la centra.</p>
+  <div class="demo" data-demo="maxw"><div><p class="rot">HTML</p><pre class="d-html"></pre></div><div><p class="rot">CSS</p><pre class="css d-css" style="margin-top:0"></pre></div><div><p class="rot">Vista real: tarjeta con max-width</p><div class="d-visor"></div></div></div>
+  <div class="quiz" data-correcta="c">
+    <p><strong>Verifique:</strong> Una caja tiene <code>width: 100%</code> y <code>max-width: 420px</code>. ¿Cuánto mide en un computador donde el espacio disponible es de 1000 px?</p>
+    <label><input type="radio" name="q4" value="a"> 1000 px, porque <code>width</code> dice 100 %</label>
+    <label><input type="radio" name="q4" value="b"> 0 px, porque las dos medidas se anulan</label>
+    <label><input type="radio" name="q4" value="c"> 420 px, porque <code>max-width</code> no la deja pasar de ahí</label>
+    <button class="chk" onclick="revisar(this)">Revisar</button>
+    <p class="resultado"></p>
+  </div>
+
+  <h3>Imágenes que no se salen</h3>
+  <p>Una imagen se muestra, si no se le dice nada, con su ancho real. Una foto de 800 px se sale de cualquier celular:</p>
+  <div class="demo" data-demo="imgsin"><div><p class="rot">HTML</p><pre class="d-html"></pre></div><div><p class="rot">CSS</p><pre class="css d-css" style="margin-top:0"></pre></div><div><p class="rot">Vista real: imagen sin reglas</p><div class="d-visor"></div></div></div>
+  <p>La regla que lo resuelve se escribe una sola vez para todas las imágenes del proyecto:</p>
+  <div class="demo" data-demo="imgcon"><div><p class="rot">HTML</p><pre class="d-html"></pre></div><div><p class="rot">CSS</p><pre class="css d-css" style="margin-top:0"></pre></div><div><p class="rot">Vista real: imagen con la regla</p><div class="d-visor"></div></div></div>
+  <ul>
+    <li><code>max-width: 100%</code>: la imagen nunca es más ancha que la caja que la contiene. Si cabe, se ve con su tamaño real; si no cabe, se encoge.</li>
+    <li><code>height: auto</code>: el alto se calcula solo, según el ancho, para que la imagen no se deforme.</li>
+  </ul>
+  <p>Esta regla de elemento no daña los íconos del panel: si en la Clase 11 les dio <code>width</code> y <code>height</code> con un selector como <code>.accion img</code>, ese selector es más específico que <code>img</code> y sus medidas se conservan.</p>
+  <div class="quiz" data-correcta="a">
+    <p><strong>Verifique:</strong> En la regla <code>img { max-width: 100%; height: auto; }</code>, ¿para qué sirve <code>height: auto</code>?</p>
+    <label><input type="radio" name="q5" value="a"> Para que el alto se calcule según el ancho y la imagen no se deforme</label>
+    <label><input type="radio" name="q5" value="b"> Para que la imagen ocupe todo el alto de la pantalla</label>
+    <label><input type="radio" name="q5" value="c"> Para ocultar la imagen en el celular</label>
+    <button class="chk" onclick="revisar(this)">Revisar</button>
+    <p class="resultado"></p>
+  </div>
+
+  <h3>Texto en rem</h3>
+  <p>Hasta ahora el tamaño de la letra se ha escrito en px. Existe otra unidad, <code>rem</code>, que mide <strong>en relación con el tamaño de letra de la página</strong>. Si nadie lo ha cambiado, el navegador usa 16 px como tamaño base, así que:</p>
+  <div class="tabla-scroll"><table>
+    <thead><tr><th>rem</th><th>Equivale, con el tamaño base de 16 px</th><th>Uso típico</th></tr></thead>
+    <tbody>
+      <tr><td><code>1rem</code></td><td>16 px</td><td>Texto normal</td></tr>
+      <tr><td><code>0.875rem</code></td><td>14 px</td><td>Rótulos pequeños</td></tr>
+      <tr><td><code>1.5rem</code></td><td>24 px</td><td>Subtítulos</td></tr>
+      <tr><td><code>2rem</code></td><td>32 px</td><td>Números grandes de las tarjetas</td></tr>
+    </tbody>
+  </table></div>
+  <p>Entonces, ¿para qué cambiar si da lo mismo? Porque <strong>no siempre da lo mismo</strong>. Una persona con baja visión puede subir el tamaño de letra predeterminado en la configuración de su navegador. Cuando lo hace, todo lo que esté en <code>rem</code> crece con ella; lo que esté en px se queda igual, como si ignorara su configuración. Pruébelo:</p>
+  <div class="demo" data-demo="rem"><div><p class="rot">HTML</p><pre class="d-html"></pre></div><div><p class="rot">CSS</p><pre class="css d-css" style="margin-top:0"></pre></div>
+    <div><p class="rot">Vista real</p>
+      <div class="visor-barra"><button type="button" class="on" id="rem-normal">Letra normal (16 px)</button><button type="button" id="rem-grande">Letra grande en el navegador (24 px)</button></div>
+      <iframe id="rem-frame" title="Ejemplo rem" style="width:100%; height:310px; border:1px solid var(--borde); border-radius:6px; background:#fff;"></iframe></div></div>
+  <p>Con la letra grande, el bloque en rem se agranda y el bloque en px no cambia. En el taller va a pasar a <code>rem</code> por lo menos el título de la barra superior y los números de las tarjetas. Las medidas de las cajas (anchos, padding, bordes) pueden seguir en px o en %.</p>
+  <div class="quiz" data-correcta="b">
+    <p><strong>Verifique:</strong> Nadie ha cambiado el tamaño de letra del navegador. ¿Cuánto mide un texto con <code>font-size: 1.5rem</code>?</p>
+    <label><input type="radio" name="q6" value="a"> 1.5 px</label>
+    <label><input type="radio" name="q6" value="b"> 24 px</label>
+    <label><input type="radio" name="q6" value="c"> 15 px</label>
+    <button class="chk" onclick="revisar(this)">Revisar</button>
+    <p class="resultado"></p>
+  </div>
+
+  <h3>Tablas anchas: que se desplacen dentro de su caja</h3>
+  <p>Una tabla de siete u ocho columnas no cabe en 375 px, y achicar la letra hasta que quepa la vuelve ilegible. Sin ayuda, la tabla se sale y arrastra a toda la página: aparece una barra de desplazamiento horizontal para la página entera.</p>
+  <div class="demo" data-demo="tablasin"><div><p class="rot">HTML</p><pre class="d-html"></pre></div><div><p class="rot">CSS</p><pre class="css d-css" style="margin-top:0"></pre></div><div><p class="rot">Vista real: tabla sin div</p><div class="d-visor"></div></div></div>
+  <p>La solución es envolver la tabla en un <code>div</code> con clase y darle a ese <code>div</code> la propiedad <code>overflow-x: auto</code>: si la tabla no cabe, la barra de desplazamiento aparece <strong>solo dentro de esa caja</strong>, y el resto de la página se queda quieto. En el celular se desliza la tabla con el dedo.</p>
+  <div class="demo" data-demo="tabla"><div><p class="rot">HTML</p><pre class="d-html"></pre></div><div><p class="rot">CSS</p><pre class="css d-css" style="margin-top:0"></pre></div><div><p class="rot">Vista real: tabla dentro del div</p><div class="d-visor"></div></div></div>
+  <p>Para notar la diferencia, deslice cada vista hacia la derecha con el mouse o con el dedo: en la primera se mueve toda la página, incluido el título; en la segunda solo se mueve la tabla.</p>
+  <h3>Un detalle cuando la tabla está dentro del panel</h3>
+  <p>En el panel, la tabla está dentro del <code>main</code>, y el <code>main</code> es un elemento flexible del contenedor. Los elementos flexibles tienen una costumbre: no se encogen por debajo de lo que mide su contenido más ancho. Si la tabla es muy ancha, el <code>main</code> se estira para que quepa entera, se sale por la derecha, y el <code>div</code> desplazable nunca llega a desplazarse. Pasa en el computador y en la tableta, cuando el menú todavía está al lado.</p>
+  <p>Se corrige con una propiedad en el contenido: <code>min-width: 0</code>, que le permite encogerse hasta el espacio que le toca. Entonces la tabla queda más ancha que su caja y el <code>overflow-x: auto</code> hace su trabajo.</p>
+  <pre class="css">.contenido {
+    flex: 1;
+    min-width: 0;
+    padding: 0 16px;
+}
+
+.tabla-desplazable {
+    overflow-x: auto;
+}</pre>
+  <div class="quiz" data-correcta="c">
+    <p><strong>Verifique:</strong> La tabla de un proyecto tiene ocho columnas y no cabe en el celular. ¿Cuál es la solución que usamos en el curso?</p>
+    <label><input type="radio" name="q7" value="a"> Bajar la letra de la tabla a 8 px</label>
+    <label><input type="radio" name="q7" value="b"> Borrar columnas hasta que quepa</label>
+    <label><input type="radio" name="q7" value="c"> Envolverla en un <code>div</code> con <code>overflow-x: auto</code>, para que se desplace dentro de su caja</label>
+    <button class="chk" onclick="revisar(this)">Revisar</button>
+    <p class="resultado"></p>
+  </div>
+
+  <h2>Media queries</h2>
+  <p>Una <strong>media query</strong> es un bloque de reglas CSS que el navegador aplica solo si se cumple una condición. La condición que vamos a usar es el ancho de la pantalla:</p>
+  <pre class="css">@media (max-width: 600px) {
+    .aviso {
+        background-color: #FCEBEE;
+        font-size: 15px;
+    }
+}</pre>
+  <ul>
+    <li><code>@media</code> abre el bloque. Lleva la arroba pegada.</li>
+    <li><code>(max-width: 600px)</code> es la condición, entre paréntesis: “si la pantalla mide <strong>600 px o menos</strong>”. Incluye el 600.</li>
+    <li>Entre las llaves del <code>@media</code> van <strong>reglas completas</strong>, cada una con su selector y sus propias llaves. Por eso al final hay dos llaves de cierre: una cierra la regla <code>.aviso</code> y la otra cierra el <code>@media</code>.</li>
+  </ul>
+  <div class="demo" data-demo="mq"><div><p class="rot">HTML</p><pre class="d-html"></pre></div><div><p class="rot">CSS</p><pre class="css d-css" style="margin-top:0"></pre></div><div><p class="rot">Vista real: una media query</p><div class="d-visor"></div></div></div>
+  <p>Fíjese en que la media query <strong>no repite todo</strong>: solo cambia lo que tiene que cambiar. El <code>padding</code> sigue llegando de la regla de arriba, porque las reglas se suman como siempre en la cascada; dentro del <code>@media</code> solo se escriben las propiedades que cambian en el celular.</p>
+  <div class="quiz" data-correcta="a">
+    <p><strong>Verifique:</strong> Con <code>@media (max-width: 600px) { ... }</code>, ¿en cuál de estas pantallas se aplican las reglas?</p>
+    <label><input type="radio" name="q8" value="a"> En una de 600 px y en una de 375 px</label>
+    <label><input type="radio" name="q8" value="b"> Solo en una de 600 px exactos</label>
+    <label><input type="radio" name="q8" value="c"> En una de 800 px y en una de 1100 px</label>
+    <button class="chk" onclick="revisar(this)">Revisar</button>
+    <p class="resultado"></p>
+  </div>
+  <div class="quiz" data-correcta="c">
+    <p><strong>Verifique:</strong> ¿Cuál de estas media queries está bien escrita?</p>
+    <label><input type="radio" name="q9" value="a"> <code>@media (max-width: 600px) .menu-lateral { width: auto; }</code></label>
+    <label><input type="radio" name="q9" value="b"> <code>@media max-width 600px { .menu-lateral { width: auto; } }</code></label>
+    <label><input type="radio" name="q9" value="c"> <code>@media (max-width: 600px) { .menu-lateral { width: auto; } }</code></label>
+    <button class="chk" onclick="revisar(this)">Revisar</button>
+    <p class="resultado"></p>
+  </div>
+
+  <h3>Dónde se escriben y en qué orden</h3>
+  <p>Las media queries se escriben <strong>al final de <code>estilos.css</code></strong>, después de todas las reglas normales. La razón es la cascada de la Clase 9: si dos reglas con la misma especificidad chocan, gana la que está escrita después. La regla normal dice <code>width: 22%</code>; la de la media query dice <code>width: 47%</code>. Si la media query va al final, gana cuando su condición se cumple.</p>
+  <p>Con dos media queries pasa lo mismo. En una pantalla de 375 px se cumplen <strong>las dos</strong> condiciones: 375 es menor que 900 y también es menor que 600. Si el bloque de 600 va de último, sus reglas ganan; si va antes del de 900, el de 900 lo pisa y el celular queda con dos tarjetas por fila. Regla práctica: <strong>de la pantalla más ancha a la más angosta</strong>, primero 900 y después 600.</p>
+  <div class="quiz" data-correcta="b">
+    <p><strong>Verifique:</strong> Un estudiante escribió primero el bloque <code>@media (max-width: 600px)</code> con <code>.tarjeta { width: 100%; }</code> y después el bloque <code>@media (max-width: 900px)</code> con <code>.tarjeta { width: 47%; }</code>. ¿Cómo quedan las tarjetas en un celular de 375 px?</p>
+    <label><input type="radio" name="q10" value="a"> Una por fila, porque 375 está más cerca de 600</label>
+    <label><input type="radio" name="q10" value="b"> Dos por fila: las dos condiciones se cumplen y gana el bloque escrito después</label>
+    <label><input type="radio" name="q10" value="c"> Cuatro por fila, porque ninguna media query se cumple</label>
+    <button class="chk" onclick="revisar(this)">Revisar</button>
+    <p class="resultado"></p>
+  </div>
+
+  <h2>Los anchos del curso: 900 y 600 px</h2>
+  <p>El punto donde el diseño cambia se llama <strong>punto de quiebre</strong> (en inglés, <em>breakpoint</em>). No existe una norma que fije sus valores: cada equipo de diseño los escoge mirando dónde se le daña la página. Para que todos los proyectos se califiquen igual, en el curso usamos dos:</p>
+  <div class="tabla-scroll"><table>
+    <thead><tr><th>Ancho de la pantalla</th><th>Nombre en el curso</th><th>Menú lateral</th><th>Tarjetas</th><th>Barra superior</th></tr></thead>
+    <tbody>
+      <tr><td>Más de 900 px</td><td>Computador</td><td>A la izquierda, como en la Clase 11</td><td>4 por fila</td><td>Nombre a un lado y menú al otro</td></tr>
+      <tr><td>De 601 a 900 px</td><td>Tableta</td><td>A la izquierda</td><td>2 por fila</td><td>Igual que en el computador</td></tr>
+      <tr><td>600 px o menos</td><td>Celular</td><td>Arriba, como una franja</td><td>1 por fila</td><td>Nombre arriba y menú debajo</td></tr>
+    </tbody>
+  </table></div>
+  <p>Así se escribe en <code>estilos.css</code>: las reglas de la Clase 11 sirven para el computador, y al final van los dos bloques.</p>
+  <pre class="css">/* ... todas las reglas de las clases 8 a 11 ... */
+
+@media (max-width: 900px) {
+    /* tableta: solo lo que cambia */
+}
+
+@media (max-width: 600px) {
+    /* celular: solo lo que cambia */
+}</pre>
+
+  <h3>Explorador de anchos</h3>
+  <p>Mueva la barra para cambiar el ancho de la pantalla simulada, píxel por píxel, y mire en qué momento exacto cambia el panel.</p>
+  <div class="explorador">
+    <label for="exp-ancho"><strong>Ancho de la pantalla:</strong> <span id="exp-valor">1100 px</span></label>
+    <input type="range" id="exp-ancho" min="320" max="1200" step="10" value="1100">
+    <p id="exp-estado" class="exp-estado"></p>
+    <div id="exp-visor" class="visor"><iframe id="exp-frame" title="Explorador de anchos"></iframe></div>
+  </div>
+
+  <h2>El menú lateral sube en el celular</h2>
+  <p>El contenedor del panel tiene <code>display: flex</code> y dirección fila: por eso el menú queda a la izquierda. Para subirlo no hay que mover el HTML: basta con cambiar la dirección del contenedor a <strong>columna</strong>. Entonces el menú queda arriba y el contenido debajo, en el mismo orden en que están escritos.</p>
+  <p>Dos detalles más. El menú tenía <code>width: 200px</code>; en columna, ese ancho lo dejaría como una franja angosta a la izquierda, así que se cambia a <code>width: auto</code> para que ocupe todo el ancho. Y la lista de opciones, que estaba en columna, se pone en fila con <code>display: flex</code> y <code>flex-wrap: wrap</code>, para que las opciones queden una al lado de la otra y bajen a otro renglón si no caben.</p>
+  <div class="demo" data-demo="menu"><div><p class="rot">HTML</p><pre class="d-html"></pre></div><div><p class="rot">CSS que se agrega al final de las reglas de la Clase 11</p><pre class="css d-css" style="margin-top:0"></pre></div><div><p class="rot">Vista real: el menú en el celular</p><div class="d-visor"></div></div></div>
+  <div class="quiz" data-correcta="a">
+    <p><strong>Verifique:</strong> En el celular, el menú lateral subió, pero quedó como una franja de 200 px pegada a la izquierda. ¿Qué le falta?</p>
+    <label><input type="radio" name="q11" value="a"> Cambiar el ancho del menú a <code>width: auto</code> dentro de la media query</label>
+    <label><input type="radio" name="q11" value="b"> Quitar <code>display: flex</code> del contenedor</label>
+    <label><input type="radio" name="q11" value="c"> Agregar <code>flex: 1</code> al menú</label>
+    <button class="chk" onclick="revisar(this)">Revisar</button>
+    <p class="resultado"></p>
+  </div>
+
+  <h2>Tarjetas de 4 a 2 y a 1 por fila</h2>
+  <p>Las tarjetas ya están en un contenedor con <code>display: flex</code>, <code>flex-wrap: wrap</code> y <code>gap</code>. Lo único que cambia es el ancho de cada tarjeta:</p>
+  <ul>
+    <li>Computador: <code>width: 22%</code>. Cuatro tarjetas de 22 % más tres huecos del <code>gap</code> caben en una fila.</li>
+    <li>Tableta: <code>width: 47%</code>. Dos de 47 % más un hueco caben; la tercera baja. No se usa 50 %, porque dos de 50 % más el <code>gap</code> suman más de 100 % y la segunda bajaría.</li>
+    <li>Celular: <code>width: 100%</code>. Una por fila.</li>
+  </ul>
+  <div class="demo" data-demo="tarjetas"><div><p class="rot">HTML</p><pre class="d-html"></pre></div><div><p class="rot">CSS que se agrega al final de las reglas de la Clase 11</p><pre class="css d-css" style="margin-top:0"></pre></div><div><p class="rot">Vista real: las tarjetas en la tableta</p><div class="d-visor"></div></div></div>
+  <p>Lo mismo se aplica a las tarjetas de acción y a cualquier grupo de tarjetas del panel. Si un grupo tiene pocas tarjetas o tarjetas muy pequeñas, el número por fila puede ser otro: lo importante es que en el celular se puedan leer y tocar sin hacer zoom.</p>
+
+  <h2>Escritorio primero y móvil primero</h2>
+  <p>En el curso escribimos primero el diseño del computador (ya lo teníamos de la Clase 11) y después, con <code>max-width</code>, lo que cambia en pantallas más angostas. Esta forma de trabajar se llama <strong>escritorio primero</strong>. Muchos equipos hacen lo contrario, <strong>móvil primero</strong>: escriben primero el diseño del celular y agregan cambios para pantallas más anchas con otra condición. Las dos formas son válidas; en el taller se usa escritorio primero con <code>max-width</code>, y la otra queda como tema de investigación.</p>
+
+  <h2>Laboratorio: el panel de préstamo de equipos en el celular</h2>
+  <div class="lab">
+    <p class="reto"><strong>Reto:</strong> el CSS de abajo ya tiene el diseño de computador. Agregue al final la media query de tableta y la de celular, y las reglas de la tabla, para que su resultado se vea igual a la página objetivo en los tres anchos. Use los botones de cada vista para comparar.</p>
+    <p class="rot">Así debe quedar</p>
+    <div id="lab-objetivo"></div>
+    <div class="grid-lab grid-lab-codigo">
+      <div><p class="rot">HTML de la página (no se edita; úselo para saber qué clases tiene cada elemento)</p><pre id="lab-html" class="lab-html"></pre></div>
+      <div><p class="rot">Su CSS</p><textarea id="lab-css" spellcheck="false"></textarea>
+        <button class="sec" onclick="reiniciarLab()">Volver al CSS inicial</button></div>
+    </div>
+    <p class="rot">Su resultado (se actualiza mientras escribe)</p>
+    <div id="lab-vista"></div>
+  </div>
+
+  <h2>Resumen de la clase</h2>
+  <div class="tabla-scroll">
+  <table>
+    <thead><tr><th>Recurso</th><th>Dónde va</th><th>Para qué</th></tr></thead>
+    <tbody>
+      <tr><td><code>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</code></td><td><code>head</code> de cada página</td><td>Que el celular use su ancho real y no reduzca la página</td></tr>
+      <tr><td><code>max-width</code></td><td>Cajas de ancho fijo</td><td>Ancho máximo: con <code>width: 100%</code>, la caja se encoge en el celular</td></tr>
+      <tr><td><code>img { max-width: 100%; height: auto; }</code></td><td>Una vez, para todas las imágenes</td><td>Que ninguna imagen se salga ni se deforme</td></tr>
+      <tr><td><code>rem</code></td><td><code>font-size</code></td><td>Letra que respeta el tamaño que escogió la persona</td></tr>
+      <tr><td><code>overflow-x: auto</code></td><td><code>div</code> que envuelve la tabla</td><td>Que la tabla ancha se desplace dentro de su caja</td></tr>
+      <tr><td><code>min-width: 0</code></td><td>Contenido del panel (el que tiene <code>flex: 1</code>)</td><td>Que el contenido se encoja y no lo estire la tabla</td></tr>
+      <tr><td><code>@media (max-width: 900px) { ... }</code></td><td>Al final de <code>estilos.css</code></td><td>Tableta: tarjetas de a 2</td></tr>
+      <tr><td><code>@media (max-width: 600px) { ... }</code></td><td>Al final, después del de 900</td><td>Celular: menú arriba, barra apilada, tarjetas de a 1</td></tr>
+      <tr><td>F12 y Ctrl + Shift + M</td><td>Navegador</td><td>Probar la página en distintos anchos</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p>En la Clase 13 vemos Bootstrap, una biblioteca que trae hechos muchos de estos comportamientos, y presentamos el Examen intermedio 2 sobre CSS y diseño responsivo.</p>
+
+  <footer class="pie">Herramientas de Programación I · Grado 10 · IE María de los Ángeles Cano</footer>
+</main>
+
+<script>
+function actualizarReloj(){
+  var el = document.getElementById('reloj');
+  var ahora = new Date();
+  el.textContent = String(ahora.getHours()).padStart(2,'0') + ':' + String(ahora.getMinutes()).padStart(2,'0') + ':' + String(ahora.getSeconds()).padStart(2,'0');
+}
+actualizarReloj();
+setInterval(actualizarReloj, 1000);
+
+function revisar(boton){
+  var quiz = boton.closest('.quiz');
+  var correcta = quiz.getAttribute('data-correcta');
+  var seleccion = quiz.querySelector('input[type="radio"]:checked');
+  var resultado = quiz.querySelector('.resultado');
+  if(!seleccion){
+    resultado.textContent = 'Seleccione una opción antes de revisar.';
+    resultado.className = 'resultado mostrar incorrecto';
+    return;
+  }
+  if(seleccion.value === correcta){
+    resultado.textContent = 'Correcto.';
+    resultado.className = 'resultado mostrar correcto';
+  } else {
+    resultado.textContent = 'Incorrecto. Revise la explicación de arriba.';
+    resultado.className = 'resultado mostrar incorrecto';
+  }
+}
+
+var ANCHOS = [['Celular', 375], ['Tableta', 800], ['Computador', 1100]];
+var VISORES = [];
+function crearVisor(caja, doc, anchoInicial, alto){
+  caja.innerHTML = '';
+  var barra = document.createElement('div'); barra.className = 'visor-barra';
+  var marco = document.createElement('div'); marco.className = 'visor';
+  var fr = document.createElement('iframe'); fr.title = 'Vista simulada'; marco.appendChild(fr);
+  var etiqueta = document.createElement('span'); etiqueta.className = 'ancho';
+  var v = {marco: marco, fr: fr, ancho: anchoInicial, alto: alto, etiqueta: etiqueta, botones: []};
+  ANCHOS.forEach(function(a){
+    var b = document.createElement('button'); b.type = 'button'; b.textContent = a[0] + ' ' + a[1] + ' px';
+    b.addEventListener('click', function(){ v.ancho = a[1]; ajustarVisor(v); });
+    v.botones.push([b, a[1]]); barra.appendChild(b);
+  });
+  barra.appendChild(etiqueta);
+  caja.appendChild(barra); caja.appendChild(marco);
+  fr.srcdoc = doc;
+  VISORES.push(v); ajustarVisor(v);
+  return v;
+}
+function ajustarVisor(v){
+  var disponible = v.marco.parentNode.clientWidth || v.ancho;
+  var escala = Math.min(1, disponible / v.ancho);
+  v.fr.style.width = v.ancho + 'px';
+  v.fr.style.height = v.alto + 'px';
+  v.fr.style.transform = 'scale(' + escala + ')';
+  v.marco.style.width = Math.round(v.ancho * escala) + 'px';
+  v.marco.style.maxWidth = '100%';
+  v.marco.style.height = Math.round(v.alto * escala) + 'px';
+  v.etiqueta.textContent = 'La página cree que la pantalla mide ' + v.ancho + ' px' + (escala < 1 ? ' (vista reducida para que quepa)' : '');
+  v.botones.forEach(function(p){ p[0].className = (p[1] === v.ancho) ? 'on' : ''; });
+}
+window.addEventListener('resize', function(){ VISORES.forEach(ajustarVisor); });
+
+var FOTO = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4MDAiIGhlaWdodD0iMjYwIiB2aWV3Qm94PSIwIDAgODAwIDI2MCI+CjxyZWN0IHdpZHRoPSI4MDAiIGhlaWdodD0iMjYwIiBmaWxsPSIjRUFGMUY4Ii8+CjxyZWN0IHg9IjAiIHk9IjIwMCIgd2lkdGg9IjgwMCIgaGVpZ2h0PSI2MCIgZmlsbD0iI0NCRDlFNiIvPgo8ZyBmaWxsPSIjMkM1QzhGIj48cmVjdCB4PSI2MCIgeT0iOTAiIHdpZHRoPSIxNTAiIGhlaWdodD0iOTUiIHJ4PSI2Ii8+PHJlY3QgeD0iMjUwIiB5PSI5MCIgd2lkdGg9IjE1MCIgaGVpZ2h0PSI5NSIgcng9IjYiLz48cmVjdCB4PSI0NDAiIHk9IjkwIiB3aWR0aD0iMTUwIiBoZWlnaHQ9Ijk1IiByeD0iNiIvPjxyZWN0IHg9IjYzMCIgeT0iOTAiIHdpZHRoPSIxMjAiIGhlaWdodD0iOTUiIHJ4PSI2Ii8+PC9nPgo8ZyBmaWxsPSIjRUFGMUY4Ij48cmVjdCB4PSI3MCIgeT0iMTAwIiB3aWR0aD0iMTMwIiBoZWlnaHQ9IjcwIi8+PHJlY3QgeD0iMjYwIiB5PSIxMDAiIHdpZHRoPSIxMzAiIGhlaWdodD0iNzAiLz48cmVjdCB4PSI0NTAiIHk9IjEwMCIgd2lkdGg9IjEzMCIgaGVpZ2h0PSI3MCIvPjxyZWN0IHg9IjY0MCIgeT0iMTAwIiB3aWR0aD0iMTAwIiBoZWlnaHQ9IjcwIi8+PC9nPgo8ZyBmaWxsPSIjMTMyQTRDIj48cmVjdCB4PSIxMjAiIHk9IjE4NSIgd2lkdGg9IjMwIiBoZWlnaHQ9IjE1Ii8+PHJlY3QgeD0iMzEwIiB5PSIxODUiIHdpZHRoPSIzMCIgaGVpZ2h0PSIxNSIvPjxyZWN0IHg9IjUwMCIgeT0iMTg1IiB3aWR0aD0iMzAiIGhlaWdodD0iMTUiLz48cmVjdCB4PSI2NzUiIHk9IjE4NSIgd2lkdGg9IjMwIiBoZWlnaHQ9IjE1Ii8+PC9nPgo8dGV4dCB4PSI0MDAiIHk9IjU1IiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMzAiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSIjMTMyQTRDIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5TYWxhIGRlIHNpc3RlbWFzIMK3IDgwMCBweCBkZSBhbmNobzwvdGV4dD4KPC9zdmc+";
+var BASE_DEMO = "body{font-family:Arial, sans-serif; margin:8px; color:#132A4C;}";
+var DEMOS = {"fijo": {"html": "<div class=\"tarjeta-ingreso\">\n    <h2>Iniciar sesión<\/h2>\n    <label for=\"u\">Usuario<\/label>\n    <input type=\"text\" id=\"u\">\n<\/div>", "css": ".tarjeta-ingreso {\n    box-sizing: border-box;\n    width: 420px;\n    padding: 16px;\n    border: 2px solid #2C5C8F;\n    border-radius: 10px;\n}\n\n.tarjeta-ingreso input {\n    box-sizing: border-box;\n    width: 100%;\n    padding: 10px;\n}", "mostrar": ".tarjeta-ingreso {\n    box-sizing: border-box;\n    width: 420px;\n    padding: 16px;\n    border: 2px solid #2C5C8F;\n    border-radius: 10px;\n}\n\n.tarjeta-ingreso input {\n    box-sizing: border-box;\n    width: 100%;\n    padding: 10px;\n}", "ancho": 375, "alto": 260}, "maxw": {"html": "<div class=\"tarjeta-ingreso\">\n    <h2>Iniciar sesión<\/h2>\n    <label for=\"u\">Usuario<\/label>\n    <input type=\"text\" id=\"u\">\n<\/div>", "css": ".tarjeta-ingreso {\n    box-sizing: border-box;\n    width: 100%;\n    max-width: 420px;\n    margin: 0 auto;\n    padding: 16px;\n    border: 2px solid #2C5C8F;\n    border-radius: 10px;\n}\n\n.tarjeta-ingreso input {\n    box-sizing: border-box;\n    width: 100%;\n    padding: 10px;\n}", "mostrar": ".tarjeta-ingreso {\n    box-sizing: border-box;\n    width: 100%;\n    max-width: 420px;\n    margin: 0 auto;\n    padding: 16px;\n    border: 2px solid #2C5C8F;\n    border-radius: 10px;\n}\n\n.tarjeta-ingreso input {\n    box-sizing: border-box;\n    width: 100%;\n    padding: 10px;\n}", "ancho": 375, "alto": 260}, "imgsin": {"html": "<h2>Sala de sistemas<\/h2>\n<img src=\"sala.svg\" alt=\"Dibujo de la sala de sistemas\">\n<p>La imagen mide 800 px de ancho.<\/p>", "css": "/* Sin reglas para la imagen */", "mostrar": "/* Sin reglas para la imagen */", "ancho": 375, "alto": 300}, "imgcon": {"html": "<h2>Sala de sistemas<\/h2>\n<img src=\"sala.svg\" alt=\"Dibujo de la sala de sistemas\">\n<p>La imagen mide 800 px de ancho.<\/p>", "css": "img {\n    max-width: 100%;\n    height: auto;\n}", "mostrar": "img {\n    max-width: 100%;\n    height: auto;\n}", "ancho": 375, "alto": 300}, "tabla": {"html": "<h2>Préstamos<\/h2>\n<div class=\"tabla-desplazable\">\n    <table>\n        <thead>\n            <tr><th>Código<\/th><th>Equipo<\/th><th>Docente<\/th><th>Grado<\/th><th>Préstamo<\/th><th>Devolución<\/th><th>Estado<\/th><\/tr>\n        <\/thead>\n        <tbody>\n            <tr><td>P-014<\/td><td>Portátil 07<\/td><td>Marta Gómez<\/td><td>10.°A<\/td><td>27/10/2026<\/td><td>28/10/2026<\/td><td>Prestado<\/td><\/tr>\n            <tr><td>P-015<\/td><td>Video beam 2<\/td><td>Luis Arango<\/td><td>8.°B<\/td><td>27/10/2026<\/td><td>27/10/2026<\/td><td>Devuelto<\/td><\/tr>\n        <\/tbody>\n    <\/table>\n<\/div>", "css": ".tabla-desplazable {\n    overflow-x: auto;\n}\n\ntable {\n    border-collapse: collapse;\n}\n\nth {\n    background-color: #2C5C8F;\n    color: white;\n    padding: 8px 12px;\n}\n\ntd {\n    padding: 8px 12px;\n    border-bottom: 1px solid #CBD9E6;\n}", "mostrar": ".tabla-desplazable {\n    overflow-x: auto;\n}\n\ntable {\n    border-collapse: collapse;\n}\n\nth {\n    background-color: #2C5C8F;\n    color: white;\n    padding: 8px 12px;\n}\n\ntd {\n    padding: 8px 12px;\n    border-bottom: 1px solid #CBD9E6;\n}", "ancho": 375, "alto": 230}, "tablasin": {"html": "<h2>Préstamos<\/h2>\n<table>\n    <thead>\n        <tr><th>Código<\/th><th>Equipo<\/th><th>Docente<\/th><th>Grado<\/th><th>Préstamo<\/th><th>Devolución<\/th><th>Estado<\/th><\/tr>\n    <\/thead>\n    <tbody>\n        <tr><td>P-014<\/td><td>Portátil 07<\/td><td>Marta Gómez<\/td><td>10.°A<\/td><td>27/10/2026<\/td><td>28/10/2026<\/td><td>Prestado<\/td><\/tr>\n        <tr><td>P-015<\/td><td>Video beam 2<\/td><td>Luis Arango<\/td><td>8.°B<\/td><td>27/10/2026<\/td><td>27/10/2026<\/td><td>Devuelto<\/td><\/tr>\n    <\/tbody>\n<\/table>", "css": "table {\n    border-collapse: collapse;\n}\n\nth {\n    background-color: #2C5C8F;\n    color: white;\n    padding: 8px 12px;\n}\n\ntd {\n    padding: 8px 12px;\n    border-bottom: 1px solid #CBD9E6;\n}", "mostrar": "table {\n    border-collapse: collapse;\n}\n\nth {\n    background-color: #2C5C8F;\n    color: white;\n    padding: 8px 12px;\n}\n\ntd {\n    padding: 8px 12px;\n    border-bottom: 1px solid #CBD9E6;\n}", "ancho": 375, "alto": 230}, "mq": {"html": "<p class=\"aviso\">Pulse los botones Celular, Tableta y Computador y mire el color y el tamaño de esta letra.<\/p>", "css": ".aviso {\n    padding: 12px;\n    background-color: #EAF1F8;\n    font-size: 20px;\n}\n\n@media (max-width: 600px) {\n    .aviso {\n        background-color: #FCEBEE;\n        font-size: 15px;\n    }\n}", "mostrar": ".aviso {\n    padding: 12px;\n    background-color: #EAF1F8;\n    font-size: 20px;\n}\n\n@media (max-width: 600px) {\n    .aviso {\n        background-color: #FCEBEE;\n        font-size: 15px;\n    }\n}", "ancho": 1100, "alto": 140}, "menu": {"html": "<header class=\"barra\">\n    <h1>Préstamo de Equipos<\/h1>\n    <nav class=\"menu-superior\">\n        <ul>\n            <li>Docente: Sala 2<\/li>\n            <li><a href=\"#\">Cerrar sesión<\/a><\/li>\n        <\/ul>\n    <\/nav>\n<\/header>\n<div class=\"contenedor\">\n    <nav class=\"menu-lateral\">\n        <ul>\n            <li><a href=\"#\" class=\"activo\">⌂ Inicio<\/a><\/li>\n            <li><a href=\"#\">✎ Nuevo préstamo<\/a><\/li>\n            <li><a href=\"#\">☰ Préstamos<\/a><\/li>\n            <li><a href=\"#\">✔ Devoluciones<\/a><\/li>\n        <\/ul>\n    <\/nav>\n    <main class=\"contenido\">\n        <h2>Resumen del día<\/h2>\n        <div class=\"tarjetas\">\n            <div class=\"tarjeta\">\n                <p class=\"numero\">24<\/p>\n                <p class=\"rotulo\">Disponibles<\/p>\n            <\/div>\n            <div class=\"tarjeta\">\n                <p class=\"numero\">9<\/p>\n                <p class=\"rotulo\">Prestados<\/p>\n            <\/div>\n            <div class=\"tarjeta\">\n                <p class=\"numero\">3<\/p>\n                <p class=\"rotulo\">En reparación<\/p>\n            <\/div>\n            <div class=\"tarjeta\">\n                <p class=\"numero\">2<\/p>\n                <p class=\"rotulo\">Con retraso<\/p>\n            <\/div>\n        <\/div>\n    <\/main>\n<\/div>", "css": "body {\n    font-family: Arial, sans-serif;\n    margin: 0;\n}\n\n.barra {\n    display: flex;\n    justify-content: space-between;\n    align-items: center;\n    padding: 0 16px;\n    background-color: #132A4C;\n    color: white;\n}\n\n.menu-superior ul {\n    display: flex;\n    gap: 16px;\n    list-style: none;\n    margin: 0;\n    padding: 0;\n}\n\n.menu-superior a {\n    color: white;\n}\n\n.contenedor {\n    display: flex;\n}\n\n.menu-lateral {\n    width: 200px;\n    background-color: #2C5C8F;\n}\n\n.menu-lateral ul {\n    list-style: none;\n    margin: 0;\n    padding: 0;\n}\n\n.menu-lateral a {\n    display: block;\n    padding: 10px 14px;\n    color: white;\n    text-decoration: none;\n}\n\n.menu-lateral .activo {\n    background-color: #B0223A;\n}\n\n.contenido {\n    flex: 1;\n    padding: 0 16px;\n}\n\n.tarjetas {\n    display: flex;\n    flex-wrap: wrap;\n    gap: 16px;\n}\n\n.tarjeta {\n    box-sizing: border-box;\n    width: 22%;\n    padding: 8px 14px;\n    border: 1px solid #CBD9E6;\n    border-left: 6px solid #2C5C8F;\n    border-radius: 8px;\n}\n\n.numero {\n    font-size: 28px;\n    font-weight: bold;\n    margin: 0;\n}\n\n/* Celular: el menú lateral sube */\n@media (max-width: 600px) {\n    .contenedor {\n        flex-direction: column;\n    }\n\n    .menu-lateral {\n        width: auto;\n    }\n\n    .menu-lateral ul {\n        display: flex;\n        flex-wrap: wrap;\n    }\n}", "mostrar": "/* Celular: el menú lateral sube */\n@media (max-width: 600px) {\n    .contenedor {\n        flex-direction: column;\n    }\n\n    .menu-lateral {\n        width: auto;\n    }\n\n    .menu-lateral ul {\n        display: flex;\n        flex-wrap: wrap;\n    }\n}", "ancho": 375, "alto": 430}, "tarjetas": {"html": "<header class=\"barra\">\n    <h1>Préstamo de Equipos<\/h1>\n    <nav class=\"menu-superior\">\n        <ul>\n            <li>Docente: Sala 2<\/li>\n            <li><a href=\"#\">Cerrar sesión<\/a><\/li>\n        <\/ul>\n    <\/nav>\n<\/header>\n<div class=\"contenedor\">\n    <nav class=\"menu-lateral\">\n        <ul>\n            <li><a href=\"#\" class=\"activo\">⌂ Inicio<\/a><\/li>\n            <li><a href=\"#\">✎ Nuevo préstamo<\/a><\/li>\n            <li><a href=\"#\">☰ Préstamos<\/a><\/li>\n            <li><a href=\"#\">✔ Devoluciones<\/a><\/li>\n        <\/ul>\n    <\/nav>\n    <main class=\"contenido\">\n        <h2>Resumen del día<\/h2>\n        <div class=\"tarjetas\">\n            <div class=\"tarjeta\">\n                <p class=\"numero\">24<\/p>\n                <p class=\"rotulo\">Disponibles<\/p>\n            <\/div>\n            <div class=\"tarjeta\">\n                <p class=\"numero\">9<\/p>\n                <p class=\"rotulo\">Prestados<\/p>\n            <\/div>\n            <div class=\"tarjeta\">\n                <p class=\"numero\">3<\/p>\n                <p class=\"rotulo\">En reparación<\/p>\n            <\/div>\n            <div class=\"tarjeta\">\n                <p class=\"numero\">2<\/p>\n                <p class=\"rotulo\">Con retraso<\/p>\n            <\/div>\n        <\/div>\n    <\/main>\n<\/div>", "css": "body {\n    font-family: Arial, sans-serif;\n    margin: 0;\n}\n\n.barra {\n    display: flex;\n    justify-content: space-between;\n    align-items: center;\n    padding: 0 16px;\n    background-color: #132A4C;\n    color: white;\n}\n\n.menu-superior ul {\n    display: flex;\n    gap: 16px;\n    list-style: none;\n    margin: 0;\n    padding: 0;\n}\n\n.menu-superior a {\n    color: white;\n}\n\n.contenedor {\n    display: flex;\n}\n\n.menu-lateral {\n    width: 200px;\n    background-color: #2C5C8F;\n}\n\n.menu-lateral ul {\n    list-style: none;\n    margin: 0;\n    padding: 0;\n}\n\n.menu-lateral a {\n    display: block;\n    padding: 10px 14px;\n    color: white;\n    text-decoration: none;\n}\n\n.menu-lateral .activo {\n    background-color: #B0223A;\n}\n\n.contenido {\n    flex: 1;\n    padding: 0 16px;\n}\n\n.tarjetas {\n    display: flex;\n    flex-wrap: wrap;\n    gap: 16px;\n}\n\n.tarjeta {\n    box-sizing: border-box;\n    width: 22%;\n    padding: 8px 14px;\n    border: 1px solid #CBD9E6;\n    border-left: 6px solid #2C5C8F;\n    border-radius: 8px;\n}\n\n.numero {\n    font-size: 28px;\n    font-weight: bold;\n    margin: 0;\n}\n\n/* Celular: el menú lateral sube */\n@media (max-width: 600px) {\n    .contenedor {\n        flex-direction: column;\n    }\n\n    .menu-lateral {\n        width: auto;\n    }\n\n    .menu-lateral ul {\n        display: flex;\n        flex-wrap: wrap;\n    }\n}\n\n/* Tableta: dos tarjetas por fila */\n@media (max-width: 900px) {\n    .tarjeta {\n        width: 47%;\n    }\n}\n\n/* Celular: una tarjeta por fila */\n@media (max-width: 600px) {\n    .tarjeta {\n        width: 100%;\n    }\n}", "mostrar": "/* Tableta: dos tarjetas por fila */\n@media (max-width: 900px) {\n    .tarjeta {\n        width: 47%;\n    }\n}\n\n/* Celular: una tarjeta por fila */\n@media (max-width: 600px) {\n    .tarjeta {\n        width: 100%;\n    }\n}", "ancho": 800, "alto": 430}};
+var REM = {"html": "<div class=\"caja\">\n    <h3 class=\"titulo-px\">Título en px<\/h3>\n    <p class=\"texto-px\">Este párrafo mide 16px.<\/p>\n<\/div>\n<div class=\"caja\">\n    <h3 class=\"titulo-rem\">Título en rem<\/h3>\n    <p class=\"texto-rem\">Este párrafo mide 1rem.<\/p>\n<\/div>", "css": ".titulo-px {\n    font-size: 24px;\n}\n\n.texto-px {\n    font-size: 16px;\n}\n\n.titulo-rem {\n    font-size: 1.5rem;\n}\n\n.texto-rem {\n    font-size: 1rem;\n}\n\n.caja {\n    border: 1px solid #CBD9E6;\n    padding: 0 10px;\n    margin-bottom: 6px;\n}"};
+var PANEL_HTML = "<header class=\"barra\">\n    <h1>Préstamo de Equipos<\/h1>\n    <nav class=\"menu-superior\">\n        <ul>\n            <li>Docente: Sala 2<\/li>\n            <li><a href=\"#\">Cerrar sesión<\/a><\/li>\n        <\/ul>\n    <\/nav>\n<\/header>\n<div class=\"contenedor\">\n    <nav class=\"menu-lateral\">\n        <ul>\n            <li><a href=\"#\" class=\"activo\">⌂ Inicio<\/a><\/li>\n            <li><a href=\"#\">✎ Nuevo préstamo<\/a><\/li>\n            <li><a href=\"#\">☰ Préstamos<\/a><\/li>\n            <li><a href=\"#\">✔ Devoluciones<\/a><\/li>\n        <\/ul>\n    <\/nav>\n    <main class=\"contenido\">\n        <h2>Resumen del día<\/h2>\n        <div class=\"tarjetas\">\n            <div class=\"tarjeta\">\n                <p class=\"numero\">24<\/p>\n                <p class=\"rotulo\">Disponibles<\/p>\n            <\/div>\n            <div class=\"tarjeta\">\n                <p class=\"numero\">9<\/p>\n                <p class=\"rotulo\">Prestados<\/p>\n            <\/div>\n            <div class=\"tarjeta\">\n                <p class=\"numero\">3<\/p>\n                <p class=\"rotulo\">En reparación<\/p>\n            <\/div>\n            <div class=\"tarjeta\">\n                <p class=\"numero\">2<\/p>\n                <p class=\"rotulo\">Con retraso<\/p>\n            <\/div>\n        <\/div>\n    <\/main>\n<\/div>";
+var PANEL_CSS_TODO = "body {\n    font-family: Arial, sans-serif;\n    margin: 0;\n}\n\n.barra {\n    display: flex;\n    justify-content: space-between;\n    align-items: center;\n    padding: 0 16px;\n    background-color: #132A4C;\n    color: white;\n}\n\n.menu-superior ul {\n    display: flex;\n    gap: 16px;\n    list-style: none;\n    margin: 0;\n    padding: 0;\n}\n\n.menu-superior a {\n    color: white;\n}\n\n.contenedor {\n    display: flex;\n}\n\n.menu-lateral {\n    width: 200px;\n    background-color: #2C5C8F;\n}\n\n.menu-lateral ul {\n    list-style: none;\n    margin: 0;\n    padding: 0;\n}\n\n.menu-lateral a {\n    display: block;\n    padding: 10px 14px;\n    color: white;\n    text-decoration: none;\n}\n\n.menu-lateral .activo {\n    background-color: #B0223A;\n}\n\n.contenido {\n    flex: 1;\n    padding: 0 16px;\n}\n\n.tarjetas {\n    display: flex;\n    flex-wrap: wrap;\n    gap: 16px;\n}\n\n.tarjeta {\n    box-sizing: border-box;\n    width: 22%;\n    padding: 8px 14px;\n    border: 1px solid #CBD9E6;\n    border-left: 6px solid #2C5C8F;\n    border-radius: 8px;\n}\n\n.numero {\n    font-size: 28px;\n    font-weight: bold;\n    margin: 0;\n}\n\n/* Tableta: dos tarjetas por fila */\n@media (max-width: 900px) {\n    .tarjeta {\n        width: 47%;\n    }\n}\n\n/* Celular: menú arriba, barra apilada y una tarjeta por fila */\n@media (max-width: 600px) {\n    .barra {\n        flex-direction: column;\n        padding-bottom: 10px;\n    }\n\n    .contenedor {\n        flex-direction: column;\n    }\n\n    .menu-lateral {\n        width: auto;\n    }\n\n    .menu-lateral ul {\n        display: flex;\n        flex-wrap: wrap;\n    }\n\n    .tarjeta {\n        width: 100%;\n    }\n}";
+var LAB_HTML = "<header class=\"barra\">\n    <h1>Préstamo de Equipos<\/h1>\n    <nav class=\"menu-superior\">\n        <ul>\n            <li>Docente: Sala 2<\/li>\n            <li><a href=\"#\">Cerrar sesión<\/a><\/li>\n        <\/ul>\n    <\/nav>\n<\/header>\n<div class=\"contenedor\">\n    <nav class=\"menu-lateral\">\n        <ul>\n            <li><a href=\"#\" class=\"activo\">⌂ Inicio<\/a><\/li>\n            <li><a href=\"#\">✎ Nuevo préstamo<\/a><\/li>\n            <li><a href=\"#\">☰ Préstamos<\/a><\/li>\n            <li><a href=\"#\">✔ Devoluciones<\/a><\/li>\n        <\/ul>\n    <\/nav>\n    <main class=\"contenido\">\n        <h2>Resumen del día<\/h2>\n        <div class=\"tarjetas\">\n            <div class=\"tarjeta\">\n                <p class=\"numero\">24<\/p>\n                <p class=\"rotulo\">Disponibles<\/p>\n            <\/div>\n            <div class=\"tarjeta\">\n                <p class=\"numero\">9<\/p>\n                <p class=\"rotulo\">Prestados<\/p>\n            <\/div>\n            <div class=\"tarjeta\">\n                <p class=\"numero\">3<\/p>\n                <p class=\"rotulo\">En reparación<\/p>\n            <\/div>\n            <div class=\"tarjeta\">\n                <p class=\"numero\">2<\/p>\n                <p class=\"rotulo\">Con retraso<\/p>\n            <\/div>\n        <\/div>\n        <h2>Préstamos de hoy<\/h2>\n        <div class=\"tabla-desplazable\">\n            <table>\n                <thead>\n                    <tr><th>Código<\/th><th>Equipo<\/th><th>Docente<\/th><th>Grado<\/th><th>Préstamo<\/th><th>Devolución<\/th><th>Estado<\/th><\/tr>\n                <\/thead>\n                <tbody>\n                    <tr><td>P-014<\/td><td>Portátil 07<\/td><td>Marta Gómez<\/td><td>10.°A<\/td><td>27/10/2026<\/td><td>28/10/2026<\/td><td>Prestado<\/td><\/tr>\n                    <tr><td>P-015<\/td><td>Video beam 2<\/td><td>Luis Arango<\/td><td>8.°B<\/td><td>27/10/2026<\/td><td>27/10/2026<\/td><td>Devuelto<\/td><\/tr>\n                <\/tbody>\n            <\/table>\n        <\/div>\n    <\/main>\n<\/div>";
+var LAB_INICIAL = "body {\n    font-family: Arial, sans-serif;\n    margin: 0;\n}\n\n.barra {\n    display: flex;\n    justify-content: space-between;\n    align-items: center;\n    padding: 0 16px;\n    background-color: #132A4C;\n    color: white;\n}\n\n.menu-superior ul {\n    display: flex;\n    gap: 16px;\n    list-style: none;\n    margin: 0;\n    padding: 0;\n}\n\n.menu-superior a {\n    color: white;\n}\n\n.contenedor {\n    display: flex;\n}\n\n.menu-lateral {\n    width: 200px;\n    background-color: #2C5C8F;\n}\n\n.menu-lateral ul {\n    list-style: none;\n    margin: 0;\n    padding: 0;\n}\n\n.menu-lateral a {\n    display: block;\n    padding: 10px 14px;\n    color: white;\n    text-decoration: none;\n}\n\n.menu-lateral .activo {\n    background-color: #B0223A;\n}\n\n.contenido {\n    flex: 1;\n    padding: 0 16px;\n}\n\n.tarjetas {\n    display: flex;\n    flex-wrap: wrap;\n    gap: 16px;\n}\n\n.tarjeta {\n    box-sizing: border-box;\n    width: 22%;\n    padding: 8px 14px;\n    border: 1px solid #CBD9E6;\n    border-left: 6px solid #2C5C8F;\n    border-radius: 8px;\n}\n\n.numero {\n    font-size: 28px;\n    font-weight: bold;\n    margin: 0;\n}\n\ntable {\n    border-collapse: collapse;\n}\n\nth {\n    background-color: #2C5C8F;\n    color: white;\n    padding: 8px 12px;\n}\n\ntd {\n    padding: 8px 12px;\n    border-bottom: 1px solid #CBD9E6;\n}\n\n/* Escriba aquí sus reglas para la tableta y el celular */\n";
+var LAB_SOL = "body {\n    font-family: Arial, sans-serif;\n    margin: 0;\n}\n\n.barra {\n    display: flex;\n    justify-content: space-between;\n    align-items: center;\n    padding: 0 16px;\n    background-color: #132A4C;\n    color: white;\n}\n\n.menu-superior ul {\n    display: flex;\n    gap: 16px;\n    list-style: none;\n    margin: 0;\n    padding: 0;\n}\n\n.menu-superior a {\n    color: white;\n}\n\n.contenedor {\n    display: flex;\n}\n\n.menu-lateral {\n    width: 200px;\n    background-color: #2C5C8F;\n}\n\n.menu-lateral ul {\n    list-style: none;\n    margin: 0;\n    padding: 0;\n}\n\n.menu-lateral a {\n    display: block;\n    padding: 10px 14px;\n    color: white;\n    text-decoration: none;\n}\n\n.menu-lateral .activo {\n    background-color: #B0223A;\n}\n\n.contenido {\n    flex: 1;\n    padding: 0 16px;\n}\n\n.tarjetas {\n    display: flex;\n    flex-wrap: wrap;\n    gap: 16px;\n}\n\n.tarjeta {\n    box-sizing: border-box;\n    width: 22%;\n    padding: 8px 14px;\n    border: 1px solid #CBD9E6;\n    border-left: 6px solid #2C5C8F;\n    border-radius: 8px;\n}\n\n.numero {\n    font-size: 28px;\n    font-weight: bold;\n    margin: 0;\n}\n\ntable {\n    border-collapse: collapse;\n}\n\nth {\n    background-color: #2C5C8F;\n    color: white;\n    padding: 8px 12px;\n}\n\ntd {\n    padding: 8px 12px;\n    border-bottom: 1px solid #CBD9E6;\n}\n\n.tabla-desplazable {\n    overflow-x: auto;\n}\n\n.contenido {\n    min-width: 0;\n}\n\n/* Tableta: dos tarjetas por fila */\n@media (max-width: 900px) {\n    .tarjeta {\n        width: 47%;\n    }\n}\n\n/* Celular: menú arriba, barra apilada y una tarjeta por fila */\n@media (max-width: 600px) {\n    .barra {\n        flex-direction: column;\n        padding-bottom: 10px;\n    }\n\n    .contenedor {\n        flex-direction: column;\n    }\n\n    .menu-lateral {\n        width: auto;\n    }\n\n    .menu-lateral ul {\n        display: flex;\n        flex-wrap: wrap;\n    }\n\n    .tarjeta {\n        width: 100%;\n    }\n}";
+
+function documentoDemo(html, css, extra){
+  var h = html.split('sala.svg').join(FOTO);
+  return '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><style>' + BASE_DEMO + (extra || '') + css + '</style></head><body>' + h +
+    '<script>document.querySelectorAll("a").forEach(function(a){a.addEventListener("click",function(e){e.preventDefault();});});<\/script></body></html>';
+}
+document.querySelectorAll('.demo[data-demo]').forEach(function(el){
+  var clave = el.getAttribute('data-demo');
+  if(clave === 'rem') return;
+  var d = DEMOS[clave];
+  el.querySelector('.d-html').textContent = d.html;
+  el.querySelector('.d-css').textContent = d.mostrar;
+  crearVisor(el.querySelector('.d-visor'), documentoDemo(d.html, d.css), d.ancho, d.alto);
+});
+
+(function(){
+  var el = document.querySelector('.demo[data-demo="rem"]');
+  el.querySelector('.d-html').textContent = REM.html;
+  el.querySelector('.d-css').textContent = REM.css;
+  var fr = document.getElementById('rem-frame');
+  var bN = document.getElementById('rem-normal'), bG = document.getElementById('rem-grande');
+  function pintar(grande){
+    fr.srcdoc = documentoDemo(REM.html, REM.css, grande ? 'html{font-size:24px;}' : '');
+    bN.className = grande ? '' : 'on'; bG.className = grande ? 'on' : '';
+  }
+  bN.addEventListener('click', function(){ pintar(false); });
+  bG.addEventListener('click', function(){ pintar(true); });
+  pintar(false);
+})();
+
+(function(){
+  var rango = document.getElementById('exp-ancho');
+  var marco = document.getElementById('exp-visor');
+  var fr = document.getElementById('exp-frame');
+  var alto = 470;
+  var caja = document.querySelector('.explorador');
+  fr.srcdoc = documentoDemo(PANEL_HTML, PANEL_CSS_TODO);
+  function ajustar(){
+    var w = parseInt(rango.value, 10);
+    alto = (w <= 600) ? 820 : 470;
+    var disp = rango.clientWidth || w;
+    var esc = Math.min(1, disp / w);
+    fr.style.width = w + 'px'; fr.style.height = alto + 'px'; fr.style.transform = 'scale(' + esc + ')';
+    marco.style.width = Math.round(w * esc) + 'px'; marco.style.height = Math.round(alto * esc) + 'px';
+    document.getElementById('exp-valor').textContent = w + ' px';
+    var estado;
+    if(w <= 600){ estado = 'Celular: se cumplen las dos condiciones, (max-width: 900px) y (max-width: 600px). Gana el bloque de 600 porque va después.'; }
+    else if(w <= 900){ estado = 'Tableta: se cumple (max-width: 900px). El bloque de 600 no se aplica.'; }
+    else { estado = 'Computador: ninguna media query se cumple. Solo cuentan las reglas normales.'; }
+    document.getElementById('exp-estado').textContent = estado;
+  }
+  rango.addEventListener('input', ajustar);
+  window.addEventListener('resize', ajustar);
+  ajustar();
+})();
+
+var labVista = null;
+document.getElementById('lab-html').textContent = LAB_HTML;
+crearVisor(document.getElementById('lab-objetivo'), documentoDemo(LAB_HTML, LAB_SOL), 375, 560);
+function pintarLab(){
+  var css = document.getElementById('lab-css').value;
+  if(!labVista){ labVista = crearVisor(document.getElementById('lab-vista'), documentoDemo(LAB_HTML, css), 375, 560); }
+  else { labVista.fr.srcdoc = documentoDemo(LAB_HTML, css); }
+}
+function reiniciarLab(){ document.getElementById('lab-css').value = LAB_INICIAL; pintarLab(); }
+document.getElementById('lab-css').addEventListener('input', pintarLab);
+reiniciarLab();
+
+</script>
+</body>
+</html>
