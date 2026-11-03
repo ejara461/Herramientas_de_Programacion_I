@@ -1,0 +1,308 @@
+/* Clase 8: selectores de elemento */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #F4F8F4;
+    color: #333333;
+}
+
+h2 {
+    color: #1E5631;
+}
+
+th {
+    background-color: #1E5631;
+    color: white;
+}
+
+td {
+    color: #333333;
+    font-size: 15px;
+}
+
+/* Clase 9 · Parte 1: barra superior */
+#barra-superior {
+    background-color: #1E5631;
+    color: white;
+}
+
+#barra-superior h1 {
+    font-size: 28px;
+    text-align: left;
+}
+
+#barra-superior p {
+    color: white;
+    font-size: 14px;
+    text-align: right;
+    font-weight: bold;
+}
+
+/* Clase 9 · Parte 2: estados */
+.pendiente {
+    background-color: #FBE3E6;
+}
+
+.pendiente td {
+    color: darkred;
+    font-weight: bold;
+}
+
+.recolectado {
+    background-color: #FFF4D6;
+}
+
+.recolectado td {
+    color: #7A4A00;
+}
+
+.aprovechado {
+    background-color: #E4F5EC;
+}
+
+.aprovechado td {
+    color: darkgreen;
+}
+
+/* Clase 9 · Parte 3: enlaces del menú y del pie */
+nav {
+    background-color: #2E7D42;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+footer a {
+    color: #1E5631;
+}
+
+/* Clase 9 · Parte 4: conflicto de especificidad */
+#aviso-recoleccion {
+    color: navy;
+}
+
+.aviso {
+    color: darkorange;
+}
+
+p {
+    color: black;
+}
+
+/* Clase 10 · Parte 1: pantalla de ingreso */
+.tarjeta-ingreso {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 320px;
+    margin: 0 auto;
+    padding: 16px;
+    border: 2px solid #1E5631;
+    border-radius: 10px;
+    background-color: white;
+}
+
+.tarjeta-ingreso input {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 12px;
+}
+
+.tarjeta-ingreso select {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 12px;
+}
+
+/* Clase 10 · Parte 2: tarjetas de indicadores (ajustadas en la Clase 11) */
+.tarjeta {
+    box-sizing: border-box;
+    width: 22%;
+    padding: 12px 16px;
+    border: 1px solid #B7DCC0;
+    border-left: 6px solid #2E7D42;
+    border-radius: 8px;
+    background-color: white;
+    margin-bottom: 0;
+}
+
+.numero {
+    color: #1E5631;
+    font-size: 32px;
+    font-weight: bold;
+}
+
+.rotulo {
+    color: #555555;
+    font-size: 14px;
+}
+
+/* Clase 10 · Parte 3: campo de archivo */
+.form-registro {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 480px;
+    padding: 16px;
+    border: 1px solid #B7DCC0;
+    border-radius: 8px;
+    background-color: white;
+}
+
+#evidencia {
+    padding: 10px;
+    margin-top: 6px;
+    margin-bottom: 14px;
+    border: 1px dashed #2E7D42;
+    border-radius: 6px;
+}
+
+/* Clase 11 · Parte 2: menú lateral y contenido */
+.contenedor {
+    display: flex;
+}
+
+.menu-lateral {
+    width: 220px;
+}
+
+.contenido {
+    flex: 1;
+    padding: 0 20px;
+}
+
+.menu-lateral ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.menu-lateral a {
+    display: block;
+    padding: 12px 16px;
+}
+
+.menu-lateral a:hover {
+    background-color: #1E5631;
+}
+
+.menu-lateral .activo {
+    background-color: #1E5631;
+    border-left: 5px solid #F4F8F4;
+}
+
+/* Clase 11 · Parte 3: tarjetas en fila */
+.tarjetas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+/* Clase 11 · Parte 4: barra superior con menú horizontal */
+#barra-superior {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+}
+
+.menu-superior {
+    background-color: #1E5631;
+}
+
+.menu-superior ul {
+    display: flex;
+    gap: 20px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.menu-superior a:hover {
+    text-decoration: underline;
+}
+
+/* Clase 11 · Parte 4: tarjetas de acción con ícono enlazado */
+.acciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.accion {
+    box-sizing: border-box;
+    width: 22%;
+    padding: 16px;
+    border: 1px solid #B7DCC0;
+    border-radius: 8px;
+    background-color: white;
+    text-align: center;
+}
+
+.accion img {
+    width: 80px;
+    height: 80px;
+}
+
+.accion h3 {
+    color: #1E5631;
+    font-size: 17px;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+@media (max-width: 900px) {
+    .tarjeta {
+        width: 47%;
+    }
+    
+    .accion {
+        width: 47%;
+    }
+}
+
+@media (max-width: 600px) {
+    .contenedor {
+        flex-direction: column;
+    }
+
+    .menu-lateral {
+        width: auto;
+    }
+
+    .menu-lateral ul {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .menu-lateral a {
+        padding: 10px 12px;
+    }
+
+    #barra-superior {
+        flex-direction: column;
+        padding-bottom: 12px;
+    }
+    
+    #barra-superior h1 {
+        font-size: 1.4 rem;
+    }
+
+    .menu-superior ul{
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+}
+
+.tarjeta {
+    width: 100%;
+}
+
+.accion {
+    width: 100%;
+}

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width , initial-scale=1.0">
+    <title>EcoPunto · Panel del administrador</title>
+    <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+    <header id="barra-superior">
+        <h1>EcoPunto</h1>
+        <nav class="menu-superior">
+            <ul>
+                <li>Usuario: Coordinador ambiental</li>
+                <li><a href="#">Ayuda</a></li>
+                <li><a href="ingreso.html">Cerrar sesión</a></li>
+            </ul>
+        </nav>
+    </header>
+    <div class="contenedor">
+        <nav class="menu-lateral">
+            <ul>
+                <li><a href="#" class="activo">⌂ Inicio</a></li>
+                <li><a href="#">✎ Registrar residuos</a></li>
+                <li><a href="#">☰ Registros</a></li>
+                <li><a href="#">★ Delegados</a></li>
+                <li><a href="#">♻ Empresas recolectoras</a></li>
+            </ul>
+        </nav>
+        <main class="contenido">
+            <section>
+                <h2>Resumen del mes</h2>
+                <div class="tarjetas">
+                    <div class="tarjeta">
+                        <p class="numero">2</p>
+                        <p class="rotulo">Registros pendientes</p>
+                    </div>
+                    <div class="tarjeta">
+                        <p class="numero">7</p>
+                        <p class="rotulo">Kg recolectados</p>
+                    </div>
+                    <div class="tarjeta">
+                        <p class="numero">12</p>
+                        <p class="rotulo">Kg aprovechados</p>
+                    </div>
+                    <div class="tarjeta">
+                        <p class="numero">4</p>
+                        <p class="rotulo">Grados con registros</p>
+                    </div>
+                </div>
+            </section>
+            <section>
+                <h2>Acciones</h2>
+                <div class="acciones">
+                    <div class="accion">
+                        <a href="#"><img src="images/registrar.jpg" alt="Ir a Registrar residuos"></a>
+                        <h3>Registrar residuos</h3>
+                        <p>Anotar lo que entregó cada grado.</p>
+                    </div>
+                    <div class="accion">
+                        <a href="#"><img src="images/registros.jpg" alt="Ir a Ver registros"></a>
+                        <h3>Ver registros</h3>
+                        <p>Consultar el estado de cada entrega.</p>
+                    </div>
+                    <div class="accion">
+                        <a href="#"><img src="images/delegados.jpg" alt="Ir a Delegados"></a>
+                        <h3>Delegados</h3>
+                        <p>Quién recibe los residuos esta semana.</p>
+                    </div>
+                    <div class="accion">
+                        <a href="#"><img src="images/empresas.jpg" alt="Ir a Empresas recolectoras"></a>
+                        <h3>Empresas recolectoras</h3>
+                        <p>Días y horarios de recolección.</p>
+                    </div>
+                </div>
+            </section>
+            <section>
+                <h2>Registros de residuos</h2>
+                <p id="aviso-recoleccion" class="aviso">La empresa recolectora pasa los martes y viernes.</p>
+                <table>
+                    <thead>
+                        <tr><th>Código</th><th>Grado</th><th>Tipo de residuo</th><th>Cantidad (kg)</th><th>Estado</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr class="aprovechado"><td>R-001</td><td>6.°A</td><td>Papel y cartón</td><td>12</td><td>Aprovechado</td></tr>
+                        <tr class="recolectado"><td>R-002</td><td>8.°B</td><td>Plástico</td><td>7</td><td>Recolectado</td></tr>
+                        <tr class="pendiente"><td>R-003</td><td>10.°A</td><td>Vidrio</td><td>4</td><td>Pendiente</td></tr>
+                        <tr class="pendiente"><td>R-004</td><td>11.°A</td><td>Envases</td><td>9</td><td>Pendiente</td></tr>
+                    </tbody>
+                </table>
+            </section>
+            <section>
+                <h2>Registrar residuos</h2>
+                <form class="form-registro">
+                    <label for="tipo">Tipo de residuo</label><br>
+                    <select id="tipo">
+                        <option value="papel">Papel y cartón</option>
+                        <option value="plastico">Plástico</option>
+                        <option value="vidrio">Vidrio</option>
+                        <option value="envases">Envases</option>
+                    </select><br>
+                    <label for="cantidad">Cantidad (kg)</label><br>
+                    <input type="text" id="cantidad"><br>
+                    <label for="evidencia">Foto de evidencia del residuo</label><br>
+                    <input type="file" id="evidencia" accept="image/*"><br>
+                    <input type="submit" value="Guardar registro">
+                </form>
+            </section>
+        </main>
+    </div>
+    <footer>
+        <p>EcoPunto · Proyecto de ejemplo del curso</p>
+        <p><a href="#">Guía de separación en la fuente</a></p>
+    </footer>
+</body>
+</html>
