@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recuperación · Guía de estudio</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --azul-profundo:#132A4C; --azul-medio:#2C5C8F; --azul-claro:#EAF1F8;
+  --rojo-mc:#B0223A; --verde:#2E7D42; --borde:#CBD9E6;
+}
+*{box-sizing:border-box;}
+body{margin:0; font-family:"IBM Plex Sans", Arial, sans-serif; color:var(--azul-profundo); background:#fff; line-height:1.55;}
+code, pre{font-family:"IBM Plex Mono","Courier New",monospace;}
+.topbar{background:var(--azul-profundo); color:#fff; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; padding:.6rem 1rem; gap:.6rem;}
+.topbar .marca{display:flex; align-items:center; gap:.6rem; font-weight:600;}
+.topbar .marca img{height:34px; width:34px; border-radius:4px; background:#fff; padding:2px;}
+.topbar .hora{font-family:"IBM Plex Mono",monospace; font-size:.95rem;}
+main{max-width:900px; margin:0 auto; padding:1.5rem 1.25rem 4rem;}
+h1{margin-top:0;}
+h2{color:var(--azul-medio); border-bottom:2px solid var(--borde); padding-bottom:.3rem; margin-top:2.2rem;}
+h3{margin-top:1.4rem;}
+.bloque{background:var(--azul-claro); border:1px solid var(--borde); border-radius:8px; padding:1rem 1.2rem; margin:1rem 0;}
+.bloque.alerta{background:#FCEBEE; border-color:#E6AEB8;}
+.bloque.pendiente{background:#FFF6DD; border-color:#E8CF84;}
+.tabla-scroll{overflow-x:auto;}
+table{border-collapse:collapse; width:100%; margin:1rem 0;}
+th, td{border:1px solid var(--borde); padding:.5rem .7rem; text-align:left; vertical-align:top;}
+thead{background:var(--azul-medio); color:#fff;}
+pre{background:var(--azul-profundo); color:#EAF1F8; padding:1rem; border-radius:6px; overflow-x:auto; font-size:.82rem;}
+pre.css{background:#1F3B2A; color:#E3F4E8;}
+pre.js{background:#3A2F13; color:#FBF1D2;}
+p code, li code, td code{overflow-wrap:anywhere;}
+.btn{background:var(--azul-medio); color:#fff; border:0; border-radius:6px; padding:.55rem 1rem; font:inherit; cursor:pointer; margin:.2rem .3rem .2rem 0;}
+.btn.rojo{background:var(--rojo-mc);}
+.tag{display:inline-block; background:#fff; border:1px solid var(--azul-medio); color:var(--azul-medio); font-family:"IBM Plex Mono",monospace; font-size:.8rem; padding:.1rem .4rem; border-radius:4px; margin:.15rem;}
+
+.etq{display:inline-block; background:#fff; border:1px solid var(--azul-medio); color:var(--azul-medio); font-family:"IBM Plex Mono",monospace; font-size:.8rem; padding:.1rem .4rem; border-radius:4px; margin:.15rem;}
+details{background:var(--azul-claro); border:1px solid var(--borde); border-radius:8px; padding:.6rem 1rem; margin:.6rem 0;}
+summary{cursor:pointer; font-weight:600;}
+@media print{ .topbar, .noimp{display:none !important;} pre{white-space:pre-wrap;} }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="marca">
+    <img src="data:image/jpeg;base64,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" alt="Logo IE María de los Ángeles Cano">
+    <span>Herramientas de Programación I · Recuperación · Guía de estudio</span>
+  </div>
+  <div class="hora" id="reloj">--:--:--</div>
+</div>
+<main>
+  <h1>Guía de estudio para la recuperación</h1>
+  <p>Esta guía resume lo que se vio en el módulo y lo que se evalúa el viernes 20 de noviembre. Los ejemplos son de otro proyecto (una tienda escolar) y distintos a los del examen.</p>
+  <button class="btn noimp" onclick="window.print()">Imprimir guía</button>
+
+  <div class="bloque">
+    <p><strong>Cómo es el examen (en papel, 3 horas):</strong></p>
+    <ul>
+      <li><strong>Bloque HTML:</strong> 10 preguntas de selección múltiple. Vale 40 % del examen.</li>
+      <li><strong>Bloque CSS:</strong> 10 preguntas de selección múltiple. Vale 40 % del examen.</li>
+      <li><strong>Bloque de código:</strong> un solo caso en el que escribe a mano un HTML, un CSS y un poco de JavaScript con <code>if/else</code>. Vale 20 % del examen.</li>
+    </ul>
+    <p>Solo se evalúa lo que se vio en clase. Si usa en el bloque de código una etiqueta o propiedad que no se enseñó, se descuenta 0.3 por cada tipo distinto. Es mejor un código sencillo y propio que uno complicado.</p>
+  </div>
+
+  <h2>HTML</h2>
+  <h3>Estructura de una página</h3>
+<pre>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;Tienda escolar&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Tienda escolar&lt;/h1&gt;
+    &lt;p&gt;Bienvenido.&lt;br&gt;Abrimos a las 7:00 a. m.&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+  <p>En <code>head</code> va la información de la página (título, juego de caracteres, enlaces a archivos). En <code>body</code> va todo lo que el usuario ve.</p>
+
+  <h3>Etiquetas que debe conocer</h3>
+  <div class="tabla-scroll">
+  <table>
+    <thead><tr><th>Etiqueta</th><th>Para qué sirve</th><th>Ejemplo</th></tr></thead>
+    <tbody>
+      <tr><td><code>title</code></td><td>Título de la pestaña del navegador (va en <code>head</code>)</td><td><code>&lt;title&gt;Tienda&lt;/title&gt;</code></td></tr>
+      <tr><td><code>meta charset</code></td><td>Que se vean bien las tildes y la ñ</td><td><code>&lt;meta charset="UTF-8"&gt;</code></td></tr>
+      <tr><td><code>h1</code>, <code>h2</code>, <code>h3</code></td><td>Títulos; <code>h1</code> es el más importante</td><td><code>&lt;h2&gt;Productos&lt;/h2&gt;</code></td></tr>
+      <tr><td><code>p</code>, <code>br</code>, <code>hr</code></td><td>Párrafo, salto de línea, línea horizontal</td><td><code>&lt;hr&gt;</code></td></tr>
+      <tr><td><code>a</code></td><td>Enlace; el destino va en <code>href</code></td><td><code>&lt;a href="menu.html"&gt;Menú&lt;/a&gt;</code></td></tr>
+      <tr><td><code>img</code></td><td>Imagen; archivo en <code>src</code>, descripción en <code>alt</code></td><td><code>&lt;img src="pan.png" alt="Pan"&gt;</code></td></tr>
+      <tr><td><code>ul</code>, <code>ol</code>, <code>li</code></td><td>Lista con viñetas, lista numerada y cada elemento</td><td><code>&lt;ul&gt;&lt;li&gt;Pan&lt;/li&gt;&lt;/ul&gt;</code></td></tr>
+      <tr><td><code>header</code>, <code>nav</code>, <code>main</code>, <code>section</code>, <code>article</code>, <code>aside</code>, <code>footer</code>, <code>div</code></td><td>Estructura de la página: encabezado, menú, contenido principal, secciones, texto independiente, lateral, pie y contenedor genérico</td><td><code>&lt;nav&gt;...&lt;/nav&gt;</code></td></tr>
+      <tr><td><code>table</code>, <code>thead</code>, <code>tbody</code>, <code>tr</code>, <code>th</code>, <code>td</code></td><td>Tabla: encabezado, cuerpo, fila, celda de encabezado y celda de dato</td><td>ver abajo</td></tr>
+      <tr><td><code>form</code>, <code>input</code>, <code>label</code></td><td>Formulario, campo y su rótulo</td><td>ver abajo</td></tr>
+      <tr><td><code>select</code>, <code>option</code></td><td>Lista desplegable y cada una de sus opciones</td><td>ver abajo</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>Tabla</h3>
+<pre>&lt;table&gt;
+    &lt;thead&gt;
+        &lt;tr&gt;&lt;th&gt;Producto&lt;/th&gt;&lt;th&gt;Precio&lt;/th&gt;&lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody&gt;
+        &lt;tr&gt;&lt;td&gt;Empanada&lt;/td&gt;&lt;td&gt;Consulte la lista&lt;/td&gt;&lt;/tr&gt;
+    &lt;/tbody&gt;
+&lt;/table&gt;</pre>
+
+  <h3>Formulario</h3>
+<pre>&lt;form&gt;
+    &lt;label for="cliente"&gt;Cliente&lt;/label&gt;
+    &lt;input type="text" id="cliente"&gt;
+
+    &lt;label for="clave"&gt;Contraseña&lt;/label&gt;
+    &lt;input type="password" id="clave"&gt;
+
+    &lt;label for="grado"&gt;Grado&lt;/label&gt;
+    &lt;select id="grado"&gt;
+        &lt;option&gt;Décimo&lt;/option&gt;
+        &lt;option&gt;Once&lt;/option&gt;
+    &lt;/select&gt;
+&lt;/form&gt;</pre>
+  <div class="bloque">
+    <p><strong>Regla clave:</strong> el <code>for</code> del <code>label</code> debe ser igual al <code>id</code> del campo. <code>type="text"</code> muestra lo que se escribe; <code>type="password"</code> lo oculta; <code>type="file"</code> permite escoger un archivo.</p>
+  </div>
+
+  <h3>Errores frecuentes en HTML</h3>
+  <ul>
+    <li>Olvidar cerrar una etiqueta (<code>&lt;/p&gt;</code>, <code>&lt;/li&gt;</code>).</li>
+    <li>Confundir <code>src</code> (imagen) con <code>href</code> (enlace).</li>
+    <li>Poner una imagen sin <code>alt</code>.</li>
+    <li>Poner en <code>head</code> algo que debe ir en <code>body</code>.</li>
+  </ul>
+
+  <h2>CSS</h2>
+  <h3>Forma de una regla</h3>
+<pre class="css">selector {
+    propiedad: valor;
+    otra-propiedad: valor;
+}</pre>
+  <p>Cada declaración termina en punto y coma. Las llaves encierran la regla. No se escriben etiquetas HTML dentro del CSS.</p>
+
+  <h3>Tres formas de aplicar CSS</h3>
+  <ul>
+    <li><strong>Externa:</strong> un archivo <code>.css</code> enlazado con <code>&lt;link rel="stylesheet" href="estilos.css"&gt;</code> dentro de <code>head</code>. Es la forma principal.</li>
+    <li><strong>Embebida:</strong> un bloque <code>&lt;style&gt;...&lt;/style&gt;</code> en <code>head</code>.</li>
+    <li><strong>En línea:</strong> el atributo <code>style="color: red;"</code> en una etiqueta.</li>
+  </ul>
+  <div class="bloque">
+    <p><strong>Cascada:</strong> si dos reglas chocan sobre la misma propiedad, gana el estilo en línea; entre externa y embebida gana la que está más abajo en <code>head</code>; en un mismo archivo gana la última regla.</p>
+  </div>
+
+  <h3>Selectores</h3>
+<pre class="css">p { color: navy; }            /* elemento: todos los p */
+.oferta { color: red; }       /* clase: class="oferta" */
+#portada { font-size: 24px; } /* id: id="portada" */
+nav a { color: white; }       /* descendiente: enlaces dentro de nav */</pre>
+
+  <h3>Propiedades que debe conocer</h3>
+  <div class="tabla-scroll">
+  <table>
+    <thead><tr><th>Propiedad</th><th>Qué hace</th></tr></thead>
+    <tbody>
+      <tr><td><code>color</code></td><td>Color del texto</td></tr>
+      <tr><td><code>background-color</code></td><td>Color de fondo</td></tr>
+      <tr><td><code>font-family</code>, <code>font-size</code></td><td>Tipo y tamaño de letra</td></tr>
+      <tr><td><code>text-align</code></td><td>Alineación del texto (<code>center</code>, <code>left</code>, <code>right</code>)</td></tr>
+      <tr><td><code>width</code>, <code>height</code></td><td>Ancho y alto</td></tr>
+      <tr><td><code>padding</code></td><td>Espacio por <strong>dentro</strong>, entre el contenido y el borde</td></tr>
+      <tr><td><code>border</code>, <code>border-radius</code></td><td>Borde y esquinas redondeadas</td></tr>
+      <tr><td><code>margin</code></td><td>Espacio por <strong>fuera</strong> del borde; <code>margin: 0 auto;</code> centra una caja con ancho definido</td></tr>
+      <tr><td><code>list-style: none;</code></td><td>Quita las viñetas de una lista (útil en menús)</td></tr>
+      <tr><td><code>:hover</code></td><td>Estilo cuando el puntero está encima, por ejemplo <code>a:hover</code></td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>Modelo de caja</h3>
+  <p>De adentro hacia afuera: <strong>contenido, padding, borde, margin</strong>. Todo elemento es una caja con esas cuatro capas.</p>
+
+  <h3>Flexbox</h3>
+<pre class="css">.tarjetas {
+    display: flex;
+    flex-wrap: wrap;
+}</pre>
+  <p><code>display: flex;</code> se escribe en el contenedor. Sus hijos se ubican uno al lado del otro, en fila. <code>flex-wrap: wrap;</code> permite que pasen a la línea siguiente si no caben.</p>
+
+  <h3>Diseño responsivo</h3>
+<pre>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</pre>
+<pre class="css">@media (max-width: 600px) {
+    .tarjetas { display: block; }
+}</pre>
+  <p>La etiqueta <code>viewport</code> hace que la página se ajuste al ancho del dispositivo. La media query aplica sus reglas solo cuando la pantalla mide 600px o menos.</p>
+
+  <h2>JavaScript</h2>
+  <p>El JavaScript se escribe en un archivo <code>.js</code> y se enlaza al HTML con <code>&lt;script src="script.js"&gt;&lt;/script&gt;</code>. El resultado de <code>console.log</code> se ve en la consola del navegador (tecla F12).</p>
+<pre class="js">let producto = "Empanada";
+let cantidad = 5;
+
+if (cantidad &gt; 10) {
+    console.log("Pedido grande");
+} else {
+    console.log("Pedido pequeño");
+}
+
+if (producto === "Empanada") {
+    console.log("Se sirve caliente");
+} else {
+    console.log("Se sirve frío");
+}</pre>
+  <ul>
+    <li><strong>Variable:</strong> un nombre que guarda un valor. Un texto va entre comillas; un número, sin comillas.</li>
+    <li><strong>Comparar:</strong> igual (<code>===</code> o <code>==</code>), mayor que (<code>&gt;</code>), menor que (<code>&lt;</code>).</li>
+    <li><strong>if/else:</strong> si la condición se cumple, se ejecuta el primer bloque; si no, el de <code>else</code>. La condición va entre paréntesis y cada bloque entre llaves.</li>
+    <li>Un solo signo <code>=</code> <strong>guarda</strong> un valor; para <strong>comparar</strong> se usan dos o tres.</li>
+  </ul>
+
+  <h2>Cómo responder bien</h2>
+  <ul>
+    <li>Lea la pregunta completa y las cuatro opciones antes de marcar. Descarte primero las que sabe que están mal.</li>
+    <li>En el bloque de código, escriba en este orden: estructura del HTML, luego el CSS y por último el JavaScript. Revise las comillas, las llaves y los puntos y coma.</li>
+    <li>Use solo lo que se vio en clase. Si duda de una etiqueta o propiedad, no la use.</li>
+    <li>Entregue su propio trabajo. Para el docente, la honestidad pesa más que la perfección.</li>
+  </ul>
+
+  <h2>Autoevaluación</h2>
+  <p>Responda primero sin mirar; luego abra la respuesta.</p>
+  <ol>
+    <li>¿Qué atributo lleva la ruta de una imagen y cuál lleva el destino de un enlace?
+      <details><summary>Ver respuesta</summary><p><code>src</code> para la imagen y <code>href</code> para el enlace.</p></details></li>
+    <li>Un <code>&lt;label for="correo"&gt;</code>: ¿qué debe tener el campo para quedar asociado?
+      <details><summary>Ver respuesta</summary><p>El mismo valor en su <code>id</code>: <code>id="correo"</code>.</p></details></li>
+    <li>¿Qué etiquetas forman una tabla con encabezado?
+      <details><summary>Ver respuesta</summary><p><code>table</code>, <code>thead</code>, <code>tbody</code>, <code>tr</code>, <code>th</code> y <code>td</code>.</p></details></li>
+    <li>¿Qué diferencia hay entre <code>padding</code> y <code>margin</code>?
+      <details><summary>Ver respuesta</summary><p><code>padding</code> es el espacio dentro de la caja, entre el contenido y el borde; <code>margin</code> es el espacio fuera del borde.</p></details></li>
+    <li>Un párrafo tiene <code>style="color: green;"</code> y el archivo CSS dice <code>p { color: red; }</code>. ¿De qué color se ve?
+      <details><summary>Ver respuesta</summary><p>Verde, porque el estilo en línea gana sobre las demás formas.</p></details></li>
+    <li>¿Cómo se escribe el selector de la clase <code>destacado</code> y el del id <code>portada</code>?
+      <details><summary>Ver respuesta</summary><p><code>.destacado</code> con punto y <code>#portada</code> con numeral.</p></details></li>
+    <li>Escriba un <code>if/else</code> que muestre "Mayor" si la variable <code>edad</code> es mayor que 17 y "Menor" si no.
+      <details><summary>Ver respuesta</summary><pre class="js">if (edad &gt; 17) {
+    console.log("Mayor");
+} else {
+    console.log("Menor");
+}</pre></details></li>
+  </ol>
+</main>
+<script>
+(function(){
+  var r = document.getElementById("reloj");
+  function tic(){ var d = new Date(); r.textContent = d.toLocaleTimeString("es-CO"); }
+  tic(); setInterval(tic, 1000);
+})();
+</script></body></html>
